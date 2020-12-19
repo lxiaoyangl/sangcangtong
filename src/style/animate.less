@@ -1,0 +1,32 @@
+.fade-enter-active,
+.fade-leave-active {
+  transition: all .2s ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
+
+.main-enter, .main-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+
+}
+.main-enter-active {
+  transition: all 0.2s;
+}
+.main-leave-active {
+  position: absolute;
+  transition: all 0.3s;
+}
+.slidLeft-enter-active,
+.slidLeft-leave-active {
+  transition: all .2s ease;
+  max-width: 300px;
+}
+
+.slidLeft-enter,
+.slidLeft-leave-active {
+  max-width: 0;
+}

@@ -1,0 +1,66 @@
+/**************************基本样式***********************/
+/*屏幕适配*/
+html, body, iframe, h1, h2, h3, h4, h5, h6, p, a, em, img, strong, var, dl, dt, dd, ol, ul, li, form, label, i {
+  font-family: 'STSongti-SC-Regular', 'Microsoft YaHei', '微软雅黑', arial, SimSun, '宋体';
+  font-style: normal;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+  background: transparent;
+  font-weight: normal;
+}
+
+body {
+  background: #fff;
+}
+
+ul, ol {
+  list-style: none
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #999;
+}
+
+/*去除数字输入框上下箭头*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+button:disabled, input[type=button]:disabled {
+  opacity: 0.8;
+  box-shadow: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+}
+#index ::-webkit-scrollbar{
+  width:1px;
+}
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #e0e0e0;
+}

@@ -1,0 +1,368 @@
+.el-form-item__content {
+  line-height: 36px;
+}
+.el-form-item__label {
+  line-height: 34px;
+}
+.el-input__inner {
+  height: 36px;
+  line-height: 36px;
+}
+
+.el-button {
+  padding: 10px 20px;
+}
+.el-button--mini,
+.el-button--mini.is-round{
+  padding: 5px 10px;
+}
+.el-radio {
+  display: inline-block;
+  line-height: 40px;
+}
+
+.el-table {
+  th, td {
+    padding: 10px 0;
+    border-bottom: none;
+    position: relative;
+    &:after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 1px;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      background-color: #E4E8EF;
+    }
+  }
+  th {
+    color: #333;
+    border-left: none;
+    border-bottom: none;
+    padding: 5px;
+    background-color: #ecf5ff!important;
+    &:first-child{
+      border-left: none;
+    }
+    &:after{
+      background-color: #fff;
+    }
+    .cell{
+      margin: 8px 0;
+    }
+    .caret-wrapper{
+      height: 20px;
+    }
+    .sort-caret.ascending{
+      top: -2px;
+    }
+    .sort-caret.descending{
+      bottom: 0;
+    }
+  }
+  .el-table--border, .el-table--group{
+    border: none;
+    border-left: 1px solid #f0f0f0;
+  }
+  .el-table__fixed-right{
+    border-right: 1px solid #f0f0f0;
+  }
+  td{
+    padding: 6px;
+    border-bottom: none;
+    &:after{
+      background-color: #fff;
+    }
+  }
+  .sort-caret.ascending {
+    color: #d8d8d8;
+  }
+  tr{
+    background-color: #fff!important;
+    &:nth-child(2n){
+      background-color: #ecf5ff!important;
+    }
+  }
+  .cell{
+    white-space: nowrap;
+    .el-button{
+      border: none;
+      background-color: transparent;
+      border-bottom: 1px solid;
+      color: #409eff;
+      border-radius: 0;
+      padding: 5px 0;
+      &:hover{
+        color: #000;
+      }
+    }
+  }
+}
+.el-table td, .el-table th.is-leaf{
+  border-bottom: none;
+}
+.el-pagination {
+  padding: 10px 0 0 0;
+  text-align: right;
+  font-size: 13px;
+  .el-pagination__total,
+  .el-pagination__sizes {
+    float: left;
+    color: #666666;
+  }
+}
+.el-tree-node__content{
+  height: inherit;
+}
+.el-tree-node>.el-tree-node__children{
+  overflow: inherit;
+}
+.el-dialog {
+  margin-top: 10vh!important;
+  .el-form-item__label{
+    line-height: 38px;
+  }
+  width: 60%;
+  max-width: 800px;
+  .el-dialog__body{
+    .el-form{
+      max-height: 62vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 10px;
+    }
+  }
+}
+.el-dialog__header {
+  background: #F8F8F8;
+  color: #333;
+  font-size: 14px;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 20px;
+  border: none;
+}
+.el-dialog__body {
+  border-top: 1px solid #e7eaec;
+  border-bottom: 1px solid #e7eaec;
+  .el-form{
+    max-height: 600px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-right: 20px;
+  }
+  .el-select {
+    width: 100%;
+    .el-input__inner {
+      padding-right: 15px;
+    }
+  }
+}
+.el-cascader{
+  width: 100%;
+}
+.el-input{
+  width: 100%;
+}
+.el-date-editor.el-input{
+  width: 100%;
+}
+.el-select{
+  width: 100%;
+}
+.el-input__inner[disabled="disabled"] {
+  cursor: pointer !important;
+  color: #606266!important;
+}
+.el-radio__input.is-disabled+span.el-radio__label, .el-textarea.is-disabled .el-textarea__inner{
+  color: #606266!important;
+}
+/*树形线的汇绘制start*/
+.el-tree{
+  color: #333;
+}
+.el-tree > .el-tree-node:after {
+  border-top: none;
+}
+
+.el-tree-node {
+  position: relative;
+  padding-left: 8px;
+}
+
+//节点有间隙，隐藏掉展开按钮就好了,如果觉得空隙没事可以删掉
+.el-tree.checkbox-tree{
+  .el-tree-node__expand-icon.is-leaf.el-icon-caret-right:before,
+  .el-tree-node__expand-icon.el-icon-caret-right:before{
+    position: relative;
+    left: 20px;
+  }
+  .el-checkbox{
+    position: relative;
+    left: -20px;
+  }
+  .el-tree-node__children{
+    padding-left: 38px;
+  }
+}
+.el-tree-node__expand-icon{
+  padding: 0;
+}
+.el-tree-node__expand-icon.is-leaf.el-icon-caret-right:before {
+  font-family:FontAwesome!important;
+  font-size: 13px;
+  content: "\f15b";
+  color: #666;
+  margin-right: 5px;
+}
+.el-tree-node__expand-icon.el-icon-caret-right:before{
+  font-family:FontAwesome!important;
+  content: "\f07b";
+  color: #666;
+  display: inline-block;
+  font-size: 14px;
+  transform: rotate(0deg);
+}
+.el-tree-node__expand-icon.expanded{
+  transform: rotate(0deg);
+}
+.el-tree-node__expand-icon.expanded.el-icon-caret-right:before{
+  content: "\f07c";
+}
+.el-tree-node__children {
+  padding-left: 18px;
+}
+
+.el-tree-node :last-child:before {
+  height: 13px;
+}
+
+.el-tree > .el-tree-node:before {
+  border-left: none;
+}
+
+.el-tree > .el-tree-node:after {
+  border-top: none;
+}
+
+.el-tree-node:before {
+  content: "";
+  height: 100%;
+  width: 1px;
+  position: absolute;
+  left: -4px;
+  right: auto;
+  bottom: 0px;
+  top: 0px;
+  border-left: 1px dashed #999;
+}
+
+.el-tree-node:after {
+  width: 16px;
+  height: 20px;
+  content: "";
+  left:-4px;
+  right: auto;
+  top: 12px;
+  position: absolute;
+  border-top: 1px dashed #999;
+}
+/*树形线的汇绘制end*/
+.el-card.is-always-shadow, .el-card.is-hover-shadow:focus, .el-card.is-hover-shadow:hover{
+  box-shadow: none;
+  border: none;
+}
+.el-table--border td,
+.el-table--border th,
+.el-table__body-wrapper
+.el-table--border
+.is-scrolling-left~.el-table__fixed{
+  border-right: none;
+}
+
+.content-window-card{
+  position: relative;
+  top: 0;
+  left:0;
+  font-size: 14px;
+  color: #000;
+  z-index: 1000;
+  .label{
+    font-size: 13px;
+    color: #666;
+  }
+}
+.amap-info-close{
+  top:3px;
+  right: 3px!important;
+}
+.el-icon-location-information{
+  font-size: 16px;
+  font-weight: 600;
+  color: #00a8c6;
+  cursor: pointer;
+}
+
+.amap-icon img {
+  max-width: 28px!important;
+  max-height: 28px!important;
+}
+// .el-menu-item, .el-submenu__title,
+// .el-submenu .el-menu-item{
+//   height: 40px;
+//   line-height: 40px;
+//   box-sizing: border-box;
+//   background-color: #fff;
+//   color: #333!important;
+//   opacity: 1;
+// }
+// .el-submenu.is-active .el-submenu__title,
+// .el-menu-item, .el-submenu__title{
+//   border-bottom: 1px solid #d9dee9;
+//   &:hover {
+//     color: #409EFF !important;
+//     background-color: rgba(64,158,255, 0.1)!important;
+//   }
+// }
+
+.el-dialog__headerbtn{
+  top:15px;
+}
+.my-marker{
+  .my-marker-name{
+    font-size:16px;
+    font-weight:bold;
+    color:rgba(216,30,6,1);
+    line-height:19px;
+    text-align: center;
+  }
+  .my-marker-img{
+    width: 80px;
+    margin-top: -20px;
+  }
+}
+.other-marker{
+  padding: 20px 29px 40px;
+  width:175px;
+  height:99px;
+  box-sizing: border-box;
+  background: url("../assets/map_marker_bg.png") no-repeat left top/ auto 100%;
+  &:hover{
+    background: url("../assets/map_marker_bg_h.png") no-repeat left top/ auto 100%;
+  }
+  .other-marker-name{
+    font-size:16px;
+    font-weight:bold;
+    color:rgba(255,255,255,1);
+    line-height:19px;
+  }
+  .other-marker-tips{
+    font-size:12px;
+    color:rgba(255,255,255,1);
+    line-height:19px;
+    opacity:0.8;
+    margin-top: 5px;
+  }
+}

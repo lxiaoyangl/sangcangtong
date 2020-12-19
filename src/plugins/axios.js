@@ -92,7 +92,7 @@ function _commonApi(type, url, params){
     return axios(config).then((res) => {
         const sussArr = [100, 101, 102, 103, 104]
         if (sussArr.indexOf(res.data.status) > -1) {
-        return res
+        return res.data.data
         } else {
             // 骚操作批量删除添加
             if (res.data.status !== 202 && res.data.status !== 201) { clearpop(res.data.data || res.data.msg, 'error') }

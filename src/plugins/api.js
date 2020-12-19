@@ -1,6 +1,7 @@
 ﻿import { postApi } from './axios'
 
 export function login(params) { return postApi('/login/userLogin', params) }
+export function loginByUserId(params) { return postApi('/login/loginByUserId', params) }
 export function modifyPas(params) { return postApi('/user/changeUserPassword', params) }
 
 export function setRoleAdd(params) { return postApi('/role/baseAdd', params) }

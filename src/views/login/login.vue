@@ -61,7 +61,7 @@
 <script type="text/ecmascript-6">
 //    import axios from 'axios';
     import config from "Public/config.js";
-    import { login } from '@/plugins/api';
+    import { login, loginByUserId } from '@/plugins/api';
 
     export default {
         data(){
@@ -122,26 +122,26 @@
 //                            name: res.realname
 //                        })
                             let userinfo = {
-                                username:res.data.data.realname,
-                                token:res.data.data.token,
-                                userId:res.data.data.userId
+                                username:res.realname,
+                                token:res.token,
+                                userId:res.userId
                             }
 
                             sessionStorage.setItem('two-nav-menu',JSON.stringify([]));
                             sessionStorage.setItem('three-nav-menu',JSON.stringify([]));
-                            this.$axios.post(config.loginUrl+'/login/loginByUserId',{
+                            loginByUserId({
                                 userId: userinfo.userId,
                                 sysCode: config.sys_code,
                             }).then(res=>{
                                 console.log('获取菜单结果',res)
                                 let userinfo = {
-                                    username:res.data.data.realname,
-                                    token:res.data.data.token,
-                                    userId:res.data.data.userId
+                                    username:res.realname,
+                                    token:res.token,
+                                    userId:res.userId
                                 }
                                 sessionStorage.setItem('login-userinfo',JSON.stringify(userinfo));
-                                sessionStorage.setItem('two-nav-menu',JSON.stringify(res.data.data.menu));
-                                sessionStorage.setItem('companyId',JSON.stringify(res.data.data.companyId));
+                                sessionStorage.setItem('two-nav-menu',JSON.stringify(res.menu));
+                                sessionStorage.setItem('companyId',JSON.stringify(res.companyId));
                                 this.$router.push({name:'Home'});
                             })
                         })

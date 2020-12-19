@@ -2,7 +2,8 @@ import config from "Public/config.js";
 
 // 配置权限地址
 const loginUrl = [
-  '/login/userLogin'
+  '/login/userLogin',
+    '/login/loginByUserId'
 ]
 const newsUrl = [
   '/column/baseList',

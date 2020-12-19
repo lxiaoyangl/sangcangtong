@@ -467,7 +467,8 @@ export default {
             let webSocket
             var websocket_connected_count = 0
             const newSocketInit = () => {
-                webSocket = new WebSocket(`${config.ws_ip}/imserver/${this.userinfo.userId}`)
+                let userinfo = JSON.parse(sessionStorage.getItem('login-userinfo'));
+                webSocket = new WebSocket(`${config.ws_ip}/imserver/${userinfo.userId}`)
             }
             newSocketInit()
             // 连接成功
