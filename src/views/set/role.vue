@@ -115,7 +115,7 @@
 import RoleMenu from '@/components/pages/roleMenu'
 import RoleUser from '@/components/pages/roleUser'
 import { sureDelete, getChangeData, state, deleteAllNext, getValidButton } from '@/utils'
-import { setRoleList, setRoleAdd, setRoleEdit, setRoleDelete, setRoleBatchDelete } from '@/axios/api'
+import { setRoleList, setRoleAdd, setRoleEdit, setRoleDelete, setRoleBatchDelete } from '@/plugins/api'
 
 export default {
   data () {

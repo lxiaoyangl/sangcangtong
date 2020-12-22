@@ -120,7 +120,7 @@
 <script type="text/ecmascript-6">
 import File from '@/components/file'
 import { sureDelete, getChangeData, state, getValidButton } from '@/utils'
-import { setDirectoryCatalogAll, setDictionaryDataList, setDictionaryDataAdd, setDictionaryDataEdit, setDictionaryDataDelete, setDictionaryDataBatchDelete } from '@/axios/api'
+import { setDirectoryCatalogAll, setDictionaryDataList, setDictionaryDataAdd, setDictionaryDataEdit, setDictionaryDataDelete, setDictionaryDataBatchDelete } from '@/plugins/api'
 
 export default {
   props: {

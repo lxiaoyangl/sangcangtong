@@ -48,7 +48,7 @@
 <script type="text/ecmascript-6">
 import User from '@/components/pages/user'
 import { sureDelete, state, deleteAllNext } from '@/utils'
-import { setRoleUserList, setRoleNoUserList, setRoleUserDelete, setRoleUserBatchDelete, setRoleUserBatchAdd } from '@/axios/api'
+import { setRoleUserList, setRoleNoUserList, setRoleUserDelete, setRoleUserBatchDelete, setRoleUserBatchAdd } from '@/plugins/api'
 
 export default {
   props: {

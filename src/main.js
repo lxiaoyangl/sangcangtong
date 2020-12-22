@@ -19,6 +19,14 @@ Vue.prototype.$fn = fn;
 import md5 from 'js-md5';
 Vue.prototype.$md5 = md5;
 
+import renRadioGroup from '@/components/ren-radio-group'
+import renSelect from '@/components/ren-select'
+Vue.use(renRadioGroup)
+Vue.use(renSelect)
+import { hasPermission, getDictLabel } from '@/utils'
+Vue.prototype.$hasPermission = hasPermission
+Vue.prototype.$getDictLabel = getDictLabel
+
 // 全局注册组件
 import BasisPage from "./components/basis_page";
 Vue.component('BasisPage',BasisPage);

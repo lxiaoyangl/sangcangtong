@@ -1,8 +1,10 @@
-﻿import { postApi } from './axios'
+﻿import { postApi, getApi } from './axios'
 
 export function login(params) { return postApi('/login/userLogin', params) }
 export function loginByUserId(params) { return postApi('/login/loginByUserId', params) }
 export function modifyPas(params) { return postApi('/user/changeUserPassword', params) }
+
+export function loadDictList(params) { return getApi('/dictionaryDirectory/all', params) }
 
 export function setRoleAdd(params) { return postApi('/role/baseAdd', params) }
 export function setRoleEdit(params) { return postApi('/role/baseEdit', params) }
