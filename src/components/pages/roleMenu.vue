@@ -42,7 +42,7 @@
 
 <script>
 import { toTreePackage } from '@/utils'
-import { setMenuBaseTree, setRoleMenuList, setRoleMenuBatchEdit } from '@/axios/api'
+import { setMenuBaseTree, setRoleMenuList, setRoleMenuBatchEdit } from '@/plugins/api'
 
 export default {
   props: {
@@ -136,7 +136,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 // scoped
 .menuConfigDialog{
   /deep/ .el-dialog__body{

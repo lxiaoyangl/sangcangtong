@@ -121,7 +121,7 @@
 import DictionaryData from '@/components/pages/dictionaryData'
 import File from '@/components/file'
 import { sureDelete, getChangeData, state, deleteAllNext, getValidButton } from '@/utils'
-import { setDirectoryCatalogList, setDirectoryCatalogAdd, setDirectoryCatalogEdit, setDirectoryCatalogDelete, setDirectoryCatalogBatchDelete } from '@/axios/api'
+import { setDirectoryCatalogList, setDirectoryCatalogAdd, setDirectoryCatalogEdit, setDirectoryCatalogDelete, setDirectoryCatalogBatchDelete } from '@/plugins/api'
 
 export default {
   data () {

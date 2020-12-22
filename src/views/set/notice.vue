@@ -152,7 +152,7 @@
 <script type="text/ecmascript-6">
 import setuserpage from '../../components/pages/setuserpage.vue'
 import { sureDelete, getChangeData, deleteAllNext } from '@/utils'
-import { setNoticeUserList, setNoticeList, setNoticeAdd, setNoticeEdit, setNoticeDelete, setNoticeBatchDelete, setDictionaryDataList, setNoticeUserDelete } from '@/axios/api'
+import { setNoticeUserList, setNoticeList, setNoticeAdd, setNoticeEdit, setNoticeDelete, setNoticeBatchDelete, setDictionaryDataList, setNoticeUserDelete } from '@/plugins/api'
 
 export default {
   data () {

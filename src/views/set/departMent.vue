@@ -100,7 +100,7 @@
 <script type="text/ecmascript-6">
 import { sureDelete, getChangeData, toTreeData, state, toTreePackage } from '@/utils'
 import TreeWrap from '@/components/treeWrap'
-import { setDepartmentList, setDepartmentAdd, setDepartmentEdit, setDepartmentDelete, setDepartmentBatchDelete, setDepartmentBaseTree } from '@/axios/api'
+import { setDepartmentList, setDepartmentAdd, setDepartmentEdit, setDepartmentDelete, setDepartmentBatchDelete, setDepartmentBaseTree } from '@/plugins/api'
 
 export default {
   data () {

@@ -5,8 +5,15 @@ import warehouse from "@/routes/warehouse";
 import supply_chain_finance from "@/routes/supply_chain_finance";
 import logistics from "@/routes/logistics";
 
+import SetDictionary from "@/views/set/dictionary";
+import SetParams from "@/views/set/params";
+import SetArea from "@/views/set/areas";
+
 import SetMenus from "@/views/set/menus";
+import SetRole from "@/views/set/role";
 import SetUser from "@/views/set/user";
+import SetDepartMent from "@/views/set/departMent";
+import SetNotice from "@/views/set/notice";
 
 Vue.use(Router)
 
@@ -35,6 +42,27 @@ export default new Router({
 					component: ()=>import("@/views/home/home.vue")
 				},
 				{
+					path: '/set/system/dictionary',
+						name: '字典管理',
+					title: '运维管理系统',
+					component: SetDictionary,
+					children: []
+				},
+				{
+					path: '/set/system/params',
+						name: '参数管理',
+					title: '运维管理系统',
+					component: SetParams,
+					children: []
+				},
+				{
+					path: '/set/system/areas',
+						name: '地区管理',
+					title: '运维管理系统',
+					component: SetArea,
+					children: []
+				},
+				{
 					path: '/set/access/menus',
 						name: '资源管理',
 					title: '运维管理系统',
@@ -42,10 +70,31 @@ export default new Router({
 					children: []
 				},
 				{
+					path: '/set/access/role',
+						name: '角色管理',
+					title: '运维管理系统',
+					component: SetRole,
+					children: []
+				},
+				{
 					path: '/set/access/user',
 						name: '用户管理',
 					title: '运维管理系统',
 					component: SetUser,
+					children: []
+				},
+				{
+					path: '/set/access/department',
+						name: '部门管理',
+					title: '运维管理系统',
+					component: SetDepartMent,
+					children: []
+				},
+				{
+					path: '/set/system/notice',
+						name: '通知公告',
+					title: '运维管理系统',
+					component: SetNotice,
 					children: []
 				},
 				...warehouse,

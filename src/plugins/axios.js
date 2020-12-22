@@ -23,9 +23,9 @@ const _axios = axios.create(config);
 
 _axios.interceptors.request.use(
   function(config) {
-      if(/^userLogin/.test(config.url)) {
+      // if(/^userLogin/.test(config.url)) {
           config.headers.token = JSON.parse(sessionStorage.getItem('login-userinfo')).token;
-      }
+      // }
       return config;
   },
   function(error) {
