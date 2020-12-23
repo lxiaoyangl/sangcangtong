@@ -168,6 +168,8 @@
 <script>
 import axios from 'axios';
 import config from "Public/config.js"
+import { loadDictList } from '@/plugins/api';
+
 export default {
     data(){
         return{
@@ -239,22 +241,11 @@ export default {
         }
     },
     mounted(){
-//        let userId = this.getParameter('userId');
-//        this.loading = true;
-//        axios.post(config.login_ip+'/login/loginByUserId',{
-//            userId: userId*1,
-//            sysCode: '1',
-//        }).then(res=>{
-//            console.log('获取菜单结果',res)
-//            let userinfo = {
-//                username:res.data.data.realname,
-//                token:res.data.data.token,
-//                userId:res.data.data.userId
-//            }
-//            sessionStorage.setItem('login-userinfo',JSON.stringify(userinfo));
-//            sessionStorage.setItem('two-nav-menu',JSON.stringify(res.data.data.menu));
-//            sessionStorage.setItem('companyId',JSON.stringify(res.data.data.companyId));
-
+            loadDictList({
+                name: '**',
+            }).then(res=>{
+                window.SITE_CONFIG['dictList'] = res
+            })
             // 获取菜单数据
             let menu = JSON.parse(sessionStorage.getItem('two-nav-menu'));
             let arr = [];

@@ -1,6 +1,7 @@
 import axios from "axios";
 import config from "../../public/config";
 
+console.log(config.ip);
 const api = axios.create({
     baseURL: config.ip,
     headers:{

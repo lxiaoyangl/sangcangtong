@@ -20,7 +20,7 @@
 
 <script type="text/ecmascript-6">
 import RoleUserCommon from '@/components/pages/roleUserCommon'
-import { setRoleUserBatchAdd } from '@/axios/api'
+import { setRoleUserBatchAdd } from '@/plugins/api'
 
 export default {
   props: {

@@ -175,7 +175,7 @@
 import TreeWrap from '@/components/treeWrap'
 import User from '@/components/pages/user'
 import { sureDelete, getChangeData, state, toTreePackage, deleteAllNext } from '@/utils'
-import { setUserListAll, setUserList, setUserAdd, setUserEdit, setUserDelete, setUserBatchDelete, setDepartmentBaseTree, setDictionaryDataList } from '@/axios/api'
+import { setUserListAll, setUserList, setUserAdd, setUserEdit, setUserDelete, setUserBatchDelete, setDepartmentBaseTree, setDictionaryDataList } from '@/plugins/api'
 
 export default {
   props: ['selectUser'],

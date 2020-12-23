@@ -118,7 +118,7 @@
 
 <script type="text/ecmascript-6">
 import { sureDelete, getChangeData, toTreeData, state, deleteAllNext } from '@/utils'
-import { setAreaList, setAreaAdd, setAreaEdit, setAreaDelete, setAreaBatchDelete } from '@/axios/api'
+import { setAreaList, setAreaAdd, setAreaEdit, setAreaDelete, setAreaBatchDelete } from '@/plugins/api'
 
 export default {
   data () {

@@ -33,8 +33,8 @@
     <div class="content-box mt10">
       <div>
         <!-- <el-button type="primary" icon="el-icon-circle-plus-outline" @click="addPrev">添加</el-button> -->
-        <template v-for="item in permissionButtons">
-          <el-button type="primary" v-if="item.name==='新增'" icon="el-icon-circle-plus-outline" @click="addPrev">新增</el-button>
+        <template>
+          <el-button type="primary" v-show="$hasPermission('新增')" icon="el-icon-circle-plus-outline" @click="addPrev">新增</el-button>
         </template>
       </div>
       <el-table
@@ -92,13 +92,13 @@
                        class="el-icon-close">删除</el-button> -->
             <div class="tableButton">
             <el-tooltip effect="dark" content="编辑" placement="top">
-              <el-button type="primary" icon="el-icon-edit" circle  @click.stop="modifyPrev(scope.row)"></el-button>
+              <el-button type="primary" v-show="$hasPermission('编辑')"　icon="el-icon-edit" circle  @click.stop="modifyPrev(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="新增" placement="top">
-              <el-button type="primary" icon="el-icon-plus" circle  @click.stop="addCurrentPrev(scope.row)"></el-button>
+              <el-button type="primary" v-show="$hasPermission('新增')"　icon="el-icon-plus" circle  @click.stop="addCurrentPrev(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="删除" placement="top">
-              <el-button type="primary" icon="el-icon-delete" circle  @click.stop="deleteItem(scope.row)"></el-button>
+              <el-button type="primary" v-show="$hasPermission('删除')"　icon="el-icon-delete" circle  @click.stop="deleteItem(scope.row)"></el-button>
             </el-tooltip>
             </div>
           </template>
@@ -209,14 +209,20 @@ export default {
         name: ''
       },
       systemType: [{label: '协同后台管理系统', value: '0'}, {label: '协同用户端管理系统', value: '1'}],
-      permissionButtons: []
+      permissionButtons: [],
+        right_arr: [],
     }
   },
   components: {
     TreeWrap
   },
   created () {
-    this.permissionButtons = getValidButton(this.$route.path)
+//    this.permissionButtons = getValidButton(this.$route.path)
+      // 获取按钮权限
+      let arr = [...JSON.parse(sessionStorage.getItem('right-arr'))===null?[]:JSON.parse(sessionStorage.getItem('right-arr'))];
+      arr.map(item=>{
+          this.right_arr.push(item.name);
+      })
     this.getList()
   },
   methods: {

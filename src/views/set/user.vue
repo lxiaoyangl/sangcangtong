@@ -1,30 +1,6 @@
 <template>
   <div class="outer-box relative" style="height:100%;">
-    <!-- <i class="icon-hide-left el-icon-caret-right"
-       v-if="!showLeft"  @click="showLeft = true"></i>
-    <transition name="slidLeft">
-      <div class="left-box relative" v-if="showLeft">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>组织管理</span>
-            <span class="box-card-right">
-            <router-link to="/set/access/department">
-               <i class="el-icon-edit-outline"></i>
-            </router-link>
-            <i class="el-icon-refresh" @click="getTreeDatas"></i>
-          </span>
-          </div>
-          <div>
-            <el-tree highlight-current default-expand-all :expand-on-click-node="false"
-                     :current-node-key="0" node-key="treeCode" ref="tree" :indent="2"
-                     :data="treeDatas" :props="treeProps" @node-click="handleTreeClick"></el-tree>
-          </div>
-        </el-card>
-        <i class="icon-hide-left el-icon-caret-left" @click="showLeft = false"></i>
-      </div>
-    </transition> -->
     <div class="right-box" :class="{'full': !showLeft }">
-      <!-- 搜索筛选 @keyup.native.enter="searchList"-->
       <el-form :inline="true" :model="formInline" class="search-box">
         <el-form-item label="用户名称">
           <el-input clearable :maxlength="50" placeholder="请输入用户名称" v-model.trim="formInline.name"></el-input>
@@ -33,35 +9,25 @@
           <el-input clearable :maxlength="50" placeholder="请输入用户电话"  type="number"
                     v-model.trim="formInline.phoneNumber"></el-input>
         </el-form-item>
-        <!--<el-form-item label="用户状态">
-          <el-select clearable v-model="formInline.userState" placeholder="请选择"
-                     @change="searchList">
-            <el-option v-for="item in states" :key="item.value"
-                       :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>-->
+        <el-form-item label="用户电话">
+          <ren-select v-model="formInline.userState" dict-type="warning_status" ></ren-select>
+        </el-form-item>
         <el-button type="primary" icon="el-icon-search" @click="searchList">搜索</el-button>
         <el-button type="primary" icon="el-icon-refresh" plain @click="searchReset">重置</el-button>
       </el-form>
       <!--列表-->
       <div class="content-box mt10">
         <div>
-          <!-- <el-button type="primary" icon="el-icon-circle-plus-outline" @click="addPrev">添加</el-button>
-          <el-button type="danger" icon="el-icon-delete" @click="batchDelete" :disabled="!multipleSelection.length">批量删除</el-button> -->
-          <template v-for="item in permissionButtons">
-          <el-button type="primary" v-if="item.name==='新增'" icon="el-icon-circle-plus-outline" @click="addPrev">新增</el-button>
-          <el-button :disabled="multipleSelection.length===0" v-if="item.name==='批量删除'" type="danger" icon="el-icon-delete" @click="batchDelete">批量删除</el-button>
+          <template>
+          <el-button type="primary" v-show="$hasPermission('新增')" icon="el-icon-circle-plus-outline" @click="addPrev">新增</el-button>
+          <el-button :disabled="multipleSelection.length===0" v-show="$hasPermission('批量删除')" type="danger" icon="el-icon-delete" @click="batchDelete">批量删除</el-button>
         </template>
         </div>
         <User :listData="listData" @handleSelectionChange="handleSelectionChange"
               :pageParams="pageParams" @handleSizeChange="handleSizeChange">
           <el-table-column sortable prop="userState" align="center" label="用户状态" min-width="120">
             <template slot-scope="scope">
-              <!-- <el-switch @change="updateState(scope.row)" :value="scope.row.userState === 1"></el-switch> -->
-              <el-tag size="mini" :type="scope.row.userState===1?'':'danger'" effect="dark" v-if="userStateList[scope.row.userState]">
-              {{userStateList[scope.row.userState].label}}
-            </el-tag>
+              {{ $getDictLabel("warning_status", scope.row.userState) }}
             </template>
           </el-table-column>
            <el-table-column sortable prop="lockState" align="center" label="是否锁定" min-width="120">
@@ -76,14 +42,6 @@
           </el-table-column>
           <el-table-column fixed="right" align="center" label="操作" width="170">
             <template slot-scope="scope">
-              <!-- <el-button type="primary" size="mini" @click.stop="modifyPrev(scope.row)"
-                         class="el-icon-edit">编辑</el-button>
-              <el-button type="primary" size="mini" @click.stop="initPasswordFuc(scope.row)"
-                         class="el-icon-edit">重置密码</el-button>
-              <el-button type="primary" size="mini" v-if="scope.row.lockState === 1" @click.stop="unLockFuc(scope.row)"
-                         class="el-icon-edit">解锁</el-button>
-              <el-button type="danger" size="mini" @click.stop="deleteItem(scope.row)"
-                         class="el-icon-close">删除</el-button> -->
             <div class="tableButton">
               <el-tooltip v-if="scope.row.lockState === 1" effect="dark" content="解锁" placement="top">
                 <el-button type="primary" icon="el-icon-unlock" circle  @click.stop="unLockFuc(scope.row)"></el-button>
@@ -114,22 +72,6 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <!-- <el-form-item label="归属组织" prop="departmentId"> -->
-                <!-- <el-input v-model="editForm.departmentName" @focus="selectTreeBefore" :maxlength="50"
-                          readonly="readonly"></el-input> -->
-                 <!-- <el-cascader
-                  placeholder="请归属组织"
-                  v-model.trim="editForm.departmentId"
-                  :disabled="editForm.type==='view'"
-                  :options="columnOptions"
-                  :props="columnNameProps"
-                  :show-all-levels="false"
-                  clearable
-                  @change="updateColumnName"
-                  expandTrigger="click"
-                  ref="columnId"
-                  ></el-cascader>
-              </el-form-item> -->
               <el-form-item label="用户状态" prop="userState">
                 <el-radio v-model="editForm.userState" :label="0">停用</el-radio>
                 <el-radio v-model="editForm.userState" :label="1">启用</el-radio>
@@ -225,7 +167,6 @@ import User from '@/components/pages/user'
 import { sureDelete, getChangeData, state, toTreePackage, deleteAllNext, getValidButton } from '@/utils'
 import { setUserList, setUserAdd, setUserEdit, setUserDelete, setUserBatchDelete, setDepartmentBaseTree, setDictionaryDataList } from '@/plugins/api'
 //import { setCompanyData, selectParameter } from '@/plugins/apis'
-var md5 = require('md5')
 
 export default {
   data () {
@@ -289,7 +230,7 @@ export default {
 
       postIds: [], // 原岗位
       sexs: [{'labels': '女', 'keyValue': 0}, {'labels': '男', 'keyValue': 1}],
-      userStateList: [{'label': '停用', 'value': 0}, {'label': '启用', 'value': 1}],
+//      userStateList: [{'label': '停用', 'value': 0}, {'label': '启用', 'value': 1}],
       lockStateList: [{'label': '未锁定', 'value': 0}, {'label': '锁定', 'value': 1}],
       companyDatas: [],
       permissionButtons: []

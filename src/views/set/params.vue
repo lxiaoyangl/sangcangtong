@@ -109,7 +109,7 @@
 
 <script type="text/ecmascript-6">
 import { sureDelete, getChangeData, deleteAllNext, getValidButton } from '@/utils'
-import { setParameterList, setParameterAdd, setParameterEdit, setParameterDelete, setParameterBatchDelete } from '@/axios/api'
+import { setParameterList, setParameterAdd, setParameterEdit, setParameterDelete, setParameterBatchDelete } from '@/plugins/api'
 
 export default {
   data () {
