@@ -81,12 +81,15 @@ Plugin.install = function (Vue, options) {
 
 function _commonApi(type, url, params) {
   const config = {
-    method: type,
-    url: getPermissionUrl(url) + url,
-    headers: {
-      token: JSON.parse(sessionStorage.getItem('login-userinfo')).token
-    },
-    traditional: true
+      method: type,
+      url: getPermissionUrl(url) + url,
+      headers: {
+          token: ''
+      },
+      traditional: true
+  }
+  if ('/login/userLogin' !== url) {
+      config.headers.token = JSON.parse(sessionStorage.getItem('login-userinfo')).token;
   }
   if (type === 'post') {
     config.data = params
