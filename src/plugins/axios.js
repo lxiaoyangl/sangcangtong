@@ -80,9 +80,12 @@ function _commonApi(type, url, params){
         method: type,
         url: getPermissionUrl(url) + url,
         headers: {
-            token: JSON.parse(sessionStorage.getItem('login-userinfo')).token
+            token: ''
         },
         traditional: true
+    }
+    if ('/login/userLogin' !== url) {
+        config.headers.token = JSON.parse(sessionStorage.getItem('login-userinfo')).token;
     }
     if (type === 'post') {
         config.data = params

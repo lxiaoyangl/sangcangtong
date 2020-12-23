@@ -126,7 +126,7 @@
                                 token:res.token,
                                 userId:res.userId
                             }
-
+                            sessionStorage.setItem('login-userinfo',JSON.stringify(userinfo));
                             sessionStorage.setItem('two-nav-menu',JSON.stringify([]));
                             sessionStorage.setItem('three-nav-menu',JSON.stringify([]));
                             loginByUserId({
@@ -139,7 +139,6 @@
                                     token:res.token,
                                     userId:res.userId
                                 }
-                                sessionStorage.setItem('login-userinfo',JSON.stringify(userinfo));
                                 sessionStorage.setItem('two-nav-menu',JSON.stringify(res.menu));
                                 sessionStorage.setItem('companyId',JSON.stringify(res.companyId));
                                 this.$router.push({name:'Home'});
