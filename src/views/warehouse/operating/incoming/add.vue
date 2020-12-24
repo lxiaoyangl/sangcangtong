@@ -496,7 +496,7 @@
   import XLSX from 'xlsx'
   import {setDictionaryDataList} from '@/plugins/api'
   import config from "Public/config.js";
-  import api_storage from "@/api/warehouse_incoming.js";
+  import api_warehouse from "@/api/warehouse.js";
 
   export default {
     data() {
@@ -667,7 +667,7 @@
           this.form.inp8 = obj.unloadingPoint;
           this.form.inp9 = obj.shippingAddress;
           this.form.inp10 = obj.consignee;
-         // this.form.inp11 = obj.consigneeNumber;
+          // this.form.inp11 = obj.consigneeNumber;
           this.form.inp12 = obj.isSendCar;
 
           if (this.form.inp12 === 1) {
@@ -863,7 +863,7 @@
               unloadingPlace: this.form.inp8,
               loadingLocation: this.form.inp9,
               applicationName: this.form.inp10,
-             // goodsSenderPhone: this.form.inp11,
+              // goodsSenderPhone: this.form.inp11,
               isPlfDistVeh: this.form.inp12,
               itemList: [...this.table_data],
               fileList: [...this.file_list]
@@ -902,7 +902,7 @@
               return;
             }
             /*/applicationIn/addApplicationIn*/
-            api_storage.addStorage(this, sendData);
+            api_warehouse.storage.addStorage(this, sendData);
             /*this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
               console.log('新增结果', res);
               // this.$message.success(res.data.data);
