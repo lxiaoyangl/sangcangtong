@@ -1,4 +1,4 @@
-import { Message, MessageBox } from 'element-ui'
+import {Message, MessageBox} from 'element-ui'
 
 /**
  * 可叠加消息提示框(普通不翻译)
@@ -143,7 +143,7 @@ export const deleteAllNext = (data, fn) => {
     if (data.current !== 1) {
       let pageNo = --data.current
       pageNo = pageNo < 1 ? 1 : pageNo
-      fn({ pageNo })
+      fn({pageNo})
     }
   }
 }
@@ -161,12 +161,26 @@ export const baseExport = (data, url) => {
  * @param url
  */
 export const getFirstMenu = (menus) => {
-  function getFirstChild (val) {
+  function getFirstChild(val) {
     if (val[0].children) {
       return getFirstChild(val[0].children)
     } else {
       return val[0]
     }
   }
+
   return getFirstChild(menus)
 }
+
+/**
+* 从sessionstorage 获取登录人信息
+*  @param  key
+*/
+
+export const getUserInfo = (key = 'login-userinfo') => {
+  let str = sessionStorage.getItem(key);
+  if(!str)return {}
+  return  JSON.parse(str)
+}
+
+

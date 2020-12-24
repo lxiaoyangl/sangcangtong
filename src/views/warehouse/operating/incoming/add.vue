@@ -30,8 +30,8 @@
               <el-option
                   v-for="item in inhouse_type_arr"
                   :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :label="item.labels"
+                  :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -47,7 +47,7 @@
           </el-form-item>
 
           <el-form-item label="发货点联系人" prop="inp4">
-            <el-input v-model="form.inp4" placeholder="货运联系人" size="mini"></el-input>
+            <el-input v-model="form.inp4" placeholder="请输入发货点联系人" size="mini"></el-input>
           </el-form-item>
 
           <el-form-item label="发货点联系方式" prop="inp5">
@@ -55,7 +55,15 @@
           </el-form-item>
 
           <el-form-item label="客户名称" prop="inp6">
-            <el-input v-model="form.inp6" placeholder="客户名称" size="mini"></el-input>
+            <el-select clearable v-model="form.inp6" placeholder="请选择客户" size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.label"
+                  filterable
+                  :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
 
           <el-form-item label="发货点" prop="inp7">
@@ -71,7 +79,15 @@
           </el-form-item>
 
           <el-form-item label="经办人" prop="inp10">
-            <el-input v-model="form.inp10" placeholder="经办人" size="mini"></el-input>
+            <el-select clearable v-model="form.inp10" placeholder="经办人" size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  filterable
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
 
           <!--<el-form-item label="联系电话" prop="inp11">
@@ -115,6 +131,9 @@
                 size="mini"
                 :picker-options="time_option">
             </el-date-picker>
+          </el-form-item>
+          <el-form-item label="备注" prop="inp16">
+            <el-input v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
           </el-form-item>
         </el-form>
       </div>
@@ -175,7 +194,7 @@
 
               <el-table-column
                   prop="enterNumber"
-                  label="计划入库数量"
+                  label="计划入仓数量"
                   width="180">
                 <template slot-scope="scope">
                   <el-input v-model="scope.row.enterNumber" type="number" placeholder="请输入数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
@@ -207,7 +226,7 @@
                         v-for="item in num_unit_arr"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
+                        :value="item.id">
                     </el-option>
                   </el-select>
                 </template>
@@ -223,7 +242,7 @@
                         v-for="item in weight_unit_arr"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
+                        :value="item.id">
                     </el-option>
                   </el-select>
                 </template>
@@ -245,7 +264,7 @@
                 </template>
               </el-table-column>
 
-              <el-table-column
+              <!--<el-table-column
                   prop="materialNatureId"
                   label="货物特性"
                   width="200">
@@ -258,6 +277,14 @@
                         :value="item.value">
                     </el-option>
                   </el-select>
+                </template>
+              </el-table-column>-->
+              <el-table-column
+                  prop="driver"
+                  label="司机"
+                  width="180">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.driver" placeholder="司机" size="mini"></el-input>
                 </template>
               </el-table-column>
 
@@ -497,6 +524,7 @@
   import {setDictionaryDataList} from '@/plugins/api'
   import config from "Public/config.js";
   import api_warehouse from "@/api/warehouse.js";
+  import {getUserInfo, timestampToTime} from "../../../../utils";
 
   export default {
     data() {
@@ -539,7 +567,12 @@
             {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
           ],*/
           inp12: {required: true, message: '请选择是否平台派车', trigger: 'blur'},
+          inp15: {required: true, message: '请选择计划发货日期', trigger: 'blur'},
+          inp16: {required: true, message: '请输入装车备注', trigger: 'blur'},
         },
+        //客户名称下拉数据
+        cusNameArr:[{value:2,label:"客户1"}],
+
         // 仓库下拉数据
         options: [],
         // 列表数据
@@ -566,7 +599,7 @@
         // 证件类型下拉数据
         idType_arr: [],
         // 计量方式
-        valuationType_arr: [],
+        valuationType_arr: [{value:1,label:"方式1"}],
 
         // 新增蒙层显示标识
         add_dialog_flag: false,
@@ -677,8 +710,8 @@
           // 物资查询
           this.$axios.post('/applicationInItem/baseList', {
             applicationId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1
-          }).then(re => {
-            this.table_data = [...re.data.data];
+          }).then(res => {
+            this.table_data = [...res.data.data];
           })
         }, err => {
           console.log('在编辑数据报错', err);
@@ -847,25 +880,61 @@
             // 判断计划送达事件要大于计划装车时间
             if (this.form.inp12 == 1) {
               if (new Date(this.form.inp13).getTime() >= new Date(this.form.inp14).getTime()) {
-                this.$message.error('计划送达事件需要大于计划装车时间')
+                this.$message.error('计划送达事件需要大于计划装车时间');
                 return;
               }
             }
+            //重新匹配字段(后台字段和原始字段不匹配)
+            let itemList = this.table_data.map((item)=>{
+              return {
+                name:item.name,
+                textureMaterial :item.textureMaterial,
+                specifications :item.specifications,
+                placeOrigin :item.businessMen || '产地',
+                inPlanNum :item.enterNumber,
+                numUnitId :item.unitQuantityId,
+                numUnit:"个",
+                inPlanWeight :item.enterWeight,
+                weightUnitId :item.unitWeightId,
+                weightUnit :'千克',
+                weightCoefficient :item.weightCoefficient || 1,
+                measureMethodId :item.measurementMethodId || 2,
+                measureMethod :"计量方式",
+                carNum :item.licensePlateNumber,
+                driver:item.driver,
+                idCardType :item.certificatesType,
+                idCardNum :item.certificatesNumber,
+                contactPhone :item.contactNumber,
+                remark :item.description,
+                isRefer :true,
+              }
+            });
             let sendData = {
               documentState: 0,
-              storageId: this.form.inp1,
-              inStorageMode: this.form.inp2,
-              putInPlanDate: this.$fn.timeChange(this.form.inp3),
-              goodsSenderName: this.form.inp4,
-              goodsSenderPhone: this.form.inp5,
-              goodsOwnerName: this.form.inp6,
-              loadingPlace: this.form.inp7,
-              unloadingPlace: this.form.inp8,
+              warehouseId: this.form.inp1,
+              warehouseName: this.form.inp1,
+              shippingTypeId: this.form.inp2,
+              shippingTypeName: this.form.inp2,
+              putInPlanDate: timestampToTime(this.form.inp3),
+              deliverName: this.form.inp4,
+              deliverPhone: this.form.inp5,
+              customerId: this.form.inp6,
+              customerName: this.form.inp6,
+              deliverPlace: this.form.inp7,
+              deliverLocation: this.form.inp8,
               loadingLocation: this.form.inp9,
-              applicationName: this.form.inp10,
+              operatorId: this.form.inp10,
+              operatorName: this.form.inp10,
               // goodsSenderPhone: this.form.inp11,
               isPlfDistVeh: this.form.inp12,
-              itemList: [...this.table_data],
+              deliverPlanDate:timestampToTime(this.form.inp15),
+              acceptPlace:this.form.inp1,
+              remark:this.form.inp16,
+              updateUserId:getUserInfo().userId,
+              updateUser:getUserInfo().username,
+              updateTime:timestampToTime(new Date()),
+              // orderState:'',
+              materialList: [...itemList],
               fileList: [...this.file_list]
             }
             this.options.map(item => {

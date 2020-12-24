@@ -82,7 +82,7 @@
             <el-table-column
                 prop="warehouseName"
                 label="仓库"
-                min-width="160">
+                min-width="120">
             </el-table-column>
             <el-table-column
                 prop="createUserName"
@@ -90,9 +90,14 @@
                 min-width="120">
             </el-table-column>
             <el-table-column
-                prop="planTakeTime"
-                label="计划装车时间"
-                min-width="160">
+                prop="contacts"
+                label="货运联系人"
+                min-width="120">
+            </el-table-column>
+            <el-table-column
+                prop="contactInformation"
+                label="货运联系方式"
+                min-width="120">
             </el-table-column>
             <el-table-column
                 prop="createTime"
@@ -100,7 +105,7 @@
                 min-width="160">
             </el-table-column>
             <el-table-column
-                prop="serviceTime"
+                prop="arriveTime"
                 label="计划到园时间"
                 min-width="160">
             </el-table-column>
@@ -123,121 +128,79 @@
 </template>
 
 <script>
+  import api_warehouse from "@/api/warehouse.js";
   export default {
-    data() {
-      return {
-        loading: false,
+    data(){
+      return{
+        loading:false,
         // 表单数据
-        form: {
-          inp1: '',
-          inp2: null,
-          inp3: null
+        form:{
+          inp1:'',
+          inp2:null,
+          inp3:null,
         },
         // 仓库下拉数据
-        options: [
-          {
-            value: '选项1',
-            label: '尼木仓库'
-          }
-        ],
+        options: [],
         // 列表数据
         table_data: [],
         // 分页数据
-        page: {
-          total: 1,
-          page_num: 1,
-          page_size: 20,
+        page:{
+          total:1,
+          page_num:1,
+          page_size:20,
         },
         table_selection_arr: [], // 多选存储变量
         right_arr: [],
       }
     },
-    mounted() {
+    mounted(){
+      sessionStorage.setItem('warehouse-incoming-edit','false');
       // 获取按钮权限
-      let arr = [...JSON.parse(sessionStorage.getItem('right-arr')) === null ? [] : JSON.parse(sessionStorage.getItem('right-arr'))];
-      arr.map(item => {
+      let arr = [...JSON.parse(sessionStorage.getItem('right-arr'))===null?[]:JSON.parse(sessionStorage.getItem('right-arr'))];
+      arr.map(item=>{
         this.right_arr.push(item.name);
       })
-
-      sessionStorage.setItem('warehouse-out-stock-edit', 'false');
-      // 进入页面校验是否已登录
-      // this.$fn.check_login(this);
       // 获取仓库数据
-      this.loading = true;
-      this.$fn.get_warehouse_data(this).then(res => {
-        console.log('res', res);
-        this.options = [...res.data.data];
-        this.get_data();
-      }, err => {
-        console.log('err', err);
-      }).finally(() => {
-        this.loading = false;
-      })
+      this.get_warehouse_data();
+      this.get_data();
     },
-    methods: {
+    methods:{
       // 审核功能
-      examine() {
-        if (this.table_selection_arr.length === 0) {
-          this.$message.error('请先选择需要审核的申请');
+      examine(){
+        if(this.table_selection_arr.length != 1){
+          this.$message.error('请先选择一个需要审核的申请');
           return;
         }
-        if (this.table_selection_arr[0].documentState === 4) {
+        if(this.table_selection_arr[0].documentState === 4){
           this.$message.error('申请已通过审核，请重新选择');
           return;
         }
-        if (this.table_selection_arr[0].documentState === 0) {
+        if(this.table_selection_arr[0].documentState === 0){
           this.$message.error('申请未提交，请重新选择');
           return;
         }
-        // this.$confirm('即将进行订单审核, 是否继续?', '提示', {
-        //     confirmButtonText: '确定',
-        //     cancelButtonText: '取消',
-        //     type: 'warning'
-        // }).then(() => {
-        //     let arr = [];
-        //     this.loading = true;
-        //     this.table_selection_arr.map(item=>{
-        //         let obj = {
-        //             id: item.id,
-        //             documentState: 2
-        //         }
-        //         arr.push(obj);
-        //     })
-        //     this.$axios.post('/applicationOut/baseBatchEdit',{
-        //         list:arr
-        //     }).then(res=>{
-        //         console.log('审核申请',res);
-        //         this.get_data();
-        //     },err=>{
-        //         console.log('审核申请报错',err);
-        //     }).finally(()=>{
-        //         this.loading = false;
-        //     })
-        // }).catch(() => {
-
-        // });
-
         this.$prompt('请进行订单审核', '提示', {
           confirmButtonText: '审核通过',
           cancelButtonText: '审核不通过',
           inputType: 'textarea',
           inputPlaceholder: '请输入审核意见',
-          distinguishCancelAndClose: true,
-          beforeClose: (action, instance, done) => {
-            console.log('===', action, instance)
+          inputErrorMessage: '最多200个字符',
+          distinguishCancelAndClose:true,
+          inputPattern: /[\u4e00-\u9fa5a-zA-Z0-9]{0,200}/,
+          beforeClose:(action,instance,done)=>{
             let value = instance.$refs.input.value;
-            if (action === 'close') {
+            if(action === 'close'){
               done();
               return;
             }
-            if (value !== null && value.length > 200) {
-              this.$message.error('审核意见长度不能超过200个字符，现在' + value.length + '个字符')
+            if(value !== null && value.length > 200){
+              this.$message.error('审核意见长度不能超过200个字符，现在'+value.length+'个字符')
               return
             }
             let arr = [];
             this.loading = true;
-            if (action === 'confirm') {
-              this.table_selection_arr.map(item => {
+            if(action === 'confirm'){
+              this.table_selection_arr.map(item=>{
                 let obj = {
                   id: item.id,
                   documentState: 4,
@@ -246,13 +209,13 @@
                 arr.push(obj);
               })
             }
-            if (action === 'cancel') {
-              if (value === null) {
+            if(action === 'cancel'){
+              if(value === null){
                 this.$message.error('不通过审核必须输入意见');
                 this.loading = false;
                 return;
               }
-              this.table_selection_arr.map(item => {
+              this.table_selection_arr.map(item=>{
                 let obj = {
                   id: item.id,
                   documentState: 5,
@@ -261,84 +224,102 @@
                 arr.push(obj);
               })
             }
-            this.$axios.post('/applicationOut/baseBatchEdit', {
-              list: arr
-            }).then(res => {
-              console.log('审核申请', res);
+            this.$axios.post('/applicationIn/baseBatchEdit',{
+              list:arr
+            }).then(res=>{
+              console.log('审核申请',res);
               this.get_data();
-            }, err => {
-              console.log('审核申请报错', err);
-            }).finally(() => {
+            },err=>{
+              console.log('审核申请报错',err);
+            }).finally(()=>{
               this.loading = false;
             })
             // 写入说明
             let userinfo = JSON.parse(sessionStorage.getItem('login-userinfo'));
-            this.$axios.post('/examineRecord/baseAdd', {
+            this.$axios.post('/examineRecord/baseAdd',{
               applicationId: this.table_selection_arr[0].id,
               applicationType: 0,
               examineOpinion: value,
               examineTime: this.$fn.timeChange(new Date()),
               reviewerId: userinfo.userId,
               reviewerName: userinfo.username,
-            }).then(res => {
+            }).then(res=>{
               console.log(res);
             })
             done();
           }
         })
       },
-      // 多选改变函数
-      table_selection_change(val) {
-        this.table_selection_arr = [...val];
-      },
       // 跳转新增页面
-      add() {
-        this.$router.push({name: 'out_stock_add'});
+      add(){
+        this.$router.push({name:'Incoming_add'});
         // this.$confirm('即将新增订单, 是否继续?', '提示', {
         //     confirmButtonText: '确定',
         //     cancelButtonText: '取消',
         //     type: 'warning'
         // }).then(() => {
-        //     this.$router.push({name:'out_stock_add'});
+        //     this.$router.push({name:'Incoming_add'});
         // }).catch(() => {
 
         // });
       },
-      // 获取数据
-      get_data() {
+      // 获取仓库数据
+      get_warehouse_data(){
+        this.$fn.get_warehouse_data(this).then(res=>{
+          console.log('res',res);
+          this.options = [...res.data.data];
+        },err=>{
+          console.log('err',err);
+        })
+      },
+      // 数据查询
+      get_data(){
         let senddata = {
           companyId: sessionStorage.getItem('companyId')
         };
-        let url = '/applicationOut/baseList?_pageList&ascColumn=documentState,createTime';
-        if (this.form.inp1 !== '') {
-          senddata.documentNo = '*' + this.form.inp1 + '*';
+        let url = '/applicationIn/baseList?_pageList&ascColumn=documentState,createTime';
+        if(this.form.inp1 !== ''){
+          senddata.documentNo = '*'+this.form.inp1+'*';
         }
-        if (this.form.inp2 !== null) {
+        if(this.form.inp2 !== null){
           senddata.warehouseId = this.form.inp2;
         }
-        if (this.form.inp3 !== null) {
-          // senddata.planTakeTime = this.$fn.timeChange(this.form.inp3[0]); // 计划装车时间
+        if(this.form.inp3 !== null){
+          // senddata.loadingTime = this.$fn.timeChange(this.form.inp3[0]); // 计划装车时间
           // senddata.serviceTime = this.$fn.timeChange(this.form.inp3[1]); // 计划送达时间
-          url = url + '&createTime_begin=' + this.$fn.timeChange(this.form.inp3[0]).substr(0, 10) + '&createTime_end=' + this.$fn.timeChange(this.form.inp3[1]).substr(0, 10)
+          url = url+'&createTime_begin='+this.$fn.timeChange(this.form.inp3[0]).substr(0,10)+'&createTime_end='+this.$fn.timeChange(this.form.inp3[1]).substr(0,10)
         }
         this.loading = true;
-        this.$axios.post(url, {
-          pageNo: this.page.page_num,
-          pageSize: this.page.page_size,
+
+        api_warehouse.storage.outStockList(this,{
+          pageNo:this.page.page_num,
+          pageSize:this.page.page_size,
           ...senddata
-        }).then(res => {
-          console.log('列表查询结果', res);
-          this.table_data = [...res.data.data.records];
-          this.page.total = res.data.data.total;
-        }, err => {
-          console.log('列表查询报错', err);
-        }).finally(() => {
-          this.loading = false;
-        })
+        });
+
+
+        /*this.$axios.post(url,{
+            pageNo:this.page.page_num,
+            pageSize:this.page.page_size,
+            ...senddata
+        }).then(res=>{
+            console.log('列表查询结果',res);
+            this.table_data = [...res.data.data.records];
+            this.page.total = res.data.data.total;
+        },err=>{
+            console.log('列表查询报错',err);
+        }).finally(()=>{
+            this.loading = false;
+        })*/
+      },
+      // 多选改变函数
+      table_selection_change(val){
+        this.table_selection_arr = [...val];
+        console.log(this.table_selection_arr);
       },
       // 删除数据
-      del_data() {
-        if (this.table_selection_arr.length === 0) {
+      del_data(){
+        if(this.table_selection_arr.length === 0){
           this.$message.error('请先选择需要删除的申请');
           return;
         }
@@ -348,64 +329,76 @@
           type: 'warning'
         }).then(() => {
           let arr = [];
-          this.table_selection_arr.map(item => {
+          this.loading = true;
+          this.table_selection_arr.map(item=>{
             arr.push(item.id);
           })
-          this.$axios.post('/applicationOut/delApplicationOut', {
-            ids: arr.join(',')
-          }).then(res => {
-            console.log('删除入库申请', res);
+          this.$axios.post('/applicationIn/delApplicationIn',{
+            ids:arr.join(',')
+          }).then(res=>{
+            console.log('删除入库申请',res);
             this.get_data();
-          }, err => {
-            console.log('删除入库申请报错', err);
+          },err=>{
+            console.log('删除入库申请报错',err);
+          }).finally(()=>{
+            this.loading = false;
           })
         }).catch(() => {
 
         });
       },
       // 修改数据
-      change() {
-        if (this.table_selection_arr.length !== 1) {
-          this.$message.error('请先选择一个申请');
+      change(){
+        if(this.table_selection_arr.length !== 1){
+          this.$message.error('请选择一个申请');
           return;
         }
-        if (this.table_selection_arr[0].documentState !== 0 && this.table_selection_arr[0].documentState !== 5) {
+        if(this.table_selection_arr[0].documentState !== 0 && this.table_selection_arr[0].documentState !== 5){
           this.$message.error('选择的申请单不能编辑');
           return;
         }
-        sessionStorage.setItem('warehouse-out-stock-edit', 'true');
-        sessionStorage.setItem('warehouse-out-stock-aplicationid', this.table_selection_arr[0].id);
-        this.$router.push({name: 'out_stock_add'});
+        sessionStorage.setItem('warehouse-incoming-edit','true');
+        sessionStorage.setItem('warehouse-incoming-aplicationid',this.table_selection_arr[0].id);
+        this.$router.push({name:'Incoming_add'});
         // this.$confirm('即将修改订单, 是否继续?', '提示', {
         //     confirmButtonText: '确定',
         //     cancelButtonText: '取消',
         //     type: 'warning'
         // }).then(() => {
-        //     sessionStorage.setItem('warehouse-out-stock-edit','true');
-        //     sessionStorage.setItem('warehouse-out-stock-aplicationid',this.table_selection_arr[0].id);
-        //     this.$router.push({name:'out_stock_add'});
+        //     sessionStorage.setItem('warehouse-incoming-edit','true');
+        //     sessionStorage.setItem('warehouse-incoming-aplicationid',this.table_selection_arr[0].id);
+        //     this.$router.push({name:'Incoming_add'});
         // }).catch(() => {
 
         // });
       },
       // 分页页码改变
-      page_num_change(val) {
+      page_num_change(val){
         this.page.page_num = val;
         this.get_data();
       },
+      // 重置
+      refresh(){
+        this.form = {
+          inp1:'',
+          inp2:null,
+          inp3:null
+        };
+        this.get_data();
+      },
       // 提交
-      submit() {
-        if (this.table_selection_arr.length === 0) {
+      submit(){
+        if(this.table_selection_arr.length === 0){
           this.$message.error('请先选择需要提交的申请');
           return;
         }
         let flag = false;
-        this.table_selection_arr.map(item => {
-          if (item.documentState === 1 || item.documentState === 4) {
+        this.table_selection_arr.map(item=>{
+          if(item.documentState === 1 || item.documentState === 4) {
             flag = true;
           }
         })
-        if (flag) {
+        if(flag) {
           this.$message.error('选择的申请单中有已提交或者已审核通过的申请单，请去除后操作');
           return;
         }
@@ -415,59 +408,47 @@
           type: 'warning'
         }).then(() => {
           let arr = [];
-          this.table_selection_arr.map(item => {
+          this.table_selection_arr.map(item=>{
             let obj = {};
             obj.id = item.id;
             obj.documentState = 1;
             arr.push(obj);
           })
-          this.$axios.post('/applicationOut/baseBatchEdit', {
-            list: arr
-          }).then(res => {
+          this.$axios.post('/applicationIn/baseBatchEdit',{
+            list:arr
+          }).then(res=>{
             console.log(res);
             this.get_data();
           })
         }).catch(() => {
 
         });
-      },
-      // 重置
-      refresh() {
-        this.form = {
-          inp1: '',
-          inp2: null,
-          inp3: null
-        };
-        this.get_data();
-      },
+      }
     }
   }
 </script>
 
 <style lang="less" scoped>
-  .incoming {
+  .incoming{
     width: 100%;
     height: 100%;
   }
 
-  /deep/ .table {
+  /deep/.table{
     width: 100%;
     height: 100%;
     // background: #fff;
     box-sizing: border-box;
     padding: 10px 20px;
-
-    .table_btn {
+    .table_btn{
       width: 100%;
       height: 50px;
     }
-
-    .table_box {
+    .table_box{
       width: 100%;
       height: calc(100% - 100px);
     }
-
-    .table_box_pagination {
+    .table_box_pagination{
       width: 100%;
       height: 50px;
       display: flex;
@@ -476,7 +457,7 @@
     }
   }
 
-  .el-form-item {
+  .el-form-item{
     margin-bottom: 0px !important;
   }
 </style>

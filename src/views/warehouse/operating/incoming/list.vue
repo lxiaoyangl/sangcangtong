@@ -5,7 +5,7 @@
                 <el-form-item label="申请订单号">
                     <el-input v-model="form.inp1" placeholder="请输入申请订单号" size="mini" clearable></el-input>
                 </el-form-item>
-                
+
                 <el-form-item label="仓库">
                     <el-select v-model="form.inp2" placeholder="请选择仓库" size="mini" clearable>
                         <el-option
@@ -128,6 +128,7 @@
 </template>
 
 <script>
+  import api_warehouse from "@/api/warehouse.js";
 export default {
     data(){
         return{
@@ -259,7 +260,7 @@ export default {
             // }).then(() => {
             //     this.$router.push({name:'Incoming_add'});
             // }).catch(() => {
-                 
+
             // });
         },
         // 获取仓库数据
@@ -289,7 +290,15 @@ export default {
                 url = url+'&createTime_begin='+this.$fn.timeChange(this.form.inp3[0]).substr(0,10)+'&createTime_end='+this.$fn.timeChange(this.form.inp3[1]).substr(0,10)
             }
             this.loading = true;
-            this.$axios.post(url,{
+
+            api_warehouse.storage.inComingList(this,{
+              pageNo:this.page.page_num,
+              pageSize:this.page.page_size,
+              ...senddata
+            });
+
+
+            /*this.$axios.post(url,{
                 pageNo:this.page.page_num,
                 pageSize:this.page.page_size,
                 ...senddata
@@ -301,7 +310,7 @@ export default {
                 console.log('列表查询报错',err);
             }).finally(()=>{
                 this.loading = false;
-            })
+            })*/
         },
         // 多选改变函数
         table_selection_change(val){
@@ -335,7 +344,7 @@ export default {
                     this.loading = false;
                 })
             }).catch(() => {
-                 
+
             });
         },
         // 修改数据
@@ -360,7 +369,7 @@ export default {
             //     sessionStorage.setItem('warehouse-incoming-aplicationid',this.table_selection_arr[0].id);
             //     this.$router.push({name:'Incoming_add'});
             // }).catch(() => {
-                 
+
             // });
         },
         // 分页页码改变
@@ -412,7 +421,7 @@ export default {
                     this.get_data();
                 })
             }).catch(() => {
-                 
+
             });
         }
     }
