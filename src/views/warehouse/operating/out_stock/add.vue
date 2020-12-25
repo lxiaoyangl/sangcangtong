@@ -971,6 +971,7 @@
               return;
             }
             /*/applicationIn/addApplicationIn*/
+            this.loading = true;
             api_warehouse.storage.addOutStorage(this, sendData);
             /*this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
               console.log('新增结果', res);

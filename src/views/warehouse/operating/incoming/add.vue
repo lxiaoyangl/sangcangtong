@@ -936,17 +936,17 @@
               // orderState:'',
               materialList: [...itemList],
               fileList: [...this.file_list]
-            }
+            };
             this.options.map(item => {
               if (item.value === this.form.inp1) {
                 sendData.warehouseName = item.label;
               }
-            })
+            });
             if (this.form.inp12 === 1) {
               if (this.form.inp13) {
                 sendData.loadingTime = this.$fn.timeChange(this.form.inp13);
               } else {
-                this.$fn.message('请选择计划装车时间', 'error')
+                this.$fn.message('请选择计划装车时间', 'error');
                 return;
               }
 
@@ -971,6 +971,7 @@
               return;
             }
             /*/applicationIn/addApplicationIn*/
+            this.loading = true;
             api_warehouse.storage.addStorage(this, sendData);
             /*this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
               console.log('新增结果', res);

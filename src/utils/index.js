@@ -29,9 +29,9 @@ export function getDictDataList (dictType) {
  * @param dictValue  字典值
  */
 export function getDictLabel (dictType, dictValue) {
-    const type = window.SITE_CONFIG['dictList'].find((element) => (element.dictType === dictType))
+    const type = window.SITE_CONFIG['dictList'].find((element) => (element.dictType === dictType));
     if (type) {
-        const val = type.dataList.find((element) => (element.dictValue === dictValue + ''))
+        const val = type.dataList.find((element) => (element.dictValue === dictValue + ''));
         if (val) {
             return val.dictLabel
         } else {

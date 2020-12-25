@@ -206,7 +206,7 @@ export default {
             // 消息详情
             detail_obj:{},
             detail_notice:false,
-            
+
 
 
             // 修改密码蒙层显示标识
@@ -245,7 +245,7 @@ export default {
                 name: '**',
             }).then(res=>{
                 window.SITE_CONFIG['dictList'] = res
-            })
+            });
             // 获取菜单数据
             let menu = JSON.parse(sessionStorage.getItem('two-nav-menu'));
             let arr = [];
@@ -430,7 +430,7 @@ export default {
             let arr = [];
             this.three_level_nav_arr.map(item=>{
                 if(item.route !== obj.route){
-                   arr.push(item); 
+                   arr.push(item);
                 }
             })
             this.three_level_nav_arr = [...arr];
@@ -735,7 +735,7 @@ export default {
                     background: rgba(#e0e5eb , 1);
                 }
                 .basis_content_right_header_route_box::-webkit-scrollbar{
-                    width: 4px; 
+                    width: 4px;
                     height: 4px;
                 }
                 .basis_content_right_header_route_box{
@@ -861,7 +861,7 @@ export default {
            font-size: 14px;
             height: 30px;
             display: flex;
-            align-items: flex-start; 
+            align-items: flex-start;
         }
     }
     .detail_dialog_content_content{
