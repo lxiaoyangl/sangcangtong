@@ -5,8 +5,8 @@ const loginUrl = [
   '/login/userLogin',
     '/login/loginByUserId'
 ]
-const newsUrl = [
-  '/column/baseList',
+const busfrontUrl = [
+  '/company/baseList',
   '/column/baseDel',
   '/column/baseBatchDel',
   '/column/baseAdd',
@@ -36,9 +36,9 @@ export function getPermissionUrl (url) {
       return config.loginUrl
     }
   }
-  for (var j = 0; j < newsUrl.length; j++) {
-    if (newsUrl[j] === url) {
-      return config.newsUrl
+  for (var j = 0; j < busfrontUrl.length; j++) {
+    if (busfrontUrl[j] === url) {
+      return config.busfrontUrl
     }
   }
   return config.serverUrl

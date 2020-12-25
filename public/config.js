@@ -7,6 +7,8 @@
 
     sys_code:'0',
 
+    busfrontUrl:'https://dev.123456cc.cc:4000/busfront-manage/busfront-manage',
+
 }*/
 
 module.exports = {
@@ -19,5 +21,7 @@ module.exports = {
   sys_code:'0',
 
   ip:'http://192.168.3.7:4000',
+
+  busfrontUrl:'https://dev.123456cc.cc:4000/busfront-manage/busfront-manage',
 
 }
