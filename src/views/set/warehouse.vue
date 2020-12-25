@@ -132,7 +132,7 @@ import {
   setWarehouseDels,
   setWarehouseAdd,
   setWarehouseEdit
-} from '@/axios/apis'
+} from '@/plugins/apis'
 import areas from '@/components/areas'
 
 export default {

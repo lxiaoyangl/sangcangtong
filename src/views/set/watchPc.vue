@@ -158,7 +158,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { setserverInfo } from '@/axios/api'
+import { setserverInfo } from '@/plugins/api'
 
 export default {
   data () {
@@ -182,7 +182,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
 .wrap{
   height: calc(100vh - 100px);
   overflow-y: auto;

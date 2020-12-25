@@ -140,8 +140,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { setserverInfo } from '@/axios/api'
-import { setCompanyData, setCompanyEdit } from '@/axios/apis'
+import { setserverInfo } from '@/plugins/api'
+import { setCompanyData, setCompanyEdit } from '@/plugins/apis'
 import Cookies from 'js-cookie'
 
 export default {
@@ -275,7 +275,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
   .wrap{
     height: 100%;
     width: 100%;

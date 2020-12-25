@@ -376,9 +376,8 @@ import {
   setCompanyGoodsAdds,
   selectDictionary,
   dictSetWarehouse
-} from '@/axios/apis'
+} from '@/plugins/apis'
 import Cookies from 'js-cookie'
-import moment from 'moment'
 
 export default {
   data () {
@@ -434,7 +433,7 @@ export default {
 
       setWarehouseList: [], // 仓库
 
-      serverUrl: __config.uploadUrl,
+      serverUrl: '',
       imageUrl: '',
       updataAttr: {
         token: Cookies.get('tokenb')
@@ -879,9 +878,7 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-</style>
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .company{
     /deep/ .el-dialog{
       width: 1200px;

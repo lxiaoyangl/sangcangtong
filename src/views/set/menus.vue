@@ -92,7 +92,7 @@
                        class="el-icon-close">删除</el-button> -->
             <div class="tableButton">
             <el-tooltip effect="dark" content="编辑" placement="top">
-              <el-button type="primary" v-show="$hasPermission('编辑')"　icon="el-icon-edit" circle  @click.stop="modifyPrev(scope.row)"></el-button>
+              <el-button type="primary"　icon="el-icon-edit" circle  @click.stop="modifyPrev(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="新增" placement="top">
               <el-button type="primary" v-show="$hasPermission('新增')"　icon="el-icon-plus" circle  @click.stop="addCurrentPrev(scope.row)"></el-button>
@@ -214,6 +214,7 @@ export default {
     }
   },
   components: {
+    Icons,
     TreeWrap
   },
   created () {

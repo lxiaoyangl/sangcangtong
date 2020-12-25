@@ -58,7 +58,7 @@
 
 <script type="text/ecmascript-6">
 import { sureDelete, deleteAllNext, baseExport, getValidButton } from '@/utils'
-import { setLoginLogList, setLoginLogDelete, setLoginLogBatchDelete } from '@/axios/api'
+import { setLoginLogList, setLoginLogDelete, setLoginLogBatchDelete } from '@/plugins/api'
 
 export default {
   data () {

@@ -165,7 +165,7 @@
 import { sureDelete, getChangeData, toTreeData, state1, toTreePackage, getValidButton } from '@/utils'
 import Icons from '@/components/icons'
 import TreeWrap from '@/components/treeWrap'
-import { setMaterialsList, setMaterialsAdd, setMaterialsEdit, setMaterialsDel, setMaterialsDels, setMaterialsTree } from '@/axios/apis'
+import { setMaterialsList, setMaterialsAdd, setMaterialsEdit, setMaterialsDel, setMaterialsDels, setMaterialsTree } from '@/plugins/apis'
 
 export default {
   data () {

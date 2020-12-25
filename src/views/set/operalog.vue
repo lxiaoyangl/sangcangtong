@@ -91,7 +91,7 @@
 
 <script type="text/ecmascript-6">
 import { sureDelete, deleteAllNext, baseExport, getValidButton } from '@/utils'
-import { setOperalogList, setOperalogDelete, setOperalogBatchDelete } from '@/axios/api'
+import { setOperalogList, setOperalogDelete, setOperalogBatchDelete } from '@/plugins/api'
 
 export default {
   data () {
