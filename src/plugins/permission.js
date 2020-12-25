@@ -3,11 +3,11 @@ import config from "Public/config.js";
 // 配置权限地址
 const loginUrl = [
   '/login/userLogin',
-    '/login/loginByUserId'
+  '/login/loginByUserId'
 ]
 const busfrontUrl = [
   '/company/baseList',
-  '/column/baseDel',
+  '/warehouse/baseList',
   '/column/baseBatchDel',
   '/column/baseAdd',
   '/column/baseEdit',
