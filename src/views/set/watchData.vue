@@ -5,17 +5,19 @@
 </template>
 
 <script>
+import config from "Public/config.js";
+
 export default {
   name: 'watch-data',
   data () {
     return {
-      serverUrl: __config.serverUrl
+      serverUrl: config.serverUrl
     }
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
 .iframe{
   box-sizing: border-box;
   width: 100%;

@@ -268,11 +268,10 @@ import {
   setMaterialsInfoEdit,
   setMaterialsTree,
   selectDictionary
-} from '@/axios/apis'
+} from '@/plugins/apis'
 import areas from '@/components/areas'
 import TreeWrap from '@/components/treeWrap'
 import Cookies from 'js-cookie'
-import moment from 'moment'
 
 export default {
   components: {
@@ -315,7 +314,7 @@ export default {
         name: ''
       },
 
-      serverUrl: __config.uploadUrl,
+      serverUrl: '',
       imageUrl: '',
       updataAttr: {
         token: Cookies.get('tokenb')
@@ -578,7 +577,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .avatar-uploader{
    .uploadBg{
     width: 100px;

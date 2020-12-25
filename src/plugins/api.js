@@ -88,5 +88,5 @@ export function setParameterList(params) { return postApi('/parameter/baseList?&
 export function setParameterDelete(params) { return postApi('/parameter/baseDel', params) }
 export function setParameterBatchDelete(params) { return postApi('/parameter/baseBatchDel', params) }
 
-export function setserverInfo(params) { return postApi('/monitor/serverInfo', params) }
+export function setserverInfo(params) { return postApi('/base/serverInfo', params) }
 

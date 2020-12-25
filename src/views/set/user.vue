@@ -166,7 +166,7 @@ import TreeWrap from '@/components/treeWrap'
 import User from '@/components/pages/user'
 import { sureDelete, getChangeData, state, toTreePackage, deleteAllNext, getValidButton } from '@/utils'
 import { setUserList, setUserAdd, setUserEdit, setUserDelete, setUserBatchDelete, setDepartmentBaseTree, setDictionaryDataList } from '@/plugins/api'
-//import { setCompanyData, selectParameter } from '@/plugins/apis'
+import { setCompanyData, selectParameter } from '@/plugins/apis'
 
 export default {
   data () {
