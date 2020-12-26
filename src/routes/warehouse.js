@@ -27,6 +27,11 @@ export default [
   },
   // 仓储协同，业务操作，出库预报
   {
+    path: '/warehouse/out_stock/homePage',
+    name: 'out_stock_homePage',
+    component: () => import("@/views/warehouse/operating/out_stock/homePage.vue")
+  },
+  {
     path: '/warehouse/out_stock/list',
     name: 'out_stock_list',
     component: () => import("@/views/warehouse/operating/out_stock/list.vue")

@@ -40,9 +40,9 @@
       </div>
       <div class="search">
         <div class="normal-search">
-          <span>入仓名称</span>
+          <span>出仓名称</span>
           <div class="d-input">
-            <el-input v-model="form.warehouseName" placeholder="请输入入仓名称" size="mini" clearable></el-input>
+            <el-input v-model="form.warehouseName" placeholder="请输入出仓名称" size="mini" clearable></el-input>
           </div>
 
           <span>客户名称</span>
@@ -64,9 +64,9 @@
           </div>
         </div>
         <div class="height-search" v-show="isHeightSearch">
-          <span>计划入仓时间</span>
-          <el-date-picker class="time-picker" v-model="form.putInPlanDate_begin" type="date" placeholder="选择开始时间" size="mini"></el-date-picker>
-          <el-date-picker class="time-picker" v-model="form.putInPlanDate_end" type="date" placeholder="选择结束时间" size="mini"></el-date-picker>
+          <span>计划出仓时间</span>
+          <el-date-picker class="time-picker" v-model="form.putOutPlanDate_begin" type="date" placeholder="选择开始时间" size="mini"></el-date-picker>
+          <el-date-picker class="time-picker" v-model="form.putOutPlanDate_end" type="date" placeholder="选择结束时间" size="mini"></el-date-picker>
           <span>计划发货时间</span>
           <el-date-picker class="time-picker" v-model="form.deliverPlanDate_begin" type="date" placeholder="选择开始时间" size="mini"></el-date-picker>
           <el-date-picker class="time-picker" v-model="form.deliverPlanDate_end" type="date" placeholder="选择结束时间" size="mini"></el-date-picker>
@@ -99,8 +99,8 @@
               min-width="120">
           </el-table-column>
           <el-table-column
-              prop="putInPlanDate"
-              label="计划入仓日期"
+              prop="putOutPlanDate"
+              label="计划出仓日期"
               :formatter="timeFormater"
               min-width="120">
           </el-table-column>
@@ -112,7 +112,7 @@
 
           <el-table-column
               prop="warehouseName"
-              label="入仓名称"
+              label="出仓名称"
               min-width="120">
           </el-table-column>
           <el-table-column
@@ -218,7 +218,7 @@
   import audit from './audit.vue'
 
   export default {
-    name: "homePage",
+    name: "out_stock_homePage",
     components: {
       audit
     },
@@ -251,8 +251,8 @@
           warehouseName: '',
           customerName: '',
           orderNo: '',
-          putInPlanDate_begin: '',
-          putInPlanDate_end: '',
+          putOutPlanDate_begin: '',
+          putOutPlanDate_end: '',
           deliverPlanDate_begin: '',
           deliverPlanDate_end: '',
         },
@@ -327,7 +327,7 @@
           }
         }
 
-        api_warehouse.storage.inComingList(this, postData);
+        api_warehouse.storage.outStockList(this, postData);
       },
       // 多选改变函数
       table_selection_change(val) {
@@ -361,7 +361,7 @@
       editRow(row) {
         sessionStorage.setItem("tableRow", JSON.stringify(row));
         sessionStorage.setItem("warehouse-incoming-edit", 'true');
-        this.$router.push({name: 'Incoming_add'});
+        this.$router.push({name: 'out_stock_add'});
         console.log(row);
       },
       //点击提交
@@ -372,10 +372,10 @@
             id: row.id,
             orderState: 'PENDING'
           };
-          api_warehouse.storage.inComingSubmit(this, data).then((res) => {
+          api_warehouse.storage.outSrockSubmit(this, data).then((res) => {
             this.$message.info(res.data.msg);
             this.get_data();
-            api_warehouse.storage.getIncomingCount().then(res => {
+            api_warehouse.storage.getOutStockCount().then(res => {
               this.incommingCount = res.data.data;
             });
           })
@@ -386,10 +386,10 @@
       closeDialog(payload) {
         this.$message.info(payload.msg)
         this.dialogVisible = false;
-        api_warehouse.storage.getIncomingCount().then(res => {
+        api_warehouse.storage.getOutStockCount().then(res => {
           this.incommingCount = res.data.data;
         });
-        this.get_data()
+        this.get_data();
       },
 
       //查询
@@ -413,12 +413,12 @@
       //新建订单
       addNew() {
         sessionStorage.setItem('warehouse-incoming-edit', 'false');
-        this.$router.push({name: 'Incoming_add'});
+        this.$router.push({name: 'out_stock_add'});
       }
     },
     mounted() {
       this.get_data();
-      api_warehouse.storage.getIncomingCount().then(res => {
+      api_warehouse.storage.getOutStockCount().then(res => {
         this.incommingCount = res.data.data;
       });
     }

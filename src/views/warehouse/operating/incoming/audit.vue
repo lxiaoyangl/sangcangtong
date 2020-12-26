@@ -1,9 +1,6 @@
 <template>
   <div class="container">
-    <div class="tips">
-      订单号: {{tableRow.orderNo}} - 客户名称: {{tableRow.customerName}} - 订单状态: {{tableRow.orderState}} <span style="color: red"></span>
-    </div>
-    <div class="base-info">
+    <div class="base-info" style="width: 1000px;">
       <p class="title">入仓基本信息</p>
       <div class="bi-content">
         <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index">
@@ -64,7 +61,7 @@
         </el-table-column>
         <el-table-column
             prop="weightCoefficient"
-            label="里重"
+            label="理重"
             min-width="120">
         </el-table-column>
         <el-table-column
@@ -165,24 +162,24 @@
         if (!info) return [];
         return [
           {name: '订单号', key: 'orderNo', value: info.orderNo},
-          {name: '是否平台派车', key: 'isPlfDistVeh', value: info.isPlfDistVeh},
-          {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo},
+          {name: '平台派车', key: 'isPlfDistVeh', value: info.isPlfDistVeh ? '是' : '否'},
+          {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo ? info.linkedOrderNo : '--'},
           {name: '客户号', key: 'customerId', value: info.customerId},
           {name: '计划发货日期', key: 'deliverPlanDate', value: info.deliverPlanDate},
           {name: '经办人', key: 'operatorName', value: info.operatorName},
           {name: '客户名称', key: 'customerName', value: info.customerName},
           {name: '发货点', key: 'deliverPlace', value: info.deliverPlace},
           {name: '最后修改人', key: 'updateUser', value: info.updateUser},
-          {name: '订单状态', key: 'orderState', value: info.orderState},
-          {name: '送货点', key: 'acceptPlace', value: info.acceptPlace},
+          {name: '订单状态', key: 'orderState', value: info.orderState.description},
+          {name: '发货详细地址', key: 'deliverLocation', value: info.deliverLocation},
           {name: '最后修改时间', key: 'updateTime', value: info.updateTime},
           {name: '入仓名称', key: 'warehouseName', value: info.warehouseName},
-          {name: '送货详细地址', key: 'deliverLocation', value: info.deliverLocation},
+          {name: '发货点联系人', key: 'deliverName', value: info.deliverName},
           {name: '订单备注', key: 'remark', value: info.remark},
           {name: '计划入仓日期', key: 'putInPlanDate', value: info.putInPlanDate},
-          {name: '送货点联系人', key: 'deliverName', value: info.deliverName},
+          {name: '发货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
           {name: '运输方式', key: 'shippingTypeName', value: info.shippingTypeName},
-          {name: '送货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
+          {name: '送货点', key: 'acceptPlace', value: info.acceptPlace},
         ]
       }
     },
@@ -249,7 +246,6 @@
   }
 
   .container {
-    padding: 10px;
     height: 100%;
     width: 100%;
     overflow: auto;
