@@ -49,6 +49,8 @@ export const setWarehouseDel = (params) => { return postApi('/warehouse/baseDel'
 export const setWarehouseDels = (params) => { return postApi('/warehouse/baseBatchDel', params) }// 批量删除仓库
 export const setWarehouseAdd = (params) => { return postApi('/warehouse/baseAdd', params) }// 新增仓库
 export const setWarehouseEdit = (params) => { return postApi('/warehouse/baseEdit', params) }// 编辑仓库
+export const setWarehouseData = (params) => { return postApi('/warehouse/baseList', params) }
+
 // 物资目录管理
 export const setMaterialsList = (params) => { return postApi('/catalog/baseList', params) }// 物资目录分页
 export const setMaterialsDel = (params) => { return postApi('/catalog/baseDel', params) }// 删除物资目录
@@ -66,3 +68,5 @@ export const setMaterialsInfoEdit = (params) => { return postApi('/material/base
 // -------------------------------字典查询--------------------------------
 export const selectDictionary = (params) => { return postApi('/dictionaryData/baseList', params) }// 查询字典
 export const selectParameter = (params) => { return postApi('/parameter/baseList', params) }// 查询参数
+
+export function setUserData(params) { return postApi('/user/baseList', params) }
