@@ -55,7 +55,7 @@
           </el-form-item>
 
           <el-form-item label="客户名称" prop="inp6">
-            <el-select clearable v-model="form.inp6" placeholder="请选择客户" size="mini">
+            <!--<el-select clearable v-model="form.inp6" placeholder="请选择客户" size="mini">
               <el-option
                   v-for="item in cusNameArr"
                   :key="item.value"
@@ -63,7 +63,7 @@
                   filterable
                   :value="item.value">
               </el-option>
-            </el-select>
+            </el-select>-->
           </el-form-item>
 
           <el-form-item label="发货点" prop="inp7">
@@ -525,6 +525,7 @@
   import config from "Public/config.js";
   import api_warehouse from "@/api/warehouse.js";
   import {getUserInfo, timestampToTime} from "../../../../utils";
+  import {setCompanyData, selectParameter} from '@/plugins/apis'
 
   export default {
     data() {
@@ -571,7 +572,7 @@
           inp16: {required: true, message: '请输入装车备注', trigger: 'blur'},
         },
         //客户名称下拉数据
-        cusNameArr:[{value:2,label:"客户1"}],
+        cusNameArr: [],
 
         // 仓库下拉数据
         options: [],
@@ -599,7 +600,9 @@
         // 证件类型下拉数据
         idType_arr: [],
         // 计量方式
-        valuationType_arr: [{value:1,label:"方式1"}],
+        valuationType_arr: [],
+        //经办人
+
 
         // 新增蒙层显示标识
         add_dialog_flag: false,
@@ -665,6 +668,7 @@
       }
     },
     mounted() {
+      alert(22)
       // 获取出仓下拉数据
       this.get_rktype();
       // 获取数量单位下拉数据
@@ -681,6 +685,11 @@
       this.get_warehouse_data();
       // 获取物资接口
       this.get_goods();
+      //获取经办人下拉数据
+      setCompanyData({}).then((res) => {
+        this.companyDatas = res
+      })
+
 
       // 判断是否是在编辑
       if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
@@ -885,28 +894,28 @@
               }
             }
             //重新匹配字段(后台字段和原始字段不匹配)
-            let itemList = this.table_data.map((item)=>{
+            let itemList = this.table_data.map((item) => {
               return {
-                name:item.name,
-                textureMaterial :item.textureMaterial,
-                specifications :item.specifications,
-                placeOrigin :item.businessMen || '产地',
-                inPlanNum :item.enterNumber,
-                numUnitId :item.unitQuantityId,
-                numUnit:"个",
-                inPlanWeight :item.enterWeight,
-                weightUnitId :item.unitWeightId,
-                weightUnit :'千克',
-                weightCoefficient :item.weightCoefficient || 1,
-                measureMethodId :item.measurementMethodId || 2,
-                measureMethod :"计量方式",
-                carNum :item.licensePlateNumber,
-                driver:item.driver,
-                idCardType :item.certificatesType,
-                idCardNum :item.certificatesNumber,
-                contactPhone :item.contactNumber,
-                remark :item.description,
-                isRefer :true,
+                name: item.name,
+                textureMaterial: item.textureMaterial,
+                specifications: item.specifications,
+                placeOrigin: item.businessMen || '产地',
+                inPlanNum: item.enterNumber,
+                numUnitId: item.unitQuantityId,
+                numUnit: "个",
+                inPlanWeight: item.enterWeight,
+                weightUnitId: item.unitWeightId,
+                weightUnit: '千克',
+                weightCoefficient: item.weightCoefficient || 1,
+                measureMethodId: item.measurementMethodId || 2,
+                measureMethod: "计量方式",
+                carNum: item.licensePlateNumber,
+                driver: item.driver,
+                idCardType: item.certificatesType,
+                idCardNum: item.certificatesNumber,
+                contactPhone: item.contactNumber,
+                remark: item.description,
+                isRefer: true,
               }
             });
             let sendData = {
@@ -927,12 +936,12 @@
               operatorName: this.form.inp10,
               // goodsSenderPhone: this.form.inp11,
               isPlfDistVeh: this.form.inp12,
-              deliverPlanDate:timestampToTime(this.form.inp15),
-              acceptPlace:this.form.inp1,
-              remark:this.form.inp16,
-              updateUserId:getUserInfo().userId,
-              updateUser:getUserInfo().username,
-              updateTime:timestampToTime(new Date()),
+              deliverPlanDate: timestampToTime(this.form.inp15),
+              acceptPlace: this.form.inp1,
+              remark: this.form.inp16,
+              updateUserId: getUserInfo().userId,
+              updateUser: getUserInfo().username,
+              updateTime: timestampToTime(new Date()),
               // orderState:'',
               materialList: [...itemList],
               fileList: [...this.file_list]

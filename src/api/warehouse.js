@@ -17,6 +17,17 @@ warehouse.storage.addStorage = function (that, data) {
     that.loading = false;
   })
 };
+//入仓修改
+warehouse.storage.updateStorage = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/updateStorage', data).then(res => {
+    // this.$message.success(res.data.data);
+    return res
+  }, err => {
+  }).finally(() => {
+    that.loading = false;
+  })
+};
+
 //出仓申请
 warehouse.storage.addOutStorage = function (that, data) {
   api.post('/busmiddle-storage/busmiddle-storage/storage/apply/out/addStorage/CUSTOMER', data).then(res => {
@@ -55,13 +66,32 @@ warehouse.storage.outStockList = function (that, data) {
 };
 //获取入仓申请物资信息 传orderNo
 warehouse.storage.getMaterialList = function (that, data) {
-  api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/material/baseList?_pageList', data).then(res => {
-    that.table_data = [...res.data.data.records];
-    that.page.total = res.data.data.total;
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/material/baseList?_pageList', data).then(res => {
+    return res;
   }, err => {
     console.log('获取信息失败', err);
   })
 };
+
+//入仓审核
+warehouse.storage.inComingAudit = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/common/storage/audit/log/audit', data).then(res => {
+    return res
+  }, err => {
+    console.log('获取信息失败', err);
+  })
+};
+
+//入仓状态统计
+warehouse.storage.getIncomingCount = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/statsStatus', data).then(res => {
+    return res
+  }, err => {
+    console.log('获取信息失败', err);
+  })
+};
+
+
 //暂时
 warehouse.transfer.addtransfer = function (that, data) {
   api.post('/busmiddle-storage/busmiddle-storage/storage/transfer/apply/add/transfer/CUSTOMER', data).then(res => {

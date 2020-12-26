@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="tips">
-      订单号: {{prepPageParams.orderNo}} - 客户名称: {{prepPageParams.customerName}} - 订单状态: {{prepPageParams.orderState}} <span style="color: red"></span>
+      订单号: {{tableRow.orderNo}} - 客户名称: {{tableRow.customerName}} - 订单状态: {{tableRow.orderState}} <span style="color: red"></span>
     </div>
     <div class="base-info">
       <p class="title">入仓基本信息</p>
@@ -129,7 +129,7 @@
             type="textarea"
             placeholder="请输入拒绝理由"
             :disabled="isPass"
-            v-model="textarea">
+            v-model="denyInfo">
         </el-input>
       </div>
       <div class="btn-div">
@@ -155,7 +155,7 @@
           page_size: 20,
         },
         table_data: [],
-        textarea: '',//拒绝意见
+        denyInfo: '',//拒绝意见
         isPass: '',
       }
     },
@@ -198,11 +198,36 @@
           pageNo: this.page.page_num,
           pageSize: this.page.page_size,
         };
-        api_warehouse.storage.getMaterialList(this, data)
+        api_warehouse.storage.getMaterialList(this, data).then(res => {
+          this.table_data = [...res.data.data.records];
+          this.page.total = res.data.data.total;
+        })
       },
       doAudit() {
-        this.$confirm("是否确定提交?").then(()=>{
-          this.$emit('onAudit');
+
+        if (this.isPass === '') {
+          this.$message.error("请选择同意或者拒绝");
+          return
+        }
+
+        if (this.isPass === false) {
+          if (!this.denyInfo) {
+            this.$message.error("请输入拒绝申请理由");
+            return
+          }
+        }
+
+        this.$confirm("是否确定提交?").then(() => {
+          let data = {
+            orderNo: this.orderNo,
+            result: this.isPass === true ? 1 : 0,
+            suggest: this.denyInfo,
+            businessType: "PUT_IN"
+          }
+          api_warehouse.storage.inComingAudit(this, data).then((res) => {
+            this.$emit('onAudit', res.data);
+          });
+
         })
       }
     },

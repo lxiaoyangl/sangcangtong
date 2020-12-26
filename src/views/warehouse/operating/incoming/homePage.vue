@@ -4,36 +4,36 @@
       <div class="item">
         <i class="el-icon-tickets"></i>
         <div>
-          <p>256</p>
+          <p>{{incommingCount.todayPendingNum}}</p>
           <p>当日待审核</p>
         </div>
       </div>
       <div class="item">
         <i class="el-icon-circle-close"></i>
         <div>
-          <p>256</p>
+          <p>{{incommingCount.todayRejectNum}}</p>
           <p>当日已拒绝</p>
         </div>
       </div>
       <div class="item">
         <i class="el-icon-document"></i>
         <div>
-          <p>256</p>
+          <p>{{incommingCount.customerNum}}</p>
           <p>客户累计提单</p>
         </div>
       </div>
       <div class="item">
         <i class="el-icon-document-checked"></i>
         <div>
-          <p>256</p>
+          <p>{{incommingCount.platfromPendingNum}}</p>
           <p>代办累计提单</p>
         </div>
       </div>
     </header>
     <div class="tabs">
       <div :class="{'tabs-ac':index === tabsAc}" v-for="(i,index) in tabsArr" :key="index" @click="changeTab(index)">
-        {{i}}
-        <span class="badeg">20</span>
+        {{i.name}}
+        <span class="badeg">{{incommingCount[i.key] !== 0 ? incommingCount[i.key] : '' }}</span>
       </div>
     </div>
     <div class="table_box">
@@ -109,8 +109,10 @@
             label="操作"
             width="100">
           <template slot-scope="scope">
-            <el-button @click="checkRow(scope.row)" type="text" size="small">审核</el-button>
-            <el-button @click="editRow(scope.row)" type="text" size="small">修改</el-button>
+            <el-button v-show="filterType == 0 || filterType == 2 || filterType == 3" @click="checkRow(scope.row)" type="text" size="small">查看</el-button>
+            <el-button v-show="filterType == 1" @click="auditRow(scope.row)" type="text" size="small">审核</el-button>
+            <el-button v-show="filterType == 1 || filterType == 3" @click="editRow(scope.row)" type="text" size="small">修改</el-button>
+            <el-button v-show="filterType == 0" @click="submitRow(scope.row)" type="text" size="small">提交</el-button>
           </template>
         </el-table-column>
         <!--<el-table-column
@@ -147,12 +149,12 @@
     </div>
     <!--详情或者审核弹出窗-->
     <el-dialog
-        title="提示"
+        title="审核"
         :visible.sync="dialogVisible"
         width="90%"
-        >
+    >
       <audit
-          :is-check="false"
+          :is-check="isCheckProp"
           :order-no="orderNo"
           :table-row="tableRow"
           @onAudit="closeDialog"
@@ -174,8 +176,16 @@
     },
     data() {
       return {
-        tabsArr: ['待审核', '已拒绝', '已通过', '平台代办'],//tabs数组
+        tabsArr: [
+          {name: '待审核', key: 'pendingNum', type: 1},
+          {name: '已拒绝', key: 'rejectNum', type: 3},
+          {name: '已通过', key: 'acceptNum', type: 2},
+          {name: '平台代办', key: 'platfromNum', type: 0},
+        ],//tabs数组
         tabsAc: 0,//当前激活tab
+        //表格按钮权限
+        tbRightsArr: [""],
+
         // 列表数据
         table_data: [],
         table_selection_arr: [], // 多选存储变量
@@ -192,13 +202,27 @@
           inp3: null,
         },
         orderNo: '',//订单号
-        tableRow:{},//选中的表格数据
-        dialogVisible: false,//是否显示弹出窗
+        tableRow: {},//选中的表格数据
+        dialogVisible: false,//是否显示弹出窗,
+        incommingCount: {},//头部入仓统计,
+
+        isCheckProp:false,//是否为查看状态
+      }
+    },
+    computed: {
+      //筛选订单类型
+      filterType(){
+        return this.tabsArr[this.tabsAc].type;
       }
     },
     methods: {
+      //表格按钮权限
+
+      //订单状态改变
       changeTab(index) {
         this.tabsAc = index;
+        this.page.page_num = 1;
+        this.get_data();
       },
       // 数据查询
       get_data() {
@@ -222,6 +246,7 @@
         api_warehouse.storage.inComingList(this, {
           pageNo: this.page.page_num,
           pageSize: this.page.page_size,
+          orderState: this.tabsArr[this.tabsAc].type,
           ...senddata
         });
       },
@@ -235,24 +260,43 @@
         this.page.page_num = val;
         this.get_data();
       },
-      //点击审核
+
       checkRow(row) {
         this.orderNo = row.orderNo;
         this.tableRow = row;
         this.dialogVisible = true;
+        this.isCheckProp = true;
+      },
+      //点击审核
+      auditRow(row) {
+        this.orderNo = row.orderNo;
+        this.tableRow = row;
+        this.dialogVisible = true;
+        this.isCheckProp = false;
         //this.$router.push({name: 'Incoming_audit'});
       },
       //点击编辑
       editRow(row) {
+        sessionStorage.setItem("tableRow", JSON.stringify(row));
+        sessionStorage.setItem("warehouse-incoming-edit", 'true');
+        this.$router.push({name: 'Incoming_add'});
         console.log(row);
       },
-      //关闭弹出床
-      closeDialog(){
+      //点击提交
+      submitRow() {
+
+      },
+      //关闭弹出窗
+      closeDialog(payload) {
+        this.$message.info(payload.msg)
         this.dialogVisible = false;
       },
     },
     mounted() {
       this.get_data();
+      api_warehouse.storage.getIncomingCount().then(res => {
+        this.incommingCount = res.data.data;
+      });
     }
   }
 </script>

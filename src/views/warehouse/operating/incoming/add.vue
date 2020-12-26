@@ -28,10 +28,10 @@
           <el-form-item label="运输方式" prop="inp2">
             <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
               <el-option
-                  v-for="item in inhouse_type_arr"
+                  v-for="item in getAllDict('transportType')"
                   :key="item.value"
-                  :label="item.labels"
-                  :value="item.id">
+                  :label="item.dictLabel"
+                  :value="item.dictValue">
               </el-option>
             </el-select>
           </el-form-item>
@@ -55,13 +55,12 @@
           </el-form-item>
 
           <el-form-item label="客户名称" prop="inp6">
-            <el-select clearable v-model="form.inp6" placeholder="请选择客户" size="mini">
+            <el-select clearable v-model="form.inp6" placeholder="请选择客户" filterable size="mini">
               <el-option
                   v-for="item in cusNameArr"
                   :key="item.value"
-                  :label="item.label"
-                  filterable
-                  :value="item.value">
+                  :label="item.name"
+                  :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -79,13 +78,13 @@
           </el-form-item>
 
           <el-form-item label="经办人" prop="inp10">
-            <el-select clearable v-model="form.inp10" placeholder="经办人" size="mini">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
               <el-option
-                  v-for="item in cusNameArr"
+                  v-for="item in operator"
                   :key="item.value"
                   filterable
-                  :label="item.label"
-                  :value="item.value">
+                  :label="item.name"
+                  :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -105,7 +104,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="计划装车时间" v-show="form.inp12 === 1">
+          <!--<el-form-item label="计划装车时间" v-show="0">
             <el-date-picker
                 v-model="form.inp13"
                 type="datetime"
@@ -114,14 +113,14 @@
             </el-date-picker>
           </el-form-item>
 
-          <el-form-item label="计划送达时间" v-show="form.inp12 === 1">
+          <el-form-item label="计划送达时间" v-show="0">
             <el-date-picker
                 v-model="form.inp14"
                 type="datetime"
                 placeholder="选择日期时间"
                 size="mini">
             </el-date-picker>
-          </el-form-item>
+          </el-form-item>-->
 
           <el-form-item label="计划发货日期" prop="inp15">
             <el-date-picker
@@ -172,13 +171,13 @@
                   width="55">
               </el-table-column>
               <el-table-column
-                  prop="materialName"
+                  prop="name"
                   label="品名"
                   width="100">
               </el-table-column>
               <el-table-column
-                  prop="specifications"
-                  label="规格"
+                  prop="placeOrigin"
+                  label="产地"
                   width="100">
               </el-table-column>
               <el-table-column
@@ -187,78 +186,82 @@
                   width="100">
               </el-table-column>
               <el-table-column
-                  prop="businessMen"
-                  label="厂商"
+                  prop="specifications"
+                  label="规格"
                   width="100">
               </el-table-column>
 
               <el-table-column
-                  prop="enterNumber"
+                  prop="inPlanNum"
                   label="计划入仓数量"
                   width="180">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.enterNumber" type="number" placeholder="请输入数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
+                  <el-input v-model="scope.row.inPlanNum" type="number" placeholder="计划入仓数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                  prop="numUnitId"
+                  label="数量单位"
+                  width="200">
+                <template slot-scope="scope">
+                  <el-select clearable v-model="scope.row.numUnitId" placeholder="数量单位" size="mini">
+                    <el-option
+                        v-for="item in getAllDict('numunit')"
+                        :key="item.value"
+                        :label="item.dictLabel"
+                        :value="item.dictValue">
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                  prop="inPlanWeight"
+                  label="计划入库重量"
+                  width="180">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.inPlanWeight" type="number" placeholder="计划入库重量" size="mini"></el-input>
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                  prop="weightUnitId"
+                  label="重量单位"
+                  width="200">
+                <template slot-scope="scope">
+                  <el-select clearable v-model="scope.row.weightUnitId" placeholder="重量单位" size="mini">
+                    <el-option
+                        v-for="item in getAllDict('weightunit')"
+                        :key="item.value"
+                        :label="item.dictLabel"
+                        :value="item.dictValue">
+                    </el-option>
+                  </el-select>
                 </template>
               </el-table-column>
 
               <el-table-column
                   prop="weightCoefficient"
-                  label="理重"
+                  label="里重"
                   width="100">
-              </el-table-column>
-
-              <el-table-column
-                  prop="enterWeight"
-                  label="计划入库重量"
-                  width="180">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.enterWeight" type="number" placeholder="请输入重量" size="mini"></el-input>
+                  <el-input v-model="scope.row.weightCoefficient" type="number" placeholder="里重" size="mini" @input="enterNumber_change(scope.row)"></el-input>
                 </template>
               </el-table-column>
 
               <el-table-column
-                  prop="unitQuantityId"
-                  label="数量单位"
-                  width="200">
-                <template slot-scope="scope">
-                  <el-select clearable v-model="scope.row.unitQuantityId" placeholder="数量单位" size="mini">
-                    <el-option
-                        v-for="item in num_unit_arr"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.id">
-                    </el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                  prop="unitWeightId"
-                  label="重量单位"
-                  width="200">
-                <template slot-scope="scope">
-                  <el-select clearable v-model="scope.row.unitWeightId" placeholder="重量单位" size="mini">
-                    <el-option
-                        v-for="item in weight_unit_arr"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.id">
-                    </el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                  prop="measurementMethodId"
+                  prop="measureMethodId"
                   label="计量方式"
                   width="200">
                 <template slot-scope="scope">
-                  <el-select clearable v-model="scope.row.measurementMethodId" placeholder="计量方式" size="mini">
+                  <el-select clearable v-model="scope.row.measureMethodId" placeholder="计量方式" size="mini">
                     <el-option
-                        v-for="item in valuationType_arr"
+                        v-for="item in getAllDict('measure_method')"
                         :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
+                        :id="typeof dictValue"
+                        :label="item.dictLabel"
+                        :value="item.dictValue">
                     </el-option>
                   </el-select>
                 </template>
@@ -280,6 +283,15 @@
                 </template>
               </el-table-column>-->
               <el-table-column
+                  prop="carNum"
+                  label="车牌号"
+                  width="180">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.carNum" placeholder="车牌号" size="mini"></el-input>
+                </template>
+              </el-table-column>
+
+              <el-table-column
                   prop="driver"
                   label="司机"
                   width="180">
@@ -289,54 +301,47 @@
               </el-table-column>
 
               <el-table-column
-                  prop="licensePlateNumber"
-                  label="车牌号"
-                  width="180">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.licensePlateNumber" placeholder="车牌号" size="mini"></el-input>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                  prop="contactNumber"
-                  label="联系方式"
-                  width="180">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.contactNumber" placeholder="联系方式" size="mini"></el-input>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                  prop="certificatesType"
+                  prop="idCardType"
                   label="证件类型"
-                  min-width="190">
+                  width="200">
                 <template slot-scope="scope">
-                  <el-select clearable v-model="scope.row.certificatesType" placeholder="证件类型" size="mini">
+                  <el-select clearable v-model="scope.row.idCardType" placeholder="证件类型" size="mini">
                     <el-option
-                        v-for="item in idType_arr"
+                        v-for="item in getAllDict('idType')"
                         :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
+                        :label="item.dictLabel"
+                        :value="item.dictValue">
                     </el-option>
                   </el-select>
+                  {{scope.row}}
                 </template>
               </el-table-column>
 
               <el-table-column
-                  prop="certificatesNumber"
-                  label="证件号"
+                  prop="idCardNum"
+                  label="证件号码"
+                  min-width="190">
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.idCardNum" placeholder="证件号码" size="mini"></el-input>
+                </template>
+              </el-table-column>
+
+
+              <el-table-column
+                  prop="contactPhone"
+                  label="联系电话"
                   width="180">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.certificatesNumber" placeholder="证件号" size="mini"></el-input>
+                  <el-input v-model="scope.row.contactPhone" placeholder="联系电话" size="mini"></el-input>
                 </template>
               </el-table-column>
 
               <el-table-column
-                  prop="description"
+                  prop="remark"
                   label="备注"
                   width="180">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.description" placeholder="备注" size="mini"></el-input>
+                  <el-input v-model="scope.row.remark" placeholder="备注" size="mini"></el-input>
                 </template>
               </el-table-column>
 
@@ -397,34 +402,34 @@
             <el-table-column
                 prop="materialName"
                 label="品名"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="placeOrigin"
                 label="产地"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="textureMaterial"
                 label="材质"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="specifications"
                 label="规格"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="unitQuantity"
                 label="数量单位"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="weight"
                 label="重量单位"
-                width="100">
+                width="150">
             </el-table-column>
-            <el-table-column
+            <!--<el-table-column
                 prop="natureGoods"
                 label="货物特性"
                 width="100">
@@ -438,7 +443,7 @@
                 prop="catalogName"
                 label="品名大类"
                 width="100">
-            </el-table-column>
+            </el-table-column>-->
           </el-table>
         </div>
       </div>
@@ -525,6 +530,8 @@
   import config from "Public/config.js";
   import api_warehouse from "@/api/warehouse.js";
   import {getUserInfo, timestampToTime} from "../../../../utils";
+  import {setCompanyData} from '@/plugins/apis'
+  import {setUserList, loadDictList} from '@/plugins/api'
 
   export default {
     data() {
@@ -547,6 +554,7 @@
           inp13: '',
           inp14: '',
           inp15: '',
+          inp16: '',
         },
         form_rules: {
           inp1: {required: true, message: '请选择仓库', trigger: 'blur'},
@@ -571,7 +579,8 @@
           inp16: {required: true, message: '请输入装车备注', trigger: 'blur'},
         },
         //客户名称下拉数据
-        cusNameArr:[{value:2,label:"客户1"}],
+        cusNameArr: [],
+        operator: [],
 
         // 仓库下拉数据
         options: [],
@@ -583,11 +592,11 @@
         is_platform_send_car_arr: [
           {
             label: '是',
-            value: 1,
+            value: true,
           },
           {
             label: '否',
-            value: 0,
+            value: false,
           }
         ],
         // 数量单位
@@ -599,7 +608,7 @@
         // 证件类型下拉数据
         idType_arr: [],
         // 计量方式
-        valuationType_arr: [{value:1,label:"方式1"}],
+        valuationType_arr: [{value: 1, label: "方式1"}],
 
         // 新增蒙层显示标识
         add_dialog_flag: false,
@@ -639,6 +648,17 @@
           disabledDate(val) {
             return val.getTime() < new Date().getTime()
           }
+        },
+        SITE_CONFIG: window.SITE_CONFIG,
+      }
+    },
+    computed: {
+      prevPageData() {
+        let data = sessionStorage.getItem("tableRow")
+        if (data) {
+          return JSON.parse(data)
+        } else {
+          return {}
         }
       }
     },
@@ -681,44 +701,90 @@
       this.get_warehouse_data();
       // 获取物资接口
       this.get_goods();
+      //获取客户下拉数据
+      setCompanyData({}).then((res) => {
+        this.cusNameArr = res
+      })
+      //获取经办人数据
+      setUserList({name: '**', phone: '**', userState: ''}).then(res => {
+        this.operator = res.records;
+      });
 
       // 判断是否是在编辑
       if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
         // 申请单详情查询
-        this.$axios.post('/applicationIn/baseList', {
-          id: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1
-        }).then(res => {
-          console.log('在编辑数据', res);
-          let obj = res.data.data[0];
-          this.form.inp1 = obj.warehouseId;
-          this.form.inp2 = obj.inWarehouseId;
-          this.form.inp3 = new Date(obj.arriveTime);
-          this.form.inp4 = obj.contacts;
-          this.form.inp5 = obj.contactInformation;
-          this.form.inp6 = obj.orderNumber;
-          this.form.inp7 = obj.loadingPoint;
-          this.form.inp8 = obj.unloadingPoint;
-          this.form.inp9 = obj.shippingAddress;
-          this.form.inp10 = obj.consignee;
-          // this.form.inp11 = obj.consigneeNumber;
-          this.form.inp12 = obj.isSendCar;
+        let obj = this.prevPageData;
+        this.form.inp1 = obj.warehouseId;
+        this.form.inp2 = obj.shippingTypeId;
+        this.form.inp3 = obj.putInPlanDate;
+        this.form.inp4 = obj.deliverName;
+        this.form.inp5 = obj.deliverPhone;
+        this.form.inp6 = obj.customerId;
+        this.form.inp7 = obj.deliverPlace;
+        this.form.inp8 = obj.acceptPlace;
+        this.form.inp9 = obj.deliverLocation;
+        this.form.inp10 = obj.operatorId;
+        // this.form.inp11 = obj.consigneeNumber;
+        this.form.inp12 = obj.isPlfDistVeh;
+        this.form.inp15 = obj.deliverPlanDate;
+        this.form.inp16 = obj.remark;
 
-          if (this.form.inp12 === 1) {
-            this.form.inp13 = obj.loadingTime;
-            this.form.inp14 = obj.serviceTime;
-          }
-          // 物资查询
-          this.$axios.post('/applicationInItem/baseList', {
-            applicationId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1
-          }).then(res => {
-            this.table_data = [...res.data.data];
-          })
-        }, err => {
-          console.log('在编辑数据报错', err);
+
+        // 物资查询
+        this.$axios.post('/applicationInItem/baseList', {
+          applicationId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1
+        }).then(res => {
+          this.table_data = [...res.data.data];
         })
+
       }
+      //获取全部数据字典
+      loadDictList({
+        name: '**',
+      }).then(res => {
+        this.allDict = res;
+        if (sessionStorage.getItem('warehouse-incoming-edit')) {
+          this.getMaterialList();
+        }
+      });
     },
     methods: {
+      //获取字典参数,主要用于下拉框选择参数
+      getAllDict(dictType) {
+        if (!this.allDict) {
+          return []
+        } else {
+          let dict = this.allDict.find((item) => {
+            return item.dictType === dictType
+          });
+
+          dict.dataList.forEach((item) => {
+            item.dictValue = Number(item.dictValue)
+          });
+
+          return dict.dataList;
+        }
+      },
+      //获取id对应的中文
+      getNameById(dictType, id, field) {
+        let data;
+        if (typeof dictType === 'object') {
+          data = dictType
+        } else {
+          data = this.getAllDict(dictType)
+        }
+
+        let obj = data.find(item => {
+          if (field) {
+            return item[field] == id;
+          } else {
+            return item.dictValue == id;
+          }
+        });
+
+        return obj || {};
+
+      },
       // 获取入库下拉信息
       get_rktype() {
         // setDictionaryDataList();
@@ -735,7 +801,7 @@
       },
       // 返回入库预报
       go_back() {
-        this.$router.push({name: 'Incoming_list'})
+        this.$router.push({name: 'Incoming_homePage'})
       },
       // 蒙层关闭前触发函数
       add_dialog_before_close() {
@@ -867,7 +933,6 @@
       },
       // 保存触发函数
       save() {
-
         this.$confirm('保存申请单, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -878,61 +943,61 @@
               return;
             }
             // 判断计划送达事件要大于计划装车时间
-            if (this.form.inp12 == 1) {
+            /*if (this.form.inp12 == 1) {
               if (new Date(this.form.inp13).getTime() >= new Date(this.form.inp14).getTime()) {
                 this.$message.error('计划送达事件需要大于计划装车时间');
                 return;
               }
-            }
+            }*/
             //重新匹配字段(后台字段和原始字段不匹配)
-            let itemList = this.table_data.map((item)=>{
+            let itemList = this.table_data.map((item) => {
               return {
-                name:item.name,
-                textureMaterial :item.textureMaterial,
-                specifications :item.specifications,
-                placeOrigin :item.businessMen || '产地',
-                inPlanNum :item.enterNumber,
-                numUnitId :item.unitQuantityId,
-                numUnit:"个",
-                inPlanWeight :item.enterWeight,
-                weightUnitId :item.unitWeightId,
-                weightUnit :'千克',
-                weightCoefficient :item.weightCoefficient || 1,
-                measureMethodId :item.measurementMethodId || 2,
-                measureMethod :"计量方式",
-                carNum :item.licensePlateNumber,
-                driver:item.driver,
-                idCardType :item.certificatesType,
-                idCardNum :item.certificatesNumber,
-                contactPhone :item.contactNumber,
-                remark :item.description,
-                isRefer :true,
+                name: item.name,
+                textureMaterial: item.textureMaterial,
+                specifications: item.specifications,
+                placeOrigin: item.placeOrigin,
+                inPlanNum: item.inPlanNum,
+                numUnitId: item.numUnitId,
+                numUnit: this.getNameById('weightunit', item.numUnitId).dictLabel,
+                inPlanWeight: item.inPlanWeight,
+                weightUnitId: item.weightUnitId,
+                weightUnit: this.getNameById('numunit', item.weightUnitId).dictLabel,
+                weightCoefficient: item.weightCoefficient,
+                measureMethodId: item.measureMethodId,
+                measureMethod: this.getNameById('measure_method', item.measureMethodId).dictLabel,
+                carNum: item.carNum,
+                driver: item.driver,
+                idCardType: item.idCardType,
+                idCardNum: item.idCardNum,
+                contactPhone: item.contactPhone,
+                remark: item.remark,
+                isRefer: true,
               }
             });
             let sendData = {
               documentState: 0,
               warehouseId: this.form.inp1,
-              warehouseName: this.form.inp1,
+              warehouseName: this.getNameById(this.options, this.form.inp1, 'id').name,
               shippingTypeId: this.form.inp2,
-              shippingTypeName: this.form.inp2,
+              shippingTypeName: this.getNameById('transportType', this.form.inp2).dictLabel,
               putInPlanDate: timestampToTime(this.form.inp3),
               deliverName: this.form.inp4,
               deliverPhone: this.form.inp5,
               customerId: this.form.inp6,
-              customerName: this.form.inp6,
+              customerName: this.getNameById(this.cusNameArr, this.form.inp6, 'id').name,
               deliverPlace: this.form.inp7,
               deliverLocation: this.form.inp8,
               loadingLocation: this.form.inp9,
               operatorId: this.form.inp10,
-              operatorName: this.form.inp10,
+              operatorName: this.getNameById(this.operator, this.form.inp10, 'id').name,
               // goodsSenderPhone: this.form.inp11,
               isPlfDistVeh: this.form.inp12,
-              deliverPlanDate:timestampToTime(this.form.inp15),
-              acceptPlace:this.form.inp1,
-              remark:this.form.inp16,
-              updateUserId:getUserInfo().userId,
-              updateUser:getUserInfo().username,
-              updateTime:timestampToTime(new Date()),
+              deliverPlanDate: timestampToTime(this.form.inp15),
+              acceptPlace: this.getNameById(this.options, this.form.inp1, 'id').name,
+              remark: this.form.inp16,
+              updateUserId: getUserInfo().userId,
+              updateUser: getUserInfo().username,
+              updateTime: timestampToTime(new Date()),
               // orderState:'',
               materialList: [...itemList],
               fileList: [...this.file_list]
@@ -942,7 +1007,7 @@
                 sendData.warehouseName = item.label;
               }
             });
-            if (this.form.inp12 === 1) {
+            /*if (this.form.inp12 === 1) {
               if (this.form.inp13) {
                 sendData.loadingTime = this.$fn.timeChange(this.form.inp13);
               } else {
@@ -956,23 +1021,23 @@
                 this.$fn.message('请选择计划送达时间', 'error')
                 return;
               }
-            }
-            if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
-              sendData.id = sessionStorage.getItem('warehouse-incoming-aplicationid') * 1;
-              /*/applicationIn/editApplicationIn*/
-
-              this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
-                console.log('修改结果', res);
-                // this.$message.success(res.data.data);
-                this.go_back();
-              }, err => {
-                console.log('修改报错', err);
-              })
-              return;
-            }
-            /*/applicationIn/addApplicationIn*/
+            }*/
             this.loading = true;
-            api_warehouse.storage.addStorage(this, sendData);
+            if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
+              let upData = {
+                id: this.prevPageData.id,
+                orderNo: this.prevPageData.orderNo,
+              }
+              api_warehouse.storage.updateStorage(this, {...sendData, ...upData}).then(res => {
+                this.$message.info(res.data.msg);
+                this.go_back();
+              });
+            } else {
+
+              api_warehouse.storage.addStorage(this, sendData);
+            }
+
+
             /*this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
               console.log('新增结果', res);
               // this.$message.success(res.data.data);
@@ -989,6 +1054,7 @@
       },
       // 提交触发函数
       submit() {
+        return
         this.$confirm('提交申请单, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1205,6 +1271,21 @@
         console.log(obj);
         window.open(obj.path);
       },
+
+      //获取商品数据
+      getMaterialList() {
+        let data = {
+          orderNo: this.prevPageData.orderNo,
+          /* pageNo: this.page.page_num,
+           pageSize: this.page.page_size,*/
+        };
+        api_warehouse.storage.getMaterialList(this, data).then(res => {
+          this.table_data = res.data.data.records
+        })
+      },
+    },
+    beforeDestroy() {
+      //sessionStorage.removeItem('warehouse-incoming-edit');
     }
   }
 </script>
