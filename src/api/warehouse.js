@@ -139,7 +139,6 @@ warehouse.storage.inComingAudit = function (that, data) {
   })
 };
 
-//todo
 //出仓审核
 warehouse.storage.outComingAudit = function (that, data) {
   return api.post('/busmiddle-storage/busmiddle-storage/common/storage/audit/log/audit', data).then(res => {
