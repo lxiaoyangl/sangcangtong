@@ -25,128 +25,169 @@
       <div class="item">
         <i class="el-icon-document-checked"></i>
         <div>
-          <p>{{incommingCount.platfromPendingNum}}</p>
+          <p>{{incommingCount.platfromNum}}</p>
           <p>代办累计提单</p>
         </div>
       </div>
     </header>
-    <div class="tabs">
-      <div :class="{'tabs-ac':index === tabsAc}" v-for="(i,index) in tabsArr" :key="index" @click="changeTab(index)">
-        {{i.name}}
-        <span class="badeg">{{incommingCount[i.key] !== 0 ? incommingCount[i.key] : '' }}</span>
+
+    <div class="filters">
+      <div class="tabs">
+        <div :class="{'tabs-ac':index === tabsAc}" v-for="(i,index) in tabsArr" :key="index" @click="changeTab(index)">
+          {{i.name}}
+          <span class="badeg">{{incommingCount[i.key] !== 0 ? incommingCount[i.key] : '' }}</span>
+        </div>
+      </div>
+      <div class="search">
+        <div class="normal-search">
+          <span>入仓名称</span>
+          <div>
+            <el-input v-model="form.warehouseName" placeholder="请输入入仓名称" size="mini" clearable></el-input>
+          </div>
+
+          <span>客户名称</span>
+          <div>
+            <el-input v-model="form.customerName" placeholder="客户名称" size="mini" clearable></el-input>
+          </div>
+
+          <span>订单号</span>
+          <div>
+            <el-input v-model="form.orderNo" placeholder="请输入订单号" size="mini" clearable></el-input>
+          </div>
+
+          <el-button type="success" @click="search" size="mini">查询</el-button>
+          <el-button type="primary" @click="resetFilter" size="mini">重置</el-button>
+          <el-button type="warning" @click="heightFilter" size="mini">高级筛选</el-button>
+
+          <div class="add-new">
+            <el-button type="success" @click="addNew" size="mini" v-show="tabsArr[tabsAc].type === 0">新建订单</el-button>
+          </div>
+        </div>
+        <div class="height-search" v-show="isHeightSearch">
+          <span>计划入仓时间</span>
+          <el-date-picker class="time-picker" v-model="form.putInPlanDate_begin" type="datetime" placeholder="选择开始时间" size="mini"></el-date-picker>
+          <el-date-picker class="time-picker" v-model="form.putInPlanDate_end" type="datetime" placeholder="选择结束时间" size="mini"></el-date-picker>
+          <span>计划发货时间</span>
+          <el-date-picker class="time-picker" v-model="form.deliverPlanDate_begin" type="datetime" placeholder="选择开始时间" size="mini"></el-date-picker>
+          <el-date-picker class="time-picker" v-model="form.deliverPlanDate_end" type="datetime" placeholder="选择结束时间" size="mini"></el-date-picker>
+        </div>
       </div>
     </div>
+
     <div class="table_box">
-      <el-table
-          :data="table_data"
-          style="width: 100%"
-          height="100%"
-          stripe
-          header-row-class-name="table_header"
-          @selection-change="table_selection_change"
-      >
-        <el-table-column
-            type="selection"
-            width="55">
-        </el-table-column>
-        <el-table-column
-            prop="orderNo"
-            label="订单号"
-            min-width="160">
-        </el-table-column>
-        <el-table-column
-            prop="deliverName"
-            label="客户名称"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="deliverPlanDate"
-            label="计划入仓日期"
-            min-width="160">
-        </el-table-column>
-        <el-table-column
-            prop="shippingTypeName"
-            label="运输方式"
-            min-width="120">
-        </el-table-column>
+      <div class="table">
+        <el-table
+            :data="table_data"
+            style="width: 100%"
+            height="100%"
+            stripe
+            header-row-class-name="table_header"
+            @selection-change="table_selection_change"
+        >
+          <el-table-column
+              type="selection"
+              width="55">
+          </el-table-column>
+          <el-table-column
+              prop="orderNo"
+              label="订单号"
+              min-width="160">
+          </el-table-column>
+          <el-table-column
+              prop="deliverName"
+              label="客户名称"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="deliverPlanDate"
+              label="计划入仓日期"
+              min-width="160">
+          </el-table-column>
+          <el-table-column
+              prop="shippingTypeName"
+              label="运输方式"
+              min-width="120">
+          </el-table-column>
 
-        <el-table-column
-            prop="warehouseName"
-            label="入仓名称"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="warehouseName"
-            label="平台派车"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="deliverPlanDate"
-            label="计划发货日期"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="remark"
-            label="备注"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="orderState"
-            label="订单状态"
-            min-width="120">
-          <!--<template slot-scope="scope">
-              <span v-show="scope.row.orderState === 'orderState'">未提交</span>
-              <span v-show="scope.row.orderState === 1">待审核</span>
-              <span v-show="scope.row.orderState === 2">审核未通过</span>
-              <span v-show="scope.row.orderState === 3">平台待审核</span>
-              <span v-show="scope.row.orderState === 4">平台处理中</span>
-              <span v-show="scope.row.orderState === 5">审核拒绝</span>
-          </template>-->
-        </el-table-column>
+          <el-table-column
+              prop="warehouseName"
+              label="入仓名称"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="warehouseName"
+              label="平台派车"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="deliverPlanDate"
+              label="计划发货日期"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="remark"
+              label="备注"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="orderState"
+              label="订单状态"
+              min-width="120">
+            <!--<template slot-scope="scope">
+                <span v-show="scope.row.orderState === 'orderState'">未提交</span>
+                <span v-show="scope.row.orderState === 1">待审核</span>
+                <span v-show="scope.row.orderState === 2">审核未通过</span>
+                <span v-show="scope.row.orderState === 3">平台待审核</span>
+                <span v-show="scope.row.orderState === 4">平台处理中</span>
+                <span v-show="scope.row.orderState === 5">审核拒绝</span>
+            </template>-->
+          </el-table-column>
 
-        <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
-          <template slot-scope="scope">
-            <el-button v-show="filterType == 0 || filterType == 2 || filterType == 3" @click="checkRow(scope.row)" type="text" size="small">查看</el-button>
-            <el-button v-show="filterType == 1" @click="auditRow(scope.row)" type="text" size="small">审核</el-button>
-            <el-button v-show="filterType == 1 || filterType == 3" @click="editRow(scope.row)" type="text" size="small">修改</el-button>
-            <el-button v-show="filterType == 0" @click="submitRow(scope.row)" type="text" size="small">提交</el-button>
-          </template>
-        </el-table-column>
-        <!--<el-table-column
-            prop="updateUser"
-            label="申请人"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="deliverName"
-            label="货运联系人"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="deliverPhone"
-            label="货运联系方式"
-            min-width="120">
-        </el-table-column>
-        <el-table-column
-            prop="updateTime"
-            label="申请日期"
-            min-width="160">
-        </el-table-column>-->
-      </el-table>
+          <el-table-column
+              fixed="right"
+              label="操作"
+              width="100">
+            <template slot-scope="scope">
+              <el-button v-show="filterType == 0 || filterType == 2 || filterType == 3" @click="checkRow(scope.row)" type="text" size="small">查看</el-button>
+              <el-button v-show="filterType == 1" @click="auditRow(scope.row)" type="text" size="small">审核</el-button>
+              <el-button v-show="filterType == 1 || filterType == 3" @click="editRow(scope.row)" type="text" size="small">修改</el-button>
+              <el-button v-show="filterType == 0" @click="submitRow(scope.row)" type="text" size="small">提交</el-button>
+            </template>
+          </el-table-column>
+          <!--<el-table-column
+              prop="updateUser"
+              label="申请人"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="deliverName"
+              label="货运联系人"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="deliverPhone"
+              label="货运联系方式"
+              min-width="120">
+          </el-table-column>
+          <el-table-column
+              prop="updateTime"
+              label="申请日期"
+              min-width="160">
+          </el-table-column>-->
+        </el-table>
+      </div>
+      <div class="table_box_pagination">
+        <el-pagination
+            background
+            layout="total, prev, pager, next, jumper"
+            :total="page.total"
+            :current-page="page.page_num"
+            :page-size="page.page_size"
+            @current-change="page_num_change">
+        </el-pagination>
+      </div>
     </div>
-    <div class="table_box_pagination">
-      <el-pagination
-          background
-          layout="total, prev, pager, next, jumper"
-          :total="page.total"
-          :current-page="page.page_num"
-          :page-size="page.page_size"
-          @current-change="page_num_change">
-      </el-pagination>
-    </div>
+
     <!--详情或者审核弹出窗-->
     <el-dialog
         title="审核"
@@ -180,7 +221,7 @@
           {name: '待审核', key: 'pendingNum', type: 1},
           {name: '已拒绝', key: 'rejectNum', type: 3},
           {name: '已通过', key: 'acceptNum', type: 2},
-          {name: '平台代办', key: 'platfromNum', type: 0},
+          {name: '平台代办', key: 'platfromPendingNum', type: 0},
         ],//tabs数组
         tabsAc: 0,//当前激活tab
         //表格按钮权限
@@ -200,18 +241,27 @@
           inp1: '',
           inp2: null,
           inp3: null,
+          warehouseName: '',
+          customerName: '',
+          orderNo: '',
+          putInPlanDate_begin: '',
+          putInPlanDate_end: '',
+          deliverPlanDate_begin: '',
+          deliverPlanDate_end: '',
         },
         orderNo: '',//订单号
         tableRow: {},//选中的表格数据
         dialogVisible: false,//是否显示弹出窗,
         incommingCount: {},//头部入仓统计,
 
-        isCheckProp:false,//是否为查看状态
+        isCheckProp: false,//是否为查看状态,
+        isHeightSearch: false,//是否高级搜索;
+
       }
     },
     computed: {
       //筛选订单类型
-      filterType(){
+      filterType() {
         return this.tabsArr[this.tabsAc].type;
       }
     },
@@ -225,7 +275,7 @@
         this.get_data();
       },
       // 数据查询
-      get_data() {
+      get_data(data) {
         let senddata = {
           companyId: sessionStorage.getItem('companyId')
         };
@@ -242,13 +292,25 @@
           url = url + '&createTime_begin=' + this.$fn.timeChange(this.form.inp3[0]).substr(0, 10) + '&createTime_end=' + this.$fn.timeChange(this.form.inp3[1]).substr(0, 10)
         }
         this.loading = true;
+        let postData = {};
+        if (data) {
+          postData = {
+            pageNo: this.page.page_num,
+            pageSize: this.page.page_size,
+            orderState: this.tabsArr[this.tabsAc].type,
+            ...senddata,
+            ...data,
+          }
+        } else {
+          postData = {
+            pageNo: this.page.page_num,
+            pageSize: this.page.page_size,
+            orderState: this.tabsArr[this.tabsAc].type,
+            ...senddata
+          }
+        }
 
-        api_warehouse.storage.inComingList(this, {
-          pageNo: this.page.page_num,
-          pageSize: this.page.page_size,
-          orderState: this.tabsArr[this.tabsAc].type,
-          ...senddata
-        });
+        api_warehouse.storage.inComingList(this, postData);
       },
       // 多选改变函数
       table_selection_change(val) {
@@ -283,7 +345,21 @@
         console.log(row);
       },
       //点击提交
-      submitRow() {
+      submitRow(row) {
+        console.log(row);
+        this.$confirm('订单提交过后将不可修改, 是否继续').then(() => {
+          let data = {
+            id: row.id,
+            orderState: 'PENDING'
+          };
+          api_warehouse.storage.inComingSubmit(this, data).then((res) => {
+            this.$message.info(res.data.msg);
+            this.get_data();
+            api_warehouse.storage.getIncomingCount().then(res => {
+              this.incommingCount = res.data.data;
+            });
+          })
+        })
 
       },
       //关闭弹出窗
@@ -291,6 +367,30 @@
         this.$message.info(payload.msg)
         this.dialogVisible = false;
       },
+
+      //查询
+      search() {
+        this.page.page_num = 1;
+        let data = this.form
+        this.get_data(data);
+      },
+
+      //重置
+      resetFilter() {
+        for (let i in this.form) {
+          this.form[i] = '';
+        }
+
+      },
+      //高级筛选
+      heightFilter() {
+        this.isHeightSearch = !this.isHeightSearch
+      },
+      //新建订单
+      addNew() {
+        sessionStorage.setItem('warehouse-incoming-edit', 'false');
+        this.$router.push({name: 'Incoming_add'});
+      }
     },
     mounted() {
       this.get_data();
@@ -330,7 +430,10 @@
   .homePage {
     width: 100%;
     height: 100%;
+    .flex;
+    flex-flow: column;
     padding: 10px;
+    background: #eaeaea;
   }
 
   header {
@@ -399,34 +502,72 @@
     }
   }
 
-  .tabs {
-    height: 40px;
-    .flex-center-y;
 
-    > div {
-      position: relative;
-      margin-right: 60px;
-      cursor: pointer;
+  .filters {
+    background: white;
+    margin: 10px 0;
+    padding: 10px;
 
-      .badeg {
-        position: relative;
-        color: red;
-        top: -8px;
+    .search {
+      span {
         font-size: 14px;
+        font-weight: bold;
+        margin-right: 20px;
+      }
+
+      .normal-search {
+        > div {
+          margin-right: 20px;
+        }
+      }
+
+      .height-search {
+        margin-top: 15px;
+
+        .time-picker {
+          margin-right: 20px;
+        }
+      }
+
+    }
+
+    .tabs {
+      height: 40px;
+      .flex-center-y;
+
+      > div {
+        position: relative;
+        margin-right: 60px;
+        cursor: pointer;
+
+        .badeg {
+          position: relative;
+          color: red;
+          top: -8px;
+          font-size: 14px;
+        }
+      }
+
+      .tabs-ac {
+        font-weight: bold;
+        color: #409EFF;
+
+        &:before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 1px;
+          background: #409EFF;
+          bottom: -5px;
+        }
       }
     }
 
-    .tabs-ac {
-      font-weight: bold;
-      color: #409EFF;
+    .normal-search {
+      .flex-center-y;
 
-      &:before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 1px;
-        background: #409EFF;
-        bottom: -5px;
+      .add-new {
+        margin-left: auto;
       }
     }
   }
@@ -440,7 +581,10 @@
   }
 
   .table_box {
-    height: calc(100% - 160px);
-    width: 100%;
+    flex: 1;
+
+    .table {
+      height: calc(100% - 50px);
+    }
   }
 </style>

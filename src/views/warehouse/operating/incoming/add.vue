@@ -7,8 +7,8 @@
 
       <div slot="detail_btn">
         <el-button type="primary" size="medium" icon="el-icon-folder-add" @click="save">保存</el-button>
-        <el-button type="primary" size="medium" icon="el-icon-folder-add" @click="submit">提交</el-button>
-        <el-button type="info" size="medium" icon="el-icon-document" @click="enclosure_flag = true">附件</el-button>
+       <!-- <el-button type="primary" size="medium" icon="el-icon-folder-add" @click="submit">提交</el-button>
+        <el-button type="info" size="medium" icon="el-icon-document" @click="enclosure_flag = true">附件</el-button>-->
       </div>
 
       <!-- 中部form信息块 -->
@@ -142,8 +142,8 @@
           <div class="detail_content_table_btn">
             <el-button type="text" @click="add_goods" icon="el-icon-circle-plus-outline">新增</el-button>
             <el-button type="text" @click="del_goods" icon="el-icon-remove-outline" class="top_color_red">删除</el-button>
-            <el-button type="text" @click="download_excel" icon="el-icon-download">模板下载</el-button>
-            <el-upload
+<!--            <el-button type="text" @click="download_excel" icon="el-icon-download">模板下载</el-button>-->
+            <!--<el-upload
                 class="upload-demo"
                 ref="upload"
                 accept=".xls,.xlsx"
@@ -154,7 +154,7 @@
                 :auto-upload="false"
             >
               <el-button type="text" icon="el-icon-upload2">数据导入</el-button>
-            </el-upload>
+            </el-upload>-->
           </div>
 
           <div class="detail_content_table_box">
@@ -370,13 +370,13 @@
               <el-input v-model="add_dialog_form.material" placeholder="材质" size="mini" clearable></el-input>
             </el-form-item>
 
-            <el-form-item label="规格">
+            <!--<el-form-item label="规格">
               <el-input v-model="add_dialog_form.spec" placeholder="规格" size="mini" clearable></el-input>
             </el-form-item>
 
             <el-form-item label="产地">
               <el-input v-model="add_dialog_form.origin" placeholder="产地" size="mini" clearable></el-input>
-            </el-form-item>
+            </el-form-item>-->
 
             <el-form-item label="">
               <el-button size="mini" icon="el-icon-search" type="primary" @click="get_goods">搜索</el-button>
@@ -731,11 +731,11 @@
 
 
         // 物资查询
-        this.$axios.post('/applicationInItem/baseList', {
+        /*this.$axios.post('/applicationInItem/baseList', {
           applicationId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1
         }).then(res => {
           this.table_data = [...res.data.data];
-        })
+        })*/
 
       }
       //获取全部数据字典
@@ -743,7 +743,7 @@
         name: '**',
       }).then(res => {
         this.allDict = res;
-        if (sessionStorage.getItem('warehouse-incoming-edit')) {
+        if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
           this.getMaterialList();
         }
       });

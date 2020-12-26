@@ -1,4 +1,5 @@
 import api from "./request";
+import {getUserInfo, timestampToTime} from "@/utils";
 
 let warehouse = {
   storage: {},
@@ -6,7 +7,7 @@ let warehouse = {
 };
 //入仓申请
 warehouse.storage.addStorage = function (that, data) {
-  api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/addStorage/CUSTOMER', data).then(res => {
+  api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/addStorage/CUSTOMER', data).then(res => {
     console.log('新增结果', res);
     // this.$message.success(res.data.data);
     that.go_back();
@@ -19,7 +20,7 @@ warehouse.storage.addStorage = function (that, data) {
 };
 //入仓修改
 warehouse.storage.updateStorage = function (that, data) {
-  return api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/updateStorage', data).then(res => {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/updateStorage', data).then(res => {
     // this.$message.success(res.data.data);
     return res
   }, err => {
@@ -30,7 +31,7 @@ warehouse.storage.updateStorage = function (that, data) {
 
 //出仓申请
 warehouse.storage.addOutStorage = function (that, data) {
-  api.post('/busmiddle-storage/busmiddle-storage/storage/apply/out/addStorage/CUSTOMER', data).then(res => {
+  api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/out/addStorage/CUSTOMER', data).then(res => {
     console.log('新增结果', res);
     // this.$message.success(res.data.data);
     that.go_back();
@@ -43,7 +44,18 @@ warehouse.storage.addOutStorage = function (that, data) {
 };
 //入仓申请列表
 warehouse.storage.inComingList = function (that, data) {
-  api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/baseList?_pageList', data).then(res => {
+  let url = '/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/baseList?_pageList';
+
+  let timeKey = ['putInPlanDate_begin', 'putInPlanDate_end', 'deliverPlanDate_begin', 'deliverPlanDate_end'];
+
+  for (let i = 0; i < timeKey.length; i++) {
+    let row = timeKey[i]
+    if (data[row]) {
+      url += `&${row}=${timestampToTime(data[row])}`
+    }
+  }
+
+  api.post(url, data).then(res => {
     that.table_data = [...res.data.data.records];
     that.page.total = res.data.data.total;
   }, err => {
@@ -53,9 +65,17 @@ warehouse.storage.inComingList = function (that, data) {
   })
 };
 
+warehouse.storage.inComingSubmit = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/baseEdit', data).then(res => {
+    return res;
+  }, err => {
+    console.log('获取信息失败', err);
+  })
+};
+
 //出仓申请列表
 warehouse.storage.outStockList = function (that, data) {
-  api.post('/busmiddle-storage/busmiddle-storage/storage/apply/out/baseList?_pageList', data).then(res => {
+  api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/out/baseList?_pageList', data).then(res => {
     that.table_data = [...res.data.data.records];
     that.page.total = res.data.data.total;
   }, err => {
@@ -66,7 +86,7 @@ warehouse.storage.outStockList = function (that, data) {
 };
 //获取入仓申请物资信息 传orderNo
 warehouse.storage.getMaterialList = function (that, data) {
-  return api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/material/baseList?_pageList', data).then(res => {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/material/baseList?_pageList', data).then(res => {
     return res;
   }, err => {
     console.log('获取信息失败', err);
@@ -84,7 +104,7 @@ warehouse.storage.inComingAudit = function (that, data) {
 
 //入仓状态统计
 warehouse.storage.getIncomingCount = function (that, data) {
-  return api.post('/busmiddle-storage/busmiddle-storage/storage/apply/in/statsStatus', data).then(res => {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/statsStatus', data).then(res => {
     return res
   }, err => {
     console.log('获取信息失败', err);
