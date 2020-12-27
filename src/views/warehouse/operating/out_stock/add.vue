@@ -7,7 +7,7 @@
       <p class="title">出仓基本信息</p>
     </div>
     <!--新增的表单-->
-    <div  v-if="!isEdit" class="detail_content_form">
+    <div v-if="!isEdit" class="detail_content_form">
       <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
         <div>
           <el-form-item label="客户名称" prop="inp6">
@@ -108,9 +108,9 @@
         <el-form-item v-show="0" label="送货点" prop="inp8">
           <el-input v-model="form.inp8" placeholder="送货点" size="mini"></el-input>
         </el-form-item>
-        <div>
+        <div style="margin-top: 5px">
           <el-form-item label="备注" prop="inp16" style="width: 100%;">
-            <el-input type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
+            <el-input style="padding-bottom: 10px" type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
           </el-form-item>
         </div>
       </el-form>
@@ -244,9 +244,9 @@
         <el-form-item v-show="0" label="送货点" prop="inp8">
           <el-input v-model="form.inp8" placeholder="送货点" size="mini"></el-input>
         </el-form-item>
-        <div>
+        <div style="margin-top: 5px">
           <el-form-item label="备注" prop="inp16" style="width: 100%;">
-            <el-input type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
+            <el-input style="padding-bottom: 10px" type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
           </el-form-item>
         </div>
       </el-form>
@@ -1118,7 +1118,8 @@
               updateTime: timestampToTime(new Date()),
               // orderState:'',
               materialList: [...itemList],
-              fileList: [...this.file_list]
+              fileList: [...this.file_list],
+              customerNo:'1',
             };
             this.options.map(item => {
               if (item.value === this.form.inp1) {
@@ -1544,7 +1545,7 @@
     .tips {
       font-weight: bold;
       font-size: 15px;
-      background: rgb(248,248,248);
+      background: rgb(248, 248, 248);
       padding: 10px 0;
     }
 

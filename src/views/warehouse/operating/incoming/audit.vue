@@ -74,6 +74,12 @@
             prop="carNum"
             label="车牌号"
             width="80">
+          <template slot-scope="scope">
+            <el-tooltip effect="dark" :content="scope.row.carNum" placement="top">
+              <span>{{scope.row.carNum}}</span>
+            </el-tooltip>
+          </template>
+
         </el-table-column>
         <el-table-column
             prop="driver"
@@ -84,11 +90,21 @@
             prop="idCardType"
             label="证件类型"
             width="70">
+          <template slot-scope="scope">
+            <el-tooltip effect="dark" :content="scope.row.idCardType" placement="top">
+              <span>{{scope.row.idCardType}}</span>
+            </el-tooltip>
+          </template>
         </el-table-column>
         <el-table-column
             prop="idCardNum"
             label="证件号码"
             width="120">
+          <template slot-scope="scope">
+            <el-tooltip effect="dark" :content="scope.row.idCardNum" placement="top">
+              <span>{{scope.row.idCardNum}}</span>
+            </el-tooltip>
+          </template>
         </el-table-column>
         <el-table-column
             prop="contactPhone"
@@ -99,6 +115,11 @@
             prop="remark"
             label="备注"
             min-width="120">
+          <template slot-scope="scope">
+            <el-tooltip effect="dark" :content="scope.row.remark" placement="top">
+              <span>{{scope.row.remark}}</span>
+            </el-tooltip>
+          </template>
         </el-table-column>
 
       </el-table>
@@ -124,7 +145,7 @@
         <el-input
             requeire
             type="textarea"
-            placeholder="请输入拒绝理由"
+            placeholder="请输入理由"
             v-model="denyInfo">
         </el-input>
       </div>

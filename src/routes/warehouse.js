@@ -68,6 +68,11 @@ export default [
     component: () => import("@/views/warehouse/operating/transfer/list.vue")
   },
   {
+    path: '/warehouse/transfer/homePage',
+    name: 'transfer_homePage',
+    component: () => import("@/views/warehouse/operating/transfer/homePage.vue")
+  },
+  {
     path: '/warehouse/transfer/add',
     name: 'transfer_add',
     component: () => import("@/views/warehouse/operating/transfer/add.vue")

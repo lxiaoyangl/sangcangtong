@@ -1,213 +1,227 @@
 <template>
-  <div class="add">
-    <BasisDetail>
-      <i slot="detail_icon" class="el-icon-back" @click="go_back"></i>
-
-      <span slot="detail_title">过户预报登记 </span>
-
-      <div slot="detail_btn">
-        <el-button type="primary" size="medium" icon="el-icon-folder-add" @click="save">保存</el-button>
-        <el-button type="primary" size="medium" icon="el-icon-folder-add" @click="submit">提交</el-button>
-        <el-button type="info" size="medium" icon="el-icon-document" @click="enclosure_flag=true">附件</el-button>
-      </div>
-
-      <!-- 中部form信息块 -->
-      <div slot="detail_content_form">
-        <el-form ref="application_form" :model="form" :rules="form_rules" :inline="true" label-width="120px">
-          <el-form-item label="仓库" prop="inp1">
-            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
+  <div class="add" v-loading="loading">
+    <div class="tips" v-show="isEdit">
+      订单号: {{prevPageData.orderNo}} - 客户名称: {{prevPageData.customerName}} - 订单状态: {{prevPageData.orderState.description}} <span style="color: red"></span>
+    </div>
+    <div class="base-info">
+      <p class="title">过户基本信息</p>
+    </div>
+    <!--新增的表单-->
+    <div class="detail_content_form">
+      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
+        <div>
+          <el-form-item label="过出方名称" prop="inp1">
+            <el-select clearable v-model="form.inp1" placeholder="过出方名称" filterable size="mini">
               <el-option
-                  v-for="item in options"
+                  v-for="item in cusNameArr"
                   :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :label="item.name"
+                  :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
-
           <el-form-item label="过入方名称" prop="inp2">
-            <el-select clearable v-model="form.inp2" placeholder="请选择过入方" size="mini">
+            <el-select clearable v-model="form.inp2" placeholder="过入方名称" size="mini">
               <el-option
-                  v-for="item in pass_through_arr"
+                  v-for="item in cusNameArr"
                   :key="item.value"
-                  :label="item.label"
-                  filterable
-                  :value="item.value">
+                  :label="item.name"
+                  :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
-
-          <el-form-item label="过出方名称" prop="inp5">
-            <el-select clearable v-model="form.inp5" placeholder="请选择过入方" size="mini">
-              <el-option
-                  v-for="item in out_through_arr"
-                  :key="item.value"
-                  :label="item.label"
-                  filterable
-                  :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="交易订单号" prop="inp3">
-            <el-input v-model="form.inp3" placeholder="交易订单号" size="mini"></el-input>
-          </el-form-item>
-
-          <el-form-item label="计划过户日期" prop="inp4">
+          <el-form-item label="计划过出日期" prop="inp3">
             <el-date-picker
-                v-model="form.inp4"
-                type="datetime"
+                v-model="form.inp3"
+                type="date"
                 placeholder="选择日期时间"
                 size="mini"
                 :picker-options="time_option">
             </el-date-picker>
           </el-form-item>
+        </div>
 
-        </el-form>
-      </div>
+        <div>
+          <el-form-item style="width: 33.33%;" label="仓库名称" prop="inp4">
+            <el-select clearable v-model="form.inp4" placeholder="仓库名称" size="mini">
+              <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="width: 33.33%;" label="经办人" prop="inp5">
+            <el-select clearable v-model="form.inp5" placeholder="请选择经办人" size="mini">
+              <el-option
+                  v-for="item in operator"
+                  :key="item.value"
+                  filterable
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
 
-      <div slot="detail_content">
-        <div class="detail_content_table">
-          <div class="detail_content_table_btn">
-            <el-button type="text" icon="el-icon-circle-plus-outline" @click="add_goods">库存选择</el-button>
-            <el-button type="text" icon="el-icon-remove-outline" @click="del_goods" class="top_color_red">删除</el-button>
-          </div>
+        </div>
+        <div style="margin-top: 5px;">
+          <el-form-item label="备注" prop="inp6" style="width: 100%;">
+            <el-input style="padding-bottom: 10px" type="textarea" v-model="form.inp6" placeholder="请输入备注" size="medium"></el-input>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
 
-          <div class="detail_content_table_box">
-            <el-table
-                :data="table_data"
-                style="width: 100%"
-                height="100%"
-                stripe
-                @selection-change="detail_table_selection_change"
-                header-row-class-name="table_header"
-            >
-              <el-table-column
-                  type="selection"
-                  width="55">
-              </el-table-column>
-              <el-table-column
-                  prop="materialName"
-                  label="品名"
-                  width="100">
-              </el-table-column>
-              <el-table-column
-                  prop="specifications"
-                  label="规格"
-                  width="100">
-              </el-table-column>
-              <el-table-column
-                  prop="textureMaterial"
-                  label="材质"
-                  width="100">
-              </el-table-column>
-              <el-table-column
-                  prop="businessMen"
-                  label="产地"
-                  width="100">
-              </el-table-column>
+    <div class="base-info">
+      <p class="title">过户商品列表</p>
+    </div>
 
-              <el-table-column
-                  prop="transferQuantity"
-                  label="计划过户数量"
-                  width="180">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.transferQuantity" type="number" placeholder="请输入数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
-                </template>
-              </el-table-column>
+    <div style="margin-bottom: 10px">
+      <el-button type="text" class="s-button" @click="add_goods" icon="el-icon-circle-plus-outline">新增</el-button>
+      <div class="line"></div>
+      <el-button type="text" @click="del_goods" icon="el-icon-remove-outline" class="top_color_red s-button">删除</el-button>
+    </div>
 
-              <el-table-column
-                  prop="weightCoefficient"
-                  label="理重"
-                  width="100">
-              </el-table-column>
+    <div class="detail_content">
+      <div class="detail_content_table">
+        <div class="detail_content_table_box">
+          <el-table
+              :data="table_data"
+              style="width: 100%"
+              height="100%"
+              stripe
+              :fit="true"
+              border
+              @selection-change="detail_table_selection_change"
+              header-row-class-name="table_header"
+          >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
+            <el-table-column
+                prop="name"
+                label="品名"
+                width="100">
+            </el-table-column>
+            <el-table-column
+                prop="placeOrigin"
+                label="产地"
+                width="100">
+            </el-table-column>
+            <el-table-column
+                prop="textureMaterial"
+                label="材质"
+                width="100">
+            </el-table-column>
+            <el-table-column
+                prop="specifications"
+                label="规格"
+                width="100">
+            </el-table-column>
 
-              <el-table-column
-                  prop="transferWeight"
-                  label="计划过户重量"
-                  width="180">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.transferWeight" type="number" placeholder="请输入重量" size="mini"></el-input>
-                </template>
-              </el-table-column>
+            <el-table-column
+                prop="transferPlanNum"
+                label="计划过户数量"
+                width="120">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.transferPlanNum" type="number" placeholder="过户数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
+              </template>
+            </el-table-column>
 
-              <el-table-column
-                  prop="unitQuantityId"
-                  label="数量单位"
-                  width="200">
-                <template slot-scope="scope">
-                  <el-select clearable v-model="scope.row.unitQuantityId" placeholder="数量单位" size="mini">
-                    <el-option
-                        v-for="item in num_unit_arr"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
+            <el-table-column
+                prop="numUnitId"
+                label="数量单位"
+                width="100">
+              <template slot-scope="scope">
+                <el-select clearable v-model="scope.row.numUnitId" placeholder="单位" size="mini">
+                  <el-option
+                      v-for="item in getAllDict('numunit')"
+                      :key="item.value"
+                      :label="item.dictLabel"
+                      :value="item.dictValue">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
 
-              <el-table-column
-                  prop="unitWeightId"
-                  label="重量单位"
-                  width="200">
-                <template slot-scope="scope">
-                  <el-select clearable v-model="scope.row.unitWeightId" placeholder="重量单位" size="mini">
-                    <el-option
-                        v-for="item in weight_unit_arr"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
+            <el-table-column
+                prop="transferPlanWeight"
+                label="计划过户重量"
+                width="100">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.transferPlanWeight" type="number" placeholder="过户重量" size="mini"></el-input>
+              </template>
+            </el-table-column>
 
-              <el-table-column
-                  prop="measurementMethod"
-                  label="计量方式"
-                  width="180">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.measurementMethod" placeholder="计量方式" size="mini"></el-input>
-                </template>
-              </el-table-column>
+            <el-table-column
+                prop="weightUnitId"
+                label="重量单位"
+                width="100">
+              <template slot-scope="scope">
+                <el-select clearable v-model="scope.row.weightUnitId" placeholder="单位" size="mini">
+                  <el-option
+                      v-for="item in getAllDict('weightunit')"
+                      :key="item.value"
+                      :label="item.dictLabel"
+                      :value="item.dictValue">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
 
-              <el-table-column
-                  prop="materialNatureId"
-                  label="货物特性"
-                  width="200">
-                <template slot-scope="scope">
-                  <el-select clearable v-model="scope.row.materialNatureId" placeholder="货物特性" size="mini">
-                    <el-option
-                        v-for="item in goods_type_arr"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
+            <el-table-column
+                prop="weightCoefficient"
+                label="理重"
+                width="80">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.weightCoefficient" type="number" placeholder="理重" size="mini" @input="enterNumber_change(scope.row)"></el-input>
+              </template>
+            </el-table-column>
 
-              <el-table-column
-                  prop="description"
-                  label="备注"
-                  width="180">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.description" placeholder="备注" size="mini"></el-input>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
+            <el-table-column
+                prop="measureMethodId"
+                label="计量方式"
+                width="120">
+              <template slot-scope="scope">
+                <el-select clearable v-model="scope.row.measureMethodId" placeholder="计量方式" size="mini">
+                  <el-option
+                      v-for="item in getAllDict('measure_method')"
+                      :key="item.value"
+                      :id="typeof dictValue"
+                      :label="item.dictLabel"
+                      :value="item.dictValue">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column
+                prop="remark"
+                label="备注"
+                min-width="180">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.remark" placeholder="备注" size="mini"></el-input>
+              </template>
+            </el-table-column>
+
+          </el-table>
         </div>
       </div>
-    </BasisDetail>
+    </div>
 
+
+    <div class="sure-btn">
+      <el-button type="primary" size="small" @click="save">保存</el-button>
+      <el-button plain size="small" @click="go_back">取消</el-button>
+    </div>
     <!-- 新增物资蒙层 -->
     <BasisDialog
         :title="'物资选择'"
         :visible="add_dialog_flag"
         @cancel="add_dialog_before_close"
         @sure="add_dialog_sure"
+        v-loading="goods_loading"
     >
       <div slot="dialog_content" class="dialog_content">
         <div class="dialog_content_form">
@@ -220,24 +234,13 @@
               <el-input v-model="add_dialog_form.material" placeholder="材质" size="mini" clearable></el-input>
             </el-form-item>
 
-            <el-form-item label="规格">
-              <el-input v-model="add_dialog_form.matespecrial" placeholder="规格" size="mini" clearable></el-input>
+            <!--<el-form-item label="规格">
+              <el-input v-model="add_dialog_form.spec" placeholder="规格" size="mini" clearable></el-input>
             </el-form-item>
 
             <el-form-item label="产地">
               <el-input v-model="add_dialog_form.origin" placeholder="产地" size="mini" clearable></el-input>
-            </el-form-item>
-
-            <el-form-item label="仓库">
-              <el-select clearable v-model="add_dialog_form.warehouse" placeholder="请选择仓库" size="mini">
-                <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
+            </el-form-item>-->
 
             <el-form-item label="">
               <el-button size="mini" icon="el-icon-search" type="primary" @click="get_goods">搜索</el-button>
@@ -263,47 +266,32 @@
             <el-table-column
                 prop="materialName"
                 label="品名"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="placeOrigin"
                 label="产地"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="textureMaterial"
                 label="材质"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="specifications"
                 label="规格"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="unitQuantity"
                 label="数量单位"
-                width="100">
+                width="150">
             </el-table-column>
             <el-table-column
                 prop="weight"
                 label="重量单位"
-                width="100">
-            </el-table-column>
-            <el-table-column
-                prop="natureGoods"
-                label="货物特性"
-                width="100">
-            </el-table-column>
-            <el-table-column
-                prop="mnemonicCode"
-                label="物资代码"
-                width="100">
-            </el-table-column>
-            <el-table-column
-                prop="catalogName"
-                label="品名大类"
-                width="100">
+                width="150">
             </el-table-column>
           </el-table>
         </div>
@@ -339,7 +327,7 @@
               :on-change='enclosure_upload'
           >
             <span>上传新文件&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <el-button size="small" type="primary" :loading="enclosure_loading">点击上传</el-button>
+            <el-button size="small" type="primary" icon="el-icon-upload2" :loading="enclosure_loading">点击上传</el-button>
           </el-upload>
         </div>
 
@@ -386,37 +374,92 @@
 </template>
 
 <script>
+  import XLSX from 'xlsx'
+  import {setDictionaryDataList} from '@/plugins/api'
+  import config from "Public/config.js";
+  import api_warehouse from "@/api/warehouse.js";
+  import {getUserInfo, timestampToTime} from "../../../../utils";
+  import {setCompanyData} from '@/plugins/apis'
+  import {setUserList, loadDictList} from '@/plugins/api'
+
   export default {
     data() {
       return {
+        loading: false,
         // 表单数据
         form: {
           inp1: null,
           inp2: null,
           inp3: '',
           inp4: '',
+          inp5: '',
+          inp6: '',
+          inp7: '',
+          inp8: '',
+          inp9: '',
+          inp10: '',
+          inp11: '',
+          inp12: true,
+          inp13: '',
+          inp14: '',
+          inp15: '',
+          inp16: '',
         },
-        form_rules: {
+        /*form_rules: {
+
           inp1: {required: true, message: '请选择仓库', trigger: 'blur'},
-          inp2: {required: true, message: '请选择过入方', trigger: 'blur'},
-          inp3: {required: true, message: '请输入交易订单号', trigger: 'blur'},
-          inp4: {required: true, message: '请选择过户时间', trigger: 'blur'},
-          inp5: {required: true, message: '请选择过出方', trigger: 'blur'},
-        },
+          inp2: {required: true, message: '请选择运输方式', trigger: 'blur'},
+          inp3: {required: true, message: '请选择入仓时间', trigger: 'blur'},
+          inp4: {required: true, message: '请输入发货点联系人', trigger: 'blur'},
+          inp5: [
+            {required: true, message: '请输入发货点联系方式', trigger: 'blur'},
+            {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
+          ],
+          inp6: {required: true, message: '请输入客户名称', trigger: 'blur'},
+          inp7: {required: true, message: '请输入发货点', trigger: 'blur'},
+          inp8: {required: true, message: '请输入送货点', trigger: 'blur'},
+          inp9: {required: true, message: '请输入发货详细地址', trigger: 'blur'},
+          inp10: {required: true, message: '请输入联系人', trigger: 'blur'},
+          /!*inp11: [
+            {required: true, message: '请输入联系电话', trigger: 'blur'},
+            {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
+          ],*!/
+          inp12: {required: true, message: '请选择是否平台派车', trigger: 'blur'},
+          inp15: {required: true, message: '请选择计划发货日期', trigger: 'blur'},
+          inp16: {required: true, message: '请输入装车备注', trigger: 'blur'},
+
+        },*/
+        //客户名称下拉数据
+        cusNameArr: [],
+        operator: [],
+
         // 仓库下拉数据
         options: [],
-        // 过入方
-        pass_through_arr: [{value: 1, label: '测试'}],
-        //过出方
-        out_through_arr: [{value: 2, label: '测试'}],
         // 列表数据
         table_data: [],
+        // 入库方式下拉数据数组
+        inhouse_type_arr: [],
+        // 是否平台派车
+        is_platform_send_car_arr: [
+          {
+            label: '是',
+            value: true,
+          },
+          {
+            label: '否',
+            value: false,
+          }
+        ],
         // 数量单位
         num_unit_arr: [],
         // 重量单位
         weight_unit_arr: [],
         // 货物性质下拉数据
         goods_type_arr: [],
+        // 证件类型下拉数据
+        idType_arr: [],
+        // 计量方式
+        valuationType_arr: [{value: 1, label: "方式1"}],
 
         // 新增蒙层显示标识
         add_dialog_flag: false,
@@ -425,7 +468,6 @@
           material: '', // 材质
           spec: '', // 规格
           origin: '', // 产地
-          warehouse: null, // 仓库
         },
         // 蒙层表格
         add_dialog_table_data: [],
@@ -433,14 +475,14 @@
         add_dialog_selected_arr: [],
         // 详情列表选中存储数组
         detail_selected_arr: [],
-
         // 新增蒙层页码数据
         add_dialog_page_obj: {
           total: 0,
           page_num: 1,
           page_size: 20
         },
-
+        // 物资的loading
+        goods_loading: false,
 
         // 附件上传标识
         enclosure_loading: false,
@@ -455,87 +497,201 @@
         // 时间组件的范围确定
         time_option: {
           disabledDate(val) {
-            return val.getTime() < new Date().getTime()
+            return val.getTime() <= new Date(new Date().getTime() - 86400000).getTime()
           }
-        }
+        },
+        SITE_CONFIG: window.SITE_CONFIG,
       }
+    },
+    computed: {
+      prevPageData() {
+        let data = sessionStorage.getItem("tableRow")
+        if (data) {
+          return JSON.parse(data)
+        } else {
+          return {}
+        }
+      },
+      isEdit() {
+        return sessionStorage.getItem('warehouse-incoming-edit') === 'true'
+      },
+      form_rules() {
+        return {
+          inp1: {required: true, message: '请选择过出方名称', trigger: 'blur'},
+          inp2: {required: true, message: '请选择过入方名称', trigger: 'blur'},
+          inp3: {required: true, message: '请选计划过出日期', trigger: 'blur'},
+          inp4: {required: true, message: '请选计仓库名称', trigger: 'blur'},
+          inp5: {required: true, message: '请选择经办人', trigger: 'blur'},
+          inp6: {required: true, message: '请输入备注', trigger: 'blur'}
+          ,
+        }
+      },
     },
     watch: {
       'enclosure_flag': function (val) {
         if (!val) {
           return;
         }
-        if (sessionStorage.getItem('warehouse-transfer-edit') === 'false') {
+        if (sessionStorage.getItem('warehouse-incoming-edit') === 'false') {
           this.enclosure_dialog_content_table_data = [...this.file_list];
           console.log('1', this.file_list)
           return;
         }
         this.enclosure_loading = true;
         this.$axios.post('/applicationEnclosure/baseList', {
-          applicationFormType: 2,
-          applicationFormId: sessionStorage.getItem('warehouse-transfer-aplicationid') * 1,
+          applicationFormType: 0,
+          applicationFormId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1,
         }).then(res => {
           console.log('附件', res);
           this.enclosure_dialog_content_table_data = [...res.data.data];
         }).finally(() => {
           this.enclosure_loading = false;
         })
-      }
+      },
+      "form.inp12"(val) {
+        this.form.inp7 = '';
+        this.form.inp9 = '';
+        this.form.inp4 = '';
+        this.form.inp5 = '';
+        this.form.inp15 = '';
+      },
     },
     mounted() {
+      // 获取入库下拉数据
+      this.get_rktype();
       // 获取数量单位下拉数据
       this.$fn.get_numunit(this);
       // 获取重量单位下拉数据
       this.$fn.get_weightunit(this)
       // 获取货物特性
       this.$fn.get_goodsfeatures(this)
-      this.$fn.get_transportType(this);
       // 获取证件类型下拉数据
       this.$fn.get_idType(this)
       // 获取计量方式下拉数据
       this.$fn.get_valuationType(this)
-      // 获取仓库数据
+      // 获取仓库下拉数据
       this.get_warehouse_data();
-      // 获取物资
+      // 获取物资接口
       this.get_goods();
-      // 获取企业下拉数据
-      this.get_company();
+      //获取客户下拉数据
+      setCompanyData({}).then((res) => {
+        this.cusNameArr = res
+      })
+      //获取经办人数据
+      setUserList({name: '**', phone: '**', userState: ''}).then(res => {
+        this.operator = res.records;
+      });
 
       // 判断是否是在编辑
-      if (sessionStorage.getItem('warehouse-transfer-edit') === 'true') {
+      if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
         // 申请单详情查询
-        this.$axios.post('/applicationTransfer/baseList', {
-          id: sessionStorage.getItem('warehouse-transfer-aplicationid') * 1
+        let obj = this.prevPageData;
+        this.form.inp1 = obj.transferOutId;
+        this.form.inp2 = obj.transferInId;
+        this.form.inp3 = obj.transferPlanDate;
+        this.form.inp4 = obj.warehouseId;
+        this.form.inp5 = obj.operatorId;
+        this.form.inp6 = obj.remark;
+        // 物资查询
+        /*this.$axios.post('/applicationInItem/baseList', {
+          applicationId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1
         }).then(res => {
-          console.log('在编辑数据', res);
-          let obj = res.data.data[0];
-          this.form.inp1 = obj.warehouseId;
-          this.form.inp2 = obj.receiverId;
-          this.form.inp3 = obj.orderNumber;
-          this.form.inp4 = new Date(obj.transferTime);
-          // 物资查询
-          this.$axios.post('/applicationTransferItem/baseList', {
-            applicationId: sessionStorage.getItem('warehouse-transfer-aplicationid') * 1
-          }).then(re => {
-            this.table_data = [...re.data.data];
-          })
-        }, err => {
-          console.log('在编辑数据报错', err);
-        })
+          this.table_data = [...res.data.data];
+        })*/
+
       }
+      //获取全部数据字典
+      loadDictList({
+        name: '**',
+      }).then(res => {
+        this.allDict = res;
+        if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
+          this.getMaterialTransferList();
+        }
+      });
     },
     methods: {
+      //获取字典参数,主要用于下拉框选择参数
+      getAllDict(dictType) {
+        if (!this.allDict) {
+          return []
+        } else {
+          let dict = this.allDict.find((item) => {
+            return item.dictType === dictType
+          });
+
+          dict.dataList.forEach((item) => {
+            item.dictValue = Number(item.dictValue)
+          });
+
+          return dict.dataList;
+        }
+      },
+      //获取id对应的中文
+      getNameById(dictType, id, field) {
+        let data;
+        if (typeof dictType === 'object') {
+          data = dictType
+        } else {
+          data = this.getAllDict(dictType)
+        }
+
+        let obj = data.find(item => {
+          if (field) {
+            return item[field] == id;
+          } else {
+            return item.dictValue == id;
+          }
+        });
+
+        return obj || {};
+
+      },
+      // 获取入库下拉信息
+      get_rktype() {
+        // setDictionaryDataList();
+        this.$axios.post('/dictionaryData/baseList', {
+          dictionaryType: 'rktype'
+        }).then(res => {
+          console.log(res);
+          res.data.data.map(item => {
+            item.label = item.labels;
+            item.value = item.keyValue;
+          })
+          this.inhouse_type_arr = [...res.data.data];
+        })
+      },
       // 返回入库预报
       go_back() {
-        this.$router.push({name: 'transfer_list'})
+        this.$router.push({name: 'transfer_homePage'})
       },
       // 蒙层关闭前触发函数
       add_dialog_before_close() {
+        // 清空蒙层选中项
         this.$refs.add_dialog_table.clearSelection();
         this.add_dialog_flag = false;
       },
       // 新增物资
       add_goods() {
+        this.add_dialog_table_data.map(item => {
+          this.num_unit_arr.map(it => {
+            if (it.value == item.num_unit) {
+              item.num_unit_cn = it.label;
+            }
+          })
+
+          this.weight_unit_arr.map(it => {
+            if (it.value == item.weight_unit) {
+              item.weight_unit_cn = it.label;
+            }
+          })
+
+          this.goods_type_arr.map(it => {
+            if (it.value == item.goods_type) {
+              item.goods_type_cn = it.label;
+            }
+          })
+        })
         this.add_dialog_flag = true;
       },
       // 删除物资
@@ -544,6 +700,7 @@
           this.$fn.message('请选择物资再进行删除', 'error');
           return;
         }
+        console.log('选中物资删除', this.detail_selected_arr);
         let arr = [];
         this.table_data.map(item => {
           let flag = false;
@@ -573,7 +730,6 @@
         let arr = JSON.parse(JSON.stringify(this.add_dialog_selected_arr));
         arr.map(item => {
           item = Object.assign({}, item);
-          item.materialName = item.name;
           this.table_data.push(item);
         })
         this.add_dialog_before_close();
@@ -589,18 +745,6 @@
           console.log('err', err);
         })
       },
-
-      // 获取企业下拉信息
-      get_company() {
-        this.$axios.post('/company/baseList', {}).then(res => {
-          res.data.data.map(item => {
-            item.value = item.id;
-            item.label = item.name;
-          });
-          this.pass_through_arr = [...this.pass_through_arr, ...res.data.data];
-        })
-      },
-
       // 获取物资接口
       get_goods() {
         let senddata = {};
@@ -616,9 +760,6 @@
         if (this.add_dialog_form.origin !== '') {
           senddata.placeOrigin = this.add_dialog_form.origin;
         }
-        // if(this.add_dialog_form.warehouse !== null){
-        //     senddata.placeOrigin = this.add_dialog_form.origin;
-        // }
         this.goods_loading = true;
         this.$axios.post('/material/baseList?_pageList', {
           pageNo: this.add_dialog_page_obj.page_num,
@@ -637,7 +778,21 @@
           this.goods_loading = false;
         })
       },
-
+      // 获取物资的重置
+      get_goods_refresh() {
+        this.add_dialog_form = {
+          name: '',
+          material: '',
+          spec: '',
+          origin: ''
+        }
+        this.get_goods();
+      },
+      // 新增蒙层页码改变函数
+      add_dialog_page_change(val) {
+        this.add_dialog_page_obj.page_num = val;
+        this.get_goods();
+      },
       // 保存触发函数
       save() {
         this.$confirm('保存申请单, 是否继续?', '提示', {
@@ -649,52 +804,139 @@
             if (!valid) {
               return;
             }
+            // 判断计划送达事件要大于计划装车时间
+            /*if (this.form.inp12 == 1) {
+              if (new Date(this.form.inp13).getTime() >= new Date(this.form.inp14).getTime()) {
+                this.$message.error('计划送达事件需要大于计划装车时间');
+                return;
+              }
+            }*/
+            //重新匹配字段(后台字段和原始字段不匹配)
+            let itemList = this.table_data.map((item) => {
+
+              return {
+                name: item.name,
+                textureMaterial: item.textureMaterial,
+                specifications: item.specifications,
+                placeOrigin: item.placeOrigin,
+                transferPlanNum: item.transferPlanNum,
+                numUnitId: item.numUnitId,
+                numUnit: this.getNameById('numunit', item.numUnitId).dictLabel,
+                transferPlanWeight: item.transferPlanWeight,
+                weightUnitId: item.weightUnitId,
+                weightUnit: this.getNameById('weightunit', item.weightUnitId).dictLabel,
+                weightCoefficient: item.weightCoefficient,
+                measureMethodId: item.measureMethodId,
+                measureMethod: this.getNameById('measure_method', item.measureMethodId).dictLabel,
+                carNum: item.carNum,
+                driver: item.driver,
+                idCardType: item.idCardType,
+                idCardNum: item.idCardNum,
+                contactPhone: item.contactPhone,
+                remark: item.remark,
+                isRefer: true,
+              }
+            });
+
             let sendData = {
               documentState: 0,
-              warehouseId: this.form.inp1,
-              receiverId: this.form.inp2,
-              orderNumber: this.form.inp3,
-              transferTime: this.$fn.timeChange(this.form.inp4),
-              itemList: [...this.table_data],
-              fileList: [...this.file_list]
-            }
-            // 仓库中文
+              transferOutId: this.form.inp1,
+              transferOutName: this.getNameById(this.cusNameArr, this.form.inp1, 'id').name,
+
+              transferInId: this.form.inp2,
+              transferInName: this.getNameById(this.cusNameArr, this.form.inp2, 'id').name,
+
+              transferPlanDate: timestampToTime(this.form.inp3),
+
+              warehouseId: this.form.inp4,
+              warehouseName: this.getNameById(this.options, this.form.inp4, 'id').name,
+
+              operatorId: this.form.inp5,
+              operatorName: this.getNameById(this.operator, this.form.inp5, 'id').name,
+
+              updateUserId: getUserInfo().userId,
+              updateUser: getUserInfo().username,
+              updateTime: timestampToTime(new Date()),
+              remark: this.form.inp6,
+
+              /* putInPlanDate: timestampToTime(this.form.inp3),
+               deliverName: this.form.inp4,
+               deliverPhone: this.form.inp5,
+               customerId: this.form.inp6,
+               customerName: this.getNameById(this.cusNameArr, this.form.inp6, 'id').name,
+               deliverPlace: this.form.inp7,
+               deliverLocation: this.form.inp9,
+               loadingLocation: this.form.inp8,
+               operatorId: this.form.inp10,
+               operatorName: this.getNameById(this.operator, this.form.inp10, 'id').name,
+               // goodsSenderPhone: this.form.inp11,
+               isPlfDistVeh: this.form.inp12,
+               deliverPlanDate: timestampToTime(this.form.inp15),
+               acceptPlace: this.getNameById(this.options, this.form.inp1, 'id').name,
+
+               updateUserId: getUserInfo().userId,
+               updateUser: getUserInfo().username,
+               updateTime: timestampToTime(new Date()),
+               // orderState:'',*/
+              materialList: [...itemList],
+              fileList: [...this.file_list],
+              customerNo: '1',
+            };
             this.options.map(item => {
-              if (item.value === sendData.warehouseId) {
-                sendData.warehouseName = item.label
+              if (item.value === this.form.inp1) {
+                sendData.warehouseName = item.label;
               }
-            })
-            // 过户方中文
-            this.pass_through_arr.map(item => {
-              if (item.value === sendData.receiverId) {
-                sendData.receiver = item.label
+            });
+            /*if (this.form.inp12 === 1) {
+              if (this.form.inp13) {
+                sendData.loadingTime = this.$fn.timeChange(this.form.inp13);
+              } else {
+                this.$fn.message('请选择计划装车时间', 'error');
+                return;
               }
-            })
-            if (sessionStorage.getItem('warehouse-transfer-edit') === 'true') {
-              sendData.id = sessionStorage.getItem('warehouse-transfer-aplicationid') * 1;
-              this.$axios.post('/applicationTransfer/editApplicationTransfer', sendData).then(res => {
-                console.log('修改结果', res);
-                // this.$message.success(res.data.data);
+
+              if (this.form.inp14) {
+                sendData.serviceTime = this.$fn.timeChange(this.form.inp14);
+              } else {
+                this.$fn.message('请选择计划送达时间', 'error')
+                return;
+              }
+            }*/
+            this.loading = true;
+            if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
+              let upData = {
+                id: this.prevPageData.id,
+                orderNo: this.prevPageData.orderNo,
+              }
+              api_warehouse.storage.updateTransferStorage(this, {...sendData, ...upData}).then(res => {
+                this.$message.info(res.data.msg);
                 this.go_back();
-              }, err => {
-                console.log('修改报错', err);
-              })
-              return;
+              });
+            } else {
+              api_warehouse.storage.addTransferStorage(this, sendData).then((res) => {
+                this.$message.info(res.data.msg);
+                this.go_back();
+              });
             }
-            this.$axios.post('/applicationTransfer/addApplicationTransfer', sendData).then(res => {
+
+
+            /*this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
               console.log('新增结果', res);
               // this.$message.success(res.data.data);
               this.go_back();
             }, err => {
               console.log('新增报错', err);
-            })
-          })
+            })*/
+          });
         }).catch(() => {
 
         });
+
+
       },
-      // 提交
+      // 提交触发函数
       submit() {
+        return
         this.$confirm('提交申请单, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -704,30 +946,53 @@
             if (!valid) {
               return;
             }
+            // 判断计划送达事件要大于计划装车时间
+            if (this.form.inp12 == 1) {
+              if (new Date(this.form.inp13).getTime() >= new Date(this.form.inp14).getTime()) {
+                this.$message.error('计划送达事件需要大于计划装车时间')
+                return;
+              }
+            }
             let sendData = {
               documentState: 1,
               warehouseId: this.form.inp1,
-              receiverId: this.form.inp2,
-              orderNumber: this.form.inp3,
-              transferTime: this.$fn.timeChange(this.form.inp4),
+              inWarehouseId: this.form.inp2,
+              arriveTime: this.$fn.timeChange(this.form.inp3),
+              contacts: this.form.inp4,
+              contactInformation: this.form.inp5,
+              orderNumber: this.form.inp6,
+              loadingPoint: this.form.inp7,
+              unloadingPoint: this.form.inp8,
+              shippingAddress: this.form.inp9,
+              consignee: this.form.inp10,
+              //consigneeNumber: this.form.inp11,
+              isSendCar: this.form.inp12,
               itemList: [...this.table_data],
               fileList: [...this.file_list]
             }
-            // 仓库中文
             this.options.map(item => {
-              if (item.value === sendData.warehouseId) {
-                sendData.warehouseName = item.label
+              if (item.value === this.form.inp1) {
+                sendData.warehouseName = item.label;
               }
             })
-            // 过户方中文
-            this.pass_through_arr.map(item => {
-              if (item.value === sendData.receiverId) {
-                sendData.receiver = item.label
+            if (this.form.inp12 === 1) {
+              if (this.form.inp13) {
+                sendData.loadingTime = this.$fn.timeChange(this.form.inp13);
+              } else {
+                this.$fn.message('请选择计划装车时间', 'error')
+                return;
               }
-            })
-            if (sessionStorage.getItem('warehouse-transfer-edit') === 'true') {
-              sendData.id = sessionStorage.getItem('warehouse-transfer-aplicationid') * 1;
-              this.$axios.post('/applicationTransfer/editApplicationTransfer', sendData).then(res => {
+
+              if (this.form.inp14) {
+                sendData.serviceTime = this.$fn.timeChange(this.form.inp14);
+              } else {
+                this.$fn.message('请选择计划送达时间', 'error')
+                return;
+              }
+            }
+            if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
+              sendData.id = sessionStorage.getItem('warehouse-incoming-aplicationid') * 1;
+              this.$axios.post('/applicationIn/editApplicationIn', sendData).then(res => {
                 console.log('修改结果', res);
                 // this.$message.success(res.data.data);
                 this.go_back();
@@ -736,7 +1001,7 @@
               })
               return;
             }
-            this.$axios.post('/applicationTransfer/addApplicationTransfer', sendData).then(res => {
+            this.$axios.post('/applicationIn/addApplicationIn', sendData).then(res => {
               console.log('新增结果', res);
               // this.$message.success(res.data.data);
               this.go_back();
@@ -749,25 +1014,6 @@
         });
 
       },
-
-      // 获取物资的重置
-      get_goods_refresh() {
-        this.add_dialog_form = {
-          name: "", // 品名
-          material: '', // 材质
-          spec: '', // 规格
-          origin: '', // 产地
-          warehouse: null, // 仓库
-        }
-        this.get_goods();
-      },
-      // 新增蒙层页码改变函数
-      add_dialog_page_change(val) {
-        this.add_dialog_page_obj.page_num = val;
-        this.get_goods();
-      },
-
-
       // 附件蒙层关闭前触发函数
       enclosure_before_close() {
         this.enclosure_flag = false;
@@ -810,30 +1056,169 @@
         })
         this.enclosure_dialog_content_table_data = [...arr];
       },
-
       // 计划入库数量修改
       enterNumber_change(val) {
+        console.log(val);
         if (val.enterNumber < 0) {
           val.enterNumber = 0;
           val.enterWeight = 0;
           return;
         }
-        val.transferWeight = val.transferQuantity * val.weightCoefficient;
+        val.enterWeight = val.enterNumber * val.weightCoefficient;
+      },
+      // 模板下载
+      download_excel() {
+        window.open('http://dev.123456cc.cc:4000/busfront-busproc/busfront-busproc/FHYBQY.xlsx');
+      },
+      // 数据导入 material/importExcel
+      import_excel1(file, fileList) {
+        let files = {0: file.raw}
+        let that = this;
+        console.log(files);
+        if (files.length <= 0) {//如果没有文件名
+          return false;
+        } else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
+          this.$message.error('上传格式不正确，请上传xls或者xlsx格式');
+          return false;
+        }
+
+        const fileReader = new FileReader();
+        fileReader.onload = (ev) => {
+          try {
+            const data = ev.target.result;
+            const workbook = XLSX.read(data, {
+              type: 'binary'
+            });
+            const wsname = workbook.SheetNames[0];//取第一张表
+            const ws = XLSX.utils.sheet_to_json(workbook.Sheets[wsname]);//生成json表格内容
+            console.log(ws);
+            // that.peopleArr = [];//清空接收数据
+            // if(that.peopleArr.length == 1 && that.peopleArr[0].roleName == "" && that.peopleArr[0].enLine == ""){
+            //     that.peopleArr = [];
+            // }
+            //重写数据
+            try {
+              let obj = {
+                materialName: ws[0]['品名'],
+                specifications: ws[0]['规格'],
+                textureMaterial: ws[0]['材质'],
+                placeOrigin: ws[0]['产地'],
+                enterNumber: ws[0]['计划入库数量'],
+                weightCoefficient: ws[0]['理重'],
+                enterWeight: ws[0]['计划入库重量'],
+                unitQuantity: ws[0]['数量单位'],
+                unitWeight: ws[0]['重量单位'],
+                measurementMethod: ws[0]['计量方式'],
+                materialNature: ws[0]['物资性质'],
+                licensePlateNumber: ws[0]['车牌号'],
+                description: ws[0]['备注'],
+              }
+              this.table_data.push(obj);
+            } catch (err) {
+              console.log(err)
+            }
+
+            this.$refs.upload.value = '';
+
+          } catch (e) {
+
+            return false;
+          }
+        };
+        fileReader.readAsBinaryString(files[0]);
+      },
+      // 数据导入后端处理
+      import_excel(file, fileList) {
+        let formdata = new FormData();
+        formdata.append('file', file.raw)
+        this.loading = true;
+        this.$axios.post('/material/importExcel', formdata).then(res => {
+          console.log('上传结果', res);
+          // this.enclosure_dialog_content_table_data.push(res.data.data);
+          // this.enclosure_dialog_content_table_data.map(item=>{
+          //     item.fileName = item.name;
+          //     item.fileSize = item.size;
+          //     item.fileType = item.type;
+          // })
+          this.table_data = [...this.table_data, ...res.data.data];
+        }, err => {
+          console.log('上传报错', err);
+        }).finally(() => {
+          this.loading = false;
+        })
       },
 
       // 附件文件下载操作
       download_file(obj) {
         console.log(obj);
         window.open(obj.path);
-      }
+      },
+
+      //获取商品数据
+      getMaterialTransferList() {
+        let data = {
+          orderNo: this.prevPageData.orderNo,
+          /* pageNo: this.page.page_num,
+           pageSize: this.page.page_size,*/
+        };
+        api_warehouse.storage.getMaterialTransferList(this, data).then(res => {
+          this.table_data = res.data.data.records
+        })
+      },
+    },
+    beforeDestroy() {
+      //sessionStorage.removeItem('warehouse-incoming-edit');
     }
   }
 </script>
 
 <style lang="less" scoped>
-  .add {
+  /deep/ .dialog_close {
+    top: 13px !important;
+  }
+
+  .s-button {
+    padding: 0;
+  }
+
+  /deep/ .cell {
+    padding: 0;
+  }
+
+  /deep/ .el-table th > .cell {
+    padding: 0;
+  }
+
+  .line {
+    display: inline-block;
+    height: 10px;
+    width: 1px;
+    background: #e0e0e0;
+    margin: 0 10px;
+  }
+
+  .cls {
     width: 100%;
-    height: 100%;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    height: 16px;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 5px;
+
+    &:before {
+      content: '';
+      display: inline-block;
+      margin-right: 5px;
+      height: 18px;
+      width: 3px;
+      background: #409EFF;
+    }
   }
 
   /deep/ .el-textarea__inner {
@@ -841,26 +1226,39 @@
     max-height: 50px !important;
   }
 
+  .detail_content {
+    flex: 1;
+    margin-bottom: 10px;
+  }
+
   /deep/ .detail_content_table {
     width: 100%;
-    height: 600px;
+    height: 100%;
+    /*height: 600px;*/
     box-sizing: border-box;
     background: #fff;
+    overflow: auto;
 
     .detail_content_table_btn {
       width: 100%;
       height: 40px;
       line-height: 40px;
+
+      .upload-demo {
+        display: inline-block;
+        margin-left: 10px;
+      }
     }
 
     .detail_content_table_box {
       width: 100%;
-      height: calc(100% - 40px);
+      height: 100%;
     }
   }
 
   /deep/ .dialog_content {
     width: 100%;
+    // height: 500px;
     display: flex;
     flex-direction: column;
 
@@ -870,18 +1268,15 @@
 
     .dialog_content_table {
       width: 100%;
+      // flex: 1;
       height: 400px;
     }
   }
 
-  .el-select, .el-date-editor {
-    width: 178px !important;
+  /deep/ .import_dialog_content {
+    width: 100%;
+    height: 100px;
   }
-
-  // .el-form-item{
-  //     margin-bottom: 0px;
-  // }
-
 
   /deep/ .enclosure_dialog_content {
     width: 100%;
@@ -899,4 +1294,85 @@
       height: calc(100% - 50px);
     }
   }
+
+  .add {
+    display: flex;
+    flex-flow: column;
+    padding: 10px;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+
+    .tips {
+      font-weight: bold;
+      font-size: 15px;
+      background: rgb(248, 248, 248);
+      padding: 10px 0;
+    }
+
+    /deep/ .detail_content_form {
+      width: 100%;
+
+      .my-el-form {
+        display: flex;
+        flex-flow: row wrap;
+
+        > div {
+          width: 100%;
+          display: flex;
+        }
+      }
+
+      .el-form-item {
+        width: 100%;
+        margin-right: 0px;
+        display: flex;
+
+        .el-form-item__content {
+          textarea {
+            width: 100%;
+          }
+
+          .el-select {
+            width: 100% !important;
+          }
+
+          flex: 1;
+          margin-right: 20px;
+
+          .el-input {
+            width: 100% !important;
+          }
+
+          .el-input__inner {
+            flex: 1;
+            width: 100% !important;
+          }
+
+        }
+      }
+
+      /deep/ .el-textarea__inner {
+        width: 500px;
+      }
+    }
+
+    .detail_content {
+      width: 100%;
+      flex: 1;
+      min-height: 200px;
+
+      .el-select {
+        width: 100% !important;
+      }
+    }
+
+    .sure-btn {
+      height: 50px !important;
+      flex: 0 0 50px;
+    }
+
+  }
+
+
 </style>

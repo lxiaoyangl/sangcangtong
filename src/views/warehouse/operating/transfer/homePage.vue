@@ -47,14 +47,14 @@
       </div>
       <div class="search">
         <div class="normal-search">
-          <span>出仓名称</span>
+          <span>仓库名称</span>
           <div class="d-input">
-            <el-input v-model="form.warehouseName" placeholder="请输入出仓名称" size="mini" clearable></el-input>
+            <el-input v-model="form.warehouseName" placeholder="请输入仓库名称" size="mini" clearable></el-input>
           </div>
 
-          <span>客户名称</span>
+          <span>过出方名称</span>
           <div class="d-input">
-            <el-input v-model="form.customerName" placeholder="客户名称" size="mini" clearable></el-input>
+            <el-input v-model="form.transferOutName" placeholder="过出方名称" size="mini" clearable></el-input>
           </div>
 
           <span>订单号</span>
@@ -71,9 +71,9 @@
           </div>
         </div>
         <div class="height-search" v-show="isHeightSearch">
-          <span>计划出仓时间</span>
-          <el-date-picker class="time-picker" v-model="form.putOutPlanDate_begin" type="date" placeholder="选择开始时间" size="mini"></el-date-picker>
-          <el-date-picker class="time-picker" v-model="form.putOutPlanDate_end" type="date" placeholder="选择结束时间" size="mini"></el-date-picker>
+          <span>计划入仓时间</span>
+          <el-date-picker class="time-picker" v-model="form.putInPlanDate_begin" type="date" placeholder="选择开始时间" size="mini"></el-date-picker>
+          <el-date-picker class="time-picker" v-model="form.putInPlanDate_end" type="date" placeholder="选择结束时间" size="mini"></el-date-picker>
           <span>计划发货时间</span>
           <el-date-picker class="time-picker" v-model="form.deliverPlanDate_begin" type="date" placeholder="选择开始时间" size="mini"></el-date-picker>
           <el-date-picker class="time-picker" v-model="form.deliverPlanDate_end" type="date" placeholder="选择结束时间" size="mini"></el-date-picker>
@@ -96,39 +96,41 @@
               width="170px">
           </el-table-column>
           <el-table-column
-              prop="customerName"
-              label="客户名称"
+              prop="warehouseName"
+              label="仓库名称"
               width="120px">
           </el-table-column>
           <el-table-column
-              prop="putOutPlanDate"
-              label="计划出仓日期"
+              prop="transferOutName"
+              label="过出方名称"
               :formatter="timeFormater"
               width="100px">
           </el-table-column>
           <el-table-column
-              prop="shippingTypeName"
-              label="运输方式"
+              prop="transferInName"
+              label="过入方名称"
               width="70px">
           </el-table-column>
 
           <el-table-column
-              prop="warehouseName"
-              label="出仓名称"
-              min-width="120">
-          </el-table-column>
-          <el-table-column
-              prop="isPlfDistVeh"
-              label="平台派车"
-              width="70"
-              :formatter="(row,self,val)=>{return val ? '是' : '否'}"
-          ></el-table-column>
-          <el-table-column
-              prop="deliverPlanDate"
-              label="计划发货日期"
+              prop="transferPlanDate"
+              label="计划过户日期"
               :formatter="timeFormater"
               width="100px">
           </el-table-column>
+
+          <el-table-column
+              prop="operatorName"
+              label="经办人"
+              width="120">
+          </el-table-column>
+
+          <el-table-column
+              prop="orderState.description"
+              label="订单状态"
+              width="80">
+          </el-table-column>
+
           <el-table-column
               prop="remark"
               label="备注"
@@ -142,19 +144,6 @@
 
             </template>
 
-          </el-table-column>
-          <el-table-column
-              prop="orderState.description"
-              label="订单状态"
-              width="80">
-            <!--<template slot-scope="scope">
-                <span v-show="scope.row.orderState === 'orderState'">未提交</span>
-                <span v-show="scope.row.orderState === 1">待审核</span>
-                <span v-show="scope.row.orderState === 2">审核未通过</span>
-                <span v-show="scope.row.orderState === 3">平台待审核</span>
-                <span v-show="scope.row.orderState === 4">平台处理中</span>
-                <span v-show="scope.row.orderState === 5">审核拒绝</span>
-            </template>-->
           </el-table-column>
 
           <el-table-column
@@ -223,7 +212,7 @@
   export default {
     name: "homePage",
     components: {
-      audit
+       audit
     },
     data() {
       return {
@@ -254,15 +243,15 @@
           warehouseName: '',
           customerName: '',
           orderNo: '',
-          putOutPlanDate_begin: '',
-          putOutPlanDate_end: '',
+          putInPlanDate_begin: '',
+          putInPlanDate_end: '',
           deliverPlanDate_begin: '',
           deliverPlanDate_end: '',
         },
         orderNo: '',//订单号
         tableRow: {},//选中的表格数据
         dialogVisible: false,//是否显示弹出窗,
-        incommingCount: {},//头部出仓统计,
+        incommingCount: {},//头部入仓统计,
 
         isCheckProp: false,//是否为查看状态,
         isHeightSearch: false,//是否高级搜索;
@@ -275,8 +264,8 @@
         return this.tabsArr[this.tabsAc].type;
       },
       modalTitle() {
-        if (!this.tableRow.customerName) return ''
-        return `${this.tableRow.orderNo} - ${this.tableRow.customerName} - ${this.tableRow.orderState.description}`
+        if (!this.tableRow.orderNo) return ''
+        return `${this.tableRow.orderNo} -  ${this.tableRow.orderState.description}`
       },
     },
     methods: {
@@ -330,7 +319,7 @@
           }
         }
 
-        api_warehouse.storage.outStockList(this, postData);
+        api_warehouse.storage.transferList(this, postData);
       },
       // 多选改变函数
       table_selection_change(val) {
@@ -364,7 +353,7 @@
       editRow(row) {
         sessionStorage.setItem("tableRow", JSON.stringify(row));
         sessionStorage.setItem("warehouse-incoming-edit", 'true');
-        this.$router.push({name: 'out_stock_add'});
+        this.$router.push({name: 'transfer_add'});
         console.log(row);
       },
       //点击提交
@@ -373,12 +362,12 @@
         this.$confirm('订单提交过后将不可修改, 是否继续').then(() => {
           let data = {
             id: row.id,
-            orderState: 'PENDING'
+            orderState: '1'
           };
-          api_warehouse.storage.inComingSubmit(this, data).then((res) => {
+          api_warehouse.storage.transferSubmit(this, data).then((res) => {
             this.$message.info(res.data.msg);
             this.get_data();
-            api_warehouse.storage.getIncomingCount().then(res => {
+            api_warehouse.storage.getTransferCount().then(res => {
               this.incommingCount = res.data.data;
             });
           })
@@ -389,7 +378,7 @@
       closeDialog(payload) {
         this.$message.info(payload.msg)
         this.dialogVisible = false;
-        api_warehouse.storage.getIncomingCount().then(res => {
+        api_warehouse.storage.getTransferCount().then(res => {
           this.incommingCount = res.data.data;
         });
         this.get_data()
@@ -398,7 +387,7 @@
       //查询
       search() {
         this.page.page_num = 1;
-        let data = this.form
+        let data = this.form;
         this.get_data(data);
       },
 
@@ -416,12 +405,12 @@
       //新建订单
       addNew() {
         sessionStorage.setItem('warehouse-incoming-edit', 'false');
-        this.$router.push({name: 'out_stock_add'});
+        this.$router.push({name: 'transfer_add'});
       }
     },
     mounted() {
       this.get_data();
-      api_warehouse.storage.getOutStockCount().then(res => {
+      api_warehouse.storage.getTransferCount().then(res => {
         this.incommingCount = res.data.data;
       });
     }
@@ -429,7 +418,7 @@
 </script>
 
 <style scoped lang="less">
-  @import "../../common.less";
+ @import "../../common.less";
 
   /deep/ .el-table {
     border-collapse: collapse;

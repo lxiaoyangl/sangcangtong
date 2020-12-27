@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div class="base-info" style="width: 1000px;">
-      <p class="title">出仓基本信息</p>
+      <p class="title">过户基本信息</p>
       <div class="bi-content">
         <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index" :style="{width:i.width,visibility:i.hidden}">
           <span class="label">{{i.name}}:</span>
-          <span class="value">{{i.value}}</span>
+          <span class="value">{{i.value ? i.value : '--'}}</span>
         </div>
       </div>
     </div>
     <div class="goods-list">
-      <p class="title">出仓商品列表</p>
+      <p class="title">过户商品列表</p>
       <el-table
           :data="table_data"
           style="width: 100%"
@@ -40,8 +40,8 @@
         </el-table-column>
 
         <el-table-column
-            prop="outPlanNum"
-            label="计划入仓数量"
+            prop="transferPlanNum"
+            label="计划过户数量"
             width="100px">
         </el-table-column>
         <el-table-column
@@ -50,8 +50,8 @@
             width="70">
         </el-table-column>
         <el-table-column
-            prop="outPlanWeight"
-            label="计划入仓重量"
+            prop="transferPlanWeight"
+            label="计划过户重量"
             width="100">
         </el-table-column>
         <el-table-column
@@ -67,48 +67,7 @@
         <el-table-column
             prop="measureMethod"
             label="计量方式"
-            width="70">
-        </el-table-column>
-
-        <el-table-column
-            prop="carNum"
-            label="车牌号"
-            width="80">
-          <template slot-scope="scope">
-            <el-tooltip effect="dark" :content="scope.row.carNum" placement="top">
-              <span>{{scope.row.carNum}}</span>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-        <el-table-column
-            prop="driver"
-            label="司机"
-            width="70">
-        </el-table-column>
-        <el-table-column
-            prop="idCardType"
-            label="证件类型"
-            width="70">
-          <template slot-scope="scope">
-            <el-tooltip effect="dark" :content="scope.row.idCardType" placement="top">
-              <span>{{scope.row.idCardType}}</span>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-        <el-table-column
-            prop="idCardNum"
-            label="证件号码"
-            width="120">
-          <template slot-scope="scope">
-            <el-tooltip effect="dark" :content="scope.row.idCardNum" placement="top">
-              <span>{{scope.row.idCardNum}}</span>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-        <el-table-column
-            prop="contactPhone"
-            label="联系电话"
-            width="120">
+           width="70">
         </el-table-column>
         <el-table-column
             prop="remark"
@@ -181,28 +140,20 @@
         if (!info) return [];
         return [
           {name: '订单号', key: 'orderNo', value: info.orderNo},
-          {name: '平台派车', key: 'isPlfDistVeh', value: info.isPlfDistVeh ? '是' : '否'},
-          {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo ? info.linkedOrderNo : '--'},
-          {name: '客户号', key: 'customerId', value: info.customerId},
-          {name: '计划发货日期', key: 'deliverPlanDate', value: info.deliverPlanDate},
-          {name: '经办人', key: 'operatorName', value: info.operatorName},
-          {name: '客户名称', key: 'customerName', value: info.customerName},
-          {name: '发货点', key: 'deliverPlace', value: info.deliverPlace},
-          {name: '最后修改人', key: 'updateUser', value: info.updateUser},
+          {name: '仓库名称', key: 'warehouseName', value: info.warehouseName},
           {name: '订单状态', key: 'orderState', value: info.orderState.description},
-          {name: '发货详细地址', key: 'deliverLocation', value: info.deliverLocation},
-          {name: '最后修改时间', key: 'updateTime', value: info.updateTime},
-          {name: '出仓名称', key: 'warehouseName', value: info.warehouseName},
-          {name: '发货点联系人', key: 'deliverName', value: info.deliverName},
-          {name: 'none', key: 'none', value: 'none', hidden: 'hidden'},
-          {name: '计划出仓日期', key: 'putOutPlanDate', value: info.putOutPlanDate},
-          {name: '发货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
-          {name: 'none', key: 'none', value: 'none', hidden: 'hidden'},
-          {name: '运输方式', key: 'shippingTypeName', value: info.shippingTypeName},
-          {name: '送货点', key: 'acceptPlace', value: info.acceptPlace},
-          {name: 'none', key: 'none', value: 'none', hidden: 'hidden'},
-          {name: '订单备注', key: 'remark', value: info.remark, width: '100%'},
 
+          {name: '过出方名称', key: 'transferOutName', value: info.transferOutName},
+          {name: '过入方名称', key: 'transferInName', value: info.transferInName},
+          {name: '计划过户日期', key: 'transferPlanDate', value: info.transferPlanDate},
+
+
+          {name: '最后修改人', key: 'updateUser', value: info.updateUser},
+          {name: '最后修改时间', key: 'updateTime', value: info.updateTime},
+          {name: '经办人', key: 'operatorName', value: info.operatorName},
+
+          {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo},
+          {name: '备注', key: 'remark', value: info.remark},
         ]
       }
     },
@@ -218,7 +169,7 @@
           pageNo: this.page.page_num,
           pageSize: this.page.page_size,
         };
-        api_warehouse.storage.getMaterialOutList(this, data).then(res => {
+        api_warehouse.storage.getMaterialTransferList(this, data).then(res => {
           this.table_data = [...res.data.data.records];
           this.page.total = res.data.data.total;
         })
@@ -242,9 +193,9 @@
             orderNo: this.orderNo,
             result: this.isPass === true ? 1 : 0,
             suggest: this.denyInfo,
-            businessType: "TAKE_OUT"
+            businessType: "TRANSFER"
           }
-          api_warehouse.storage.outComingAudit(this, data).then((res) => {
+          api_warehouse.storage.transferAudit(this, data).then((res) => {
             this.$emit('onAudit', res.data);
           });
 
