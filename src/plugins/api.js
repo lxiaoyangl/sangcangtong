@@ -88,5 +88,12 @@ export function setParameterList(params) { return postApi('/parameter/baseList?&
 export function setParameterDelete(params) { return postApi('/parameter/baseDel', params) }
 export function setParameterBatchDelete(params) { return postApi('/parameter/baseBatchDel', params) }
 
+//合同信息表
+export function setManageCttAdd(params) { return postApi('/manageCtt/baseAdd', params) }
+export function setManageCttEdit(params) { return postApi('/manageCtt/baseEdit', params) }
+export function setManageCttList(url,params) { return postApi('/manageCtt/baseList?&_pageList&column=createTime&order=desc'+url, params) }
+export function setManageCttDelete(params) { return postApi('/manageCtt/baseDel', params) }
+export function setManageCttBatchDelete(params) { return postApi('/manageCtt/baseBatchDel', params) }
+
 export function setserverInfo(params) { return postApi('/base/serverInfo', params) }
 

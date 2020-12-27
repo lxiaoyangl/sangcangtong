@@ -15,7 +15,7 @@ import SetUser from "@/views/set/user";
 import SetDepartMent from "@/views/set/departMent";
 import SetNotice from "@/views/set/notice";
 
-const ManageCtt = () => import('@/views/set/loginlog')
+const ManageCtt = () => import('@/views/set/manage/ctt')
 const Warehouse = () => import('@/views/set/warehouse')
 
 const SetMaterials = () => import('@/views/set/materials')
