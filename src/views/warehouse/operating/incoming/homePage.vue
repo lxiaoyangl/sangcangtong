@@ -29,6 +29,13 @@
           <p>代办累计提单</p>
         </div>
       </div>
+      <div class="item">
+        <i class="el-icon-document-checked"></i>
+        <div>
+          <p>{{incommingCount.platfromNum1}}</p>
+          <p>总提单数量</p>
+        </div>
+      </div>
     </header>
 
     <div class="filters">
@@ -555,8 +562,8 @@
     height: 100%;
     .flex;
     flex-flow: column;
-    padding: 10px;
-    background: #eaeaea;
+    padding: 1px;
+    background: #fff;
   }
 
   header {
@@ -566,7 +573,7 @@
     .item {
       padding: 10px;
       .flex-center-y;
-      margin-right: 10px;
+      margin: 10px;
       height: 80px;
       width: 220px;
 
@@ -611,6 +618,13 @@
           color: white;
         }
       }
+    &:nth-child(5) {
+       background: #67C23A;
+
+    i {
+        color: white;
+      }
+    }
 
       p:first-child {
         color: white;
@@ -628,8 +642,8 @@
 
   .filters {
     background: white;
-    margin: 10px 0;
-    padding: 10px;
+    margin: 0px 0;
+    padding: 5px;
 
     .search {
       span {
@@ -711,7 +725,7 @@
     flex: 1;
 
     .table {
-      height: calc(100% - 50px);
+      height: calc(100% - 40px);
     }
   }
 </style>
