@@ -3,9 +3,9 @@
     <div class="base-info" style="width: 1000px;">
       <p class="title">入仓基本信息</p>
       <div class="bi-content">
-        <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index">
+        <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index" :style="{width:i.width,visibility:i.hidden}">
           <span class="label">{{i.name}}:</span>
-          <span class="value">{{i.value}}</span>
+          <span class="value">{{i.value ? i.value : '--'}}</span>
         </div>
       </div>
     </div>
@@ -21,79 +21,79 @@
         <el-table-column
             prop="name"
             label="品名"
-            min-width="160">
+            width="160px">
         </el-table-column>
         <el-table-column
             prop="placeOrigin"
             label="产地"
-            min-width="120">
+            width="80px">
         </el-table-column>
         <el-table-column
             prop="textureMaterial"
             label="材质"
-            min-width="160">
+            width="80">
         </el-table-column>
         <el-table-column
             prop="specifications"
             label="规格"
-            min-width="120">
+            width="80">
         </el-table-column>
 
         <el-table-column
             prop="inPlanNum"
             label="计划入仓数量"
-            min-width="120">
+            width="100px">
         </el-table-column>
         <el-table-column
             prop="numUnit"
             label="数量单位"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="inPlanWeight"
             label="计划入仓重量"
-            min-width="120">
+            width="100">
         </el-table-column>
         <el-table-column
             prop="weightUnit"
             label="重量单位"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="weightCoefficient"
             label="理重"
-            min-width="120">
+            width="40">
         </el-table-column>
         <el-table-column
             prop="measureMethod"
             label="计量方式"
-            min-width="120">
+           width="70">
         </el-table-column>
 
         <el-table-column
             prop="carNum"
             label="车牌号"
-            min-width="120">
+            width="80">
         </el-table-column>
         <el-table-column
             prop="driver"
             label="司机"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="idCardType"
             label="证件类型"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="idCardNum"
             label="证件号码"
-            min-width="120">
+            width="120">
         </el-table-column>
         <el-table-column
             prop="contactPhone"
             label="联系电话"
-            min-width="120">
+            width="120">
         </el-table-column>
         <el-table-column
             prop="remark"
@@ -125,7 +125,6 @@
             requeire
             type="textarea"
             placeholder="请输入拒绝理由"
-            :disabled="isPass"
             v-model="denyInfo">
         </el-input>
       </div>
@@ -175,11 +174,14 @@
           {name: '最后修改时间', key: 'updateTime', value: info.updateTime},
           {name: '入仓名称', key: 'warehouseName', value: info.warehouseName},
           {name: '发货点联系人', key: 'deliverName', value: info.deliverName},
-          {name: '订单备注', key: 'remark', value: info.remark},
+          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
           {name: '计划入仓日期', key: 'putInPlanDate', value: info.putInPlanDate},
           {name: '发货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
+          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
           {name: '运输方式', key: 'shippingTypeName', value: info.shippingTypeName},
           {name: '送货点', key: 'acceptPlace', value: info.acceptPlace},
+          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
+          {name: '订单备注', key: 'remark', value: info.remark,width:'100%'},
         ]
       }
     },
@@ -262,13 +264,15 @@
       height: 16px;
       font-size: 16px;
       font-weight: bold;
-      margin-bottom: 20px;
+      position: relative;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 5px;
 
       &:before {
         content: '';
         display: inline-block;
         margin-right: 5px;
-        height: 100%;
+        height: 18px;
         width: 3px;
         background: #409EFF;
       }
@@ -276,12 +280,11 @@
 
     .base-info {
       height: auto;
-      width: 100%;
+      width: 100% !important;
       overflow: auto;
-      margin-top: 10px;
 
       .bi-content {
-        margin-top: 30px;
+        margin-top: 0px;
         font-size: 14px;
         display: flex;
         flex-flow: row wrap;
@@ -289,6 +292,7 @@
         .bic-item {
           margin-right: 20px;
           margin-bottom: 10px;
+          display: flex;
 
           span {
             display: inline-block;
@@ -296,19 +300,19 @@
 
           span:first-child {
             width: 115px;
+            flex: 0 0 115px;
           }
 
           span:last-child {
             width: 180px;
             color: #999999;
+            flex: 1;
           }
         }
       }
     }
 
     .goods-list {
-      margin-top: 20px;
-
 
     }
 
@@ -320,8 +324,7 @@
       }
 
       .input-div {
-        width: 200px;
-        margin-bottom: 30px;
+        margin-bottom: 5px;
       }
     }
   }

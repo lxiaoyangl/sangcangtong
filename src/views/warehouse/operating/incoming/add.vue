@@ -6,116 +6,259 @@
     <div class="base-info">
       <p class="title">入仓基本信息</p>
     </div>
+    <!--新增的表单-->
+    <div v-if="!isEdit" class="detail_content_form">
+      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
+        <div>
+          <el-form-item label="客户名称" prop="inp6">
+            <el-select clearable v-model="form.inp6" placeholder="请选择客户" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="入仓名称" prop="inp1">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
+              <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="计划入仓日期" prop="inp3">
+            <el-date-picker
+                v-model="form.inp3"
+                type="date"
+                placeholder="选择日期时间"
+                size="mini"
+                :picker-options="time_option">
+            </el-date-picker>
+          </el-form-item>
+        </div>
 
-    <div class="detail_content_form">
-      <el-form ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
-        <el-form-item label="入仓名称" prop="inp1">
-          <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
-            <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否平台派车" prop="inp12">
-          <template>
-            <el-radio v-model="form.inp12" :label="true">是</el-radio>
-            <el-radio v-model="form.inp12" :label="false">否</el-radio>
-          </template>
-          <!--<el-select clearable v-model="form.inp12" placeholder="是否平台派车" size="mini">
-            <el-option
-                v-for="item in is_platform_send_car_arr"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-            </el-option>
-          </el-select>-->
-        </el-form-item>
-        <el-form-item label="计划入仓日期" prop="inp3">
-          <el-date-picker
-              v-model="form.inp3"
-              type="date"
-              placeholder="选择日期时间"
-              size="mini"
-              :picker-options="time_option">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="发货点" prop="inp7">
-          <el-input v-model="form.inp7" placeholder="发货点" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="运输方式" prop="inp2">
-          <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
-            <el-option
-                v-for="item in getAllDict('transportType')"
-                :key="item.value"
-                :label="item.dictLabel"
-                :value="item.dictValue">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="发货详细地址" prop="inp9">
-          <el-input v-model="form.inp9" placeholder="发货详细地址" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="客户名称" prop="inp6">
-          <el-select clearable v-model="form.inp6" placeholder="请选择客户" filterable size="mini">
-            <el-option
-                v-for="item in cusNameArr"
-                :key="item.value"
-                :label="item.name"
-                :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="送货点" prop="inp8">
+        <div>
+          <el-form-item label="运输方式" prop="inp2">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
+              <el-option
+                  v-for="item in getAllDict('transportType')"
+                  :key="item.value"
+                  :label="item.dictLabel"
+                  :value="item.dictValue">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="经办人" prop="inp10">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
+              <el-option
+                  v-for="item in operator"
+                  :key="item.value"
+                  filterable
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="是否平台派车" prop="inp12">
+            <template>
+              <el-radio v-model="form.inp12" :label="true">是</el-radio>
+              <el-radio v-model="form.inp12" :label="false">否</el-radio>
+            </template>
+            <!--<el-select clearable v-model="form.inp12" placeholder="是否平台派车" size="mini">
+              <el-option
+                  v-for="item in is_platform_send_car_arr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>-->
+          </el-form-item>
+        </div>
+
+        <div v-show="form.inp12">
+          <el-form-item style="width: 33.33%" label="发货点" prop="inp7">
+            <el-input v-model="form.inp7" placeholder="发货点" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item style="width: 33.33%" label="发货详细地址" prop="inp9">
+            <el-input v-model="form.inp9" placeholder="发货详细地址" size="mini"></el-input>
+          </el-form-item>
+        </div>
+
+        <div v-show="form.inp12">
+          <el-form-item label="发货点联系人" prop="inp4">
+            <el-input v-model="form.inp4" placeholder="请输入发货点联系人" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="发货点联系方式" prop="inp5">
+            <el-input v-model="form.inp5" placeholder="货运联系方式" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="计划发货日期" prop="inp15">
+            <el-date-picker
+                v-model="form.inp15"
+                type="date"
+                placeholder="选择日期时间"
+                size="mini"
+                :picker-options="time_option">
+            </el-date-picker>
+          </el-form-item>
+        </div>
+        <el-form-item v-show="0" label="送货点" prop="inp8">
           <el-input v-model="form.inp8" placeholder="送货点" size="mini"></el-input>
         </el-form-item>
-        <el-form-item label="发货点联系人" prop="inp4">
-          <el-input v-model="form.inp4" placeholder="请输入发货点联系人" size="mini"></el-input>
+        <div>
+          <el-form-item label="备注" prop="inp16" style="width: 100%;">
+            <el-input type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+    <!--修改的表单-->
+    <div v-if="isEdit" class="detail_content_form">
+      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
+
+        <div>
+          <el-form-item label="订单号">
+            <el-input clearable readonly v-model="prevPageData.orderNo" placeholder="请选择客户" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="订单状态">
+            <el-input clearable readonly v-model="prevPageData.orderState.description" placeholder="请选择客户" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="客户名称" prop="inp6">
+            <el-select clearable v-model="form.inp6" placeholder="请选择客户" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <div>
+
+          <el-form-item label="入仓名称" prop="inp1">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
+              <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="计划入仓日期" prop="inp3">
+            <el-date-picker
+                v-model="form.inp3"
+                type="date"
+                placeholder="选择日期时间"
+                size="mini"
+                :picker-options="time_option">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="运输方式" prop="inp2">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
+              <el-option
+                  v-for="item in getAllDict('transportType')"
+                  :key="item.value"
+                  :label="item.dictLabel"
+                  :value="item.dictValue">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <div>
+
+          <el-form-item style="width: 33.33%" label="经办人" prop="inp10">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
+              <el-option
+                  v-for="item in operator"
+                  :key="item.value"
+                  filterable
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="width: 33.33%" label="是否平台派车" prop="inp12">
+            <template>
+              <el-radio v-model="form.inp12" :label="true">是</el-radio>
+              <el-radio v-model="form.inp12" :label="false">否</el-radio>
+            </template>
+            <!--<el-select clearable v-model="form.inp12" placeholder="是否平台派车" size="mini">
+              <el-option
+                  v-for="item in is_platform_send_car_arr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>-->
+          </el-form-item>
+        </div>
+
+        <div v-show="form.inp12">
+          <el-form-item style="width: 33.33%" label="发货点" prop="inp7">
+            <el-input v-model="form.inp7" placeholder="发货点" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item style="width: 33.33%" label="发货详细地址" prop="inp9">
+            <el-input v-model="form.inp9" placeholder="发货详细地址" size="mini"></el-input>
+          </el-form-item>
+        </div>
+
+        <div v-show="form.inp12">
+          <el-form-item label="发货点联系人" prop="inp4">
+            <el-input v-model="form.inp4" placeholder="请输入发货点联系人" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="发货点联系方式" prop="inp5">
+            <el-input v-model="form.inp5" placeholder="货运联系方式" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="计划发货日期" prop="inp15">
+            <el-date-picker
+                v-model="form.inp15"
+                type="date"
+                placeholder="选择日期时间"
+                size="mini"
+                :picker-options="time_option">
+            </el-date-picker>
+          </el-form-item>
+        </div>
+        <el-form-item v-show="0" label="送货点" prop="inp8">
+          <el-input v-model="form.inp8" placeholder="送货点" size="mini"></el-input>
         </el-form-item>
-        <el-form-item label="发货点联系方式" prop="inp5">
-          <el-input v-model="form.inp5" placeholder="货运联系方式" size="mini"></el-input>
-        </el-form-item>
-        <el-form-item label="经办人" prop="inp10">
-          <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
-            <el-option
-                v-for="item in operator"
-                :key="item.value"
-                filterable
-                :label="item.name"
-                :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="计划发货日期" prop="inp15">
-          <el-date-picker
-              v-model="form.inp15"
-              type="date"
-              placeholder="选择日期时间"
-              size="mini"
-              :picker-options="time_option">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="备注" prop="inp16">
-          <el-input type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
-        </el-form-item>
+        <div>
+          <el-form-item label="备注" prop="inp16" style="width: 100%;">
+            <el-input type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
+          </el-form-item>
+        </div>
       </el-form>
     </div>
 
     <div class="base-info">
       <p class="title">入仓商品列表</p>
-      <!--<div class="bi-content">
-        <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index">
-          <span class="label">{{i.name}}:</span>
-          <span class="value">{{i.value}}</span>
-        </div>
-      </div>-->
     </div>
 
-    <div>
-      <el-button type="text" @click="add_goods" icon="el-icon-circle-plus-outline">新增</el-button>
-      <el-button type="text" @click="del_goods" icon="el-icon-remove-outline" class="top_color_red">删除</el-button>
+    <div style="margin-bottom: 10px">
+      <el-button type="text" class="s-button" @click="add_goods" icon="el-icon-circle-plus-outline">新增</el-button>
+      <div class="line"></div>
+      <el-button type="text" @click="del_goods" icon="el-icon-remove-outline" class="top_color_red s-button">删除</el-button>
     </div>
 
     <div class="detail_content">
@@ -126,6 +269,8 @@
               style="width: 100%"
               height="100%"
               stripe
+              :fit="true"
+              border
               @selection-change="detail_table_selection_change"
               header-row-class-name="table_header"
           >
@@ -166,7 +311,7 @@
             <el-table-column
                 prop="numUnitId"
                 label="数量单位"
-                width="120">
+                width="100">
               <template slot-scope="scope">
                 <el-select clearable v-model="scope.row.numUnitId" placeholder="单位" size="mini">
                   <el-option
@@ -182,16 +327,16 @@
             <el-table-column
                 prop="inPlanWeight"
                 label="计划入库重量"
-                width="120">
+                width="100">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.inPlanWeight" type="number" placeholder="计划入库重量" size="mini"></el-input>
+                <el-input v-model="scope.row.inPlanWeight" type="number" placeholder="入库重量" size="mini"></el-input>
               </template>
             </el-table-column>
 
             <el-table-column
                 prop="weightUnitId"
                 label="重量单位"
-                width="120">
+                width="100">
               <template slot-scope="scope">
                 <el-select clearable v-model="scope.row.weightUnitId" placeholder="单位" size="mini">
                   <el-option
@@ -207,7 +352,7 @@
             <el-table-column
                 prop="weightCoefficient"
                 label="理重"
-                width="120">
+                width="80">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.weightCoefficient" type="number" placeholder="理重" size="mini" @input="enterNumber_change(scope.row)"></el-input>
               </template>
@@ -257,7 +402,7 @@
                       v-for="item in getAllDict('idType')"
                       :key="item.value"
                       :label="item.dictLabel"
-                      :value="item.dictValue">
+                      :value="item.dictLabel">
                   </el-option>
                 </el-select>
               </template>
@@ -298,7 +443,7 @@
 
 
     <div class="sure-btn">
-      <el-button type="primary" size="small"  @click="save">保存</el-button>
+      <el-button type="primary" size="small" @click="save">保存</el-button>
       <el-button plain size="small" @click="go_back">取消</el-button>
     </div>
     <!-- 新增物资蒙层 -->
@@ -379,21 +524,6 @@
                 label="重量单位"
                 width="150">
             </el-table-column>
-            <!--<el-table-column
-                prop="natureGoods"
-                label="货物特性"
-                width="100">
-            </el-table-column>
-            <el-table-column
-                prop="mnemonicCode"
-                label="物资代码"
-                width="100">
-            </el-table-column>
-            <el-table-column
-                prop="catalogName"
-                label="品名大类"
-                width="100">
-            </el-table-column>-->
           </el-table>
         </div>
       </div>
@@ -500,13 +630,14 @@
           inp9: '',
           inp10: '',
           inp11: '',
-          inp12: 0,
+          inp12: true,
           inp13: '',
           inp14: '',
           inp15: '',
           inp16: '',
         },
-        form_rules: {
+        /*form_rules: {
+
           inp1: {required: true, message: '请选择仓库', trigger: 'blur'},
           inp2: {required: true, message: '请选择运输方式', trigger: 'blur'},
           inp3: {required: true, message: '请选择入仓时间', trigger: 'blur'},
@@ -520,14 +651,15 @@
           inp8: {required: true, message: '请输入送货点', trigger: 'blur'},
           inp9: {required: true, message: '请输入发货详细地址', trigger: 'blur'},
           inp10: {required: true, message: '请输入联系人', trigger: 'blur'},
-          /*inp11: [
+          /!*inp11: [
             {required: true, message: '请输入联系电话', trigger: 'blur'},
             {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
-          ],*/
+          ],*!/
           inp12: {required: true, message: '请选择是否平台派车', trigger: 'blur'},
           inp15: {required: true, message: '请选择计划发货日期', trigger: 'blur'},
           inp16: {required: true, message: '请输入装车备注', trigger: 'blur'},
-        },
+
+        },*/
         //客户名称下拉数据
         cusNameArr: [],
         operator: [],
@@ -611,10 +743,33 @@
           return {}
         }
       },
-      isEdit(){
+      isEdit() {
         return sessionStorage.getItem('warehouse-incoming-edit') === 'true'
       },
-
+      form_rules() {
+        return {
+          inp1: {required: true, message: '请选择仓库', trigger: 'blur'},
+          inp2: {required: true, message: '请选择运输方式', trigger: 'blur'},
+          inp3: {required: true, message: '请选择入仓时间', trigger: 'blur'},
+          inp4: {required: this.form.inp12, message: '请输入发货点联系人', trigger: 'blur'},
+          inp5: [
+            {required: this.form.inp12, message: '请输入发货点联系方式', trigger: 'blur'},
+            {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
+          ],
+          inp6: {required: true, message: '请输入客户名称', trigger: 'blur'},
+          inp7: {required: this.form.inp12, message: '请输入发货点', trigger: 'blur'},
+          inp8: {required: false, message: '请输入送货点', trigger: 'blur'},
+          inp9: {required: this.form.inp12, message: '请输入发货详细地址', trigger: 'blur'},
+          inp10: {required: true, message: '请输入联系人', trigger: 'blur'},
+          /*inp11: [
+            {required: true, message: '请输入联系电话', trigger: 'blur'},
+            {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
+          ],*/
+          inp12: {required: true, message: '请选择是否平台派车', trigger: 'blur'},
+          inp15: {required: this.form.inp12, message: '请选择计划发货日期', trigger: 'blur'},
+          inp16: {required: true, message: '请输入装车备注', trigger: 'blur'},
+        }
+      },
     },
     watch: {
       'enclosure_flag': function (val) {
@@ -636,7 +791,14 @@
         }).finally(() => {
           this.enclosure_loading = false;
         })
-      }
+      },
+      "form.inp12"(val) {
+        this.form.inp7 = '';
+        this.form.inp9 = '';
+        this.form.inp4 = '';
+        this.form.inp5 = '';
+        this.form.inp15 = '';
+      },
     },
     mounted() {
       // 获取入库下拉数据
@@ -942,8 +1104,8 @@
               customerId: this.form.inp6,
               customerName: this.getNameById(this.cusNameArr, this.form.inp6, 'id').name,
               deliverPlace: this.form.inp7,
-              deliverLocation: this.form.inp8,
-              loadingLocation: this.form.inp9,
+              deliverLocation: this.form.inp9,
+              loadingLocation: this.form.inp8,
               operatorId: this.form.inp10,
               operatorName: this.getNameById(this.operator, this.form.inp10, 'id').name,
               // goodsSenderPhone: this.form.inp11,
@@ -989,7 +1151,7 @@
                 this.go_back();
               });
             } else {
-              api_warehouse.storage.addStorage(this, sendData).then(()=>{
+              api_warehouse.storage.addStorage(this, sendData).then((res) => {
                 this.$message.info(res.data.msg);
                 this.go_back();
               });
@@ -1249,6 +1411,30 @@
 </script>
 
 <style lang="less" scoped>
+  /deep/ .dialog_close {
+    top: 13px !important;
+  }
+
+  .s-button {
+    padding: 0;
+  }
+
+  /deep/ .cell {
+    padding: 0;
+  }
+
+  /deep/ .el-table th > .cell {
+    padding: 0;
+  }
+
+  .line {
+    display: inline-block;
+    height: 10px;
+    width: 1px;
+    background: #e0e0e0;
+    margin: 0 10px;
+  }
+
   .cls {
     width: 100%;
   }
@@ -1259,13 +1445,15 @@
     height: 16px;
     font-size: 16px;
     font-weight: bold;
-    margin-bottom: 20px;
+    position: relative;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 5px;
 
     &:before {
       content: '';
       display: inline-block;
       margin-right: 5px;
-      height: 100%;
+      height: 18px;
       width: 3px;
       background: #409EFF;
     }
@@ -1278,6 +1466,7 @@
 
   .detail_content {
     flex: 1;
+    margin-bottom: 10px;
   }
 
   /deep/ .detail_content_table {
@@ -1355,14 +1544,50 @@
     .tips {
       font-weight: bold;
       font-size: 15px;
-      margin-bottom: 20px;
+      background: rgb(248,248,248);
+      padding: 10px 0;
     }
 
-    .detail_content_form {
-      width: 700px;
+    /deep/ .detail_content_form {
+      width: 100%;
+
+      .my-el-form {
+        display: flex;
+        flex-flow: row wrap;
+
+        > div {
+          width: 100%;
+          display: flex;
+        }
+      }
 
       .el-form-item {
-        margin-right: 20px;
+        width: 100%;
+        margin-right: 0px;
+        display: flex;
+
+        .el-form-item__content {
+          textarea {
+            width: 100%;
+          }
+
+          .el-select {
+            width: 100% !important;
+          }
+
+          flex: 1;
+          margin-right: 20px;
+
+          .el-input {
+            width: 100% !important;
+          }
+
+          .el-input__inner {
+            flex: 1;
+            width: 100% !important;
+          }
+
+        }
       }
 
       /deep/ .el-textarea__inner {
@@ -1381,8 +1606,8 @@
     }
 
     .sure-btn {
-      height: 50px;
-      margin-top: 20px;
+      height: 50px !important;
+      flex: 0 0 50px;
     }
 
   }

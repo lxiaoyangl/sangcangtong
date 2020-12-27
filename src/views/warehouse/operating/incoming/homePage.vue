@@ -32,7 +32,7 @@
       <div class="item">
         <i class="el-icon-document-checked"></i>
         <div>
-          <p>{{incommingCount.platfromNum1}}</p>
+          <p>{{incommingCount.platfromNum + incommingCount.customerNum}}</p>
           <p>总提单数量</p>
         </div>
       </div>
@@ -89,32 +89,27 @@
             height="100%"
             border
             header-row-class-name="table_header"
-            @selection-change="table_selection_change"
         >
-          <el-table-column
-              type="selection"
-              width="55">
-          </el-table-column>
           <el-table-column
               prop="orderNo"
               label="订单号"
-              min-width="170">
+              width="170px">
           </el-table-column>
           <el-table-column
-              prop="deliverName"
+              prop="customerName"
               label="客户名称"
-              min-width="120">
+              width="120px">
           </el-table-column>
           <el-table-column
               prop="putInPlanDate"
               label="计划入仓日期"
               :formatter="timeFormater"
-              min-width="120">
+              width="100px">
           </el-table-column>
           <el-table-column
               prop="shippingTypeName"
               label="运输方式"
-              min-width="100">
+              width="70px">
           </el-table-column>
 
           <el-table-column
@@ -123,15 +118,16 @@
               min-width="120">
           </el-table-column>
           <el-table-column
-              prop="warehouseName"
+              prop="isPlfDistVeh"
               label="平台派车"
-              min-width="100">
-          </el-table-column>
+              width="70"
+              :formatter="(row,self,val)=>{return val ? '是' : '否'}"
+          ></el-table-column>
           <el-table-column
               prop="deliverPlanDate"
               label="计划发货日期"
               :formatter="timeFormater"
-              min-width="120">
+              width="100px">
           </el-table-column>
           <el-table-column
               prop="remark"
@@ -150,7 +146,7 @@
           <el-table-column
               prop="orderState.description"
               label="订单状态"
-              min-width="100">
+              width="80">
             <!--<template slot-scope="scope">
                 <span v-show="scope.row.orderState === 'orderState'">未提交</span>
                 <span v-show="scope.row.orderState === 1">待审核</span>
@@ -280,7 +276,7 @@
       },
       modalTitle() {
         if (!this.tableRow.customerName) return ''
-        return `订单号: ${this.tableRow.orderNo} - 客户名称: ${this.tableRow.customerName} - 订单状态: ${this.tableRow.orderState.description}`
+        return `${this.tableRow.orderNo} - ${this.tableRow.customerName} - ${this.tableRow.orderState.description}`
       },
     },
     methods: {
@@ -289,7 +285,7 @@
         if (value) {
           return value.slice(0, 11)
         }
-        return value
+        return '--'
       },
 
       //订单状态改变
@@ -433,10 +429,15 @@
 </script>
 
 <style scoped lang="less">
+ @import "../../common.less";
 
   /deep/ .el-table {
     border-collapse: collapse;
     border-bottom: 1px solid #e0e0e0;
+
+    .cell {
+      padding: 0;
+    }
 
     th, td {
       padding: 10px 0;
@@ -568,6 +569,7 @@
 
   header {
     .flex-center-y;
+    justify-content: space-between;
     height: 80px;
 
     .item {
@@ -576,6 +578,7 @@
       margin: 10px;
       height: 80px;
       width: 220px;
+      flex: 1;
 
       i {
         font-size: 30px;
@@ -618,13 +621,14 @@
           color: white;
         }
       }
-    &:nth-child(5) {
-       background: #67C23A;
 
-    i {
-        color: white;
+      &:nth-child(5) {
+        background: #67C23A;
+
+        i {
+          color: white;
+        }
       }
-    }
 
       p:first-child {
         color: white;

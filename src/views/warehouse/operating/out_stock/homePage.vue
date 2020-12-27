@@ -29,6 +29,13 @@
           <p>代办累计提单</p>
         </div>
       </div>
+      <div class="item">
+        <i class="el-icon-document-checked"></i>
+        <div>
+          <p>{{incommingCount.platfromNum + incommingCount.customerNum}}</p>
+          <p>总提单数量</p>
+        </div>
+      </div>
     </header>
 
     <div class="filters">
@@ -82,32 +89,27 @@
             height="100%"
             border
             header-row-class-name="table_header"
-            @selection-change="table_selection_change"
         >
-          <el-table-column
-              type="selection"
-              width="55">
-          </el-table-column>
           <el-table-column
               prop="orderNo"
               label="订单号"
-              min-width="170">
+              width="170px">
           </el-table-column>
           <el-table-column
-              prop="deliverName"
+              prop="customerName"
               label="客户名称"
-              min-width="120">
+              width="120px">
           </el-table-column>
           <el-table-column
               prop="putOutPlanDate"
               label="计划出仓日期"
               :formatter="timeFormater"
-              min-width="120">
+              width="100px">
           </el-table-column>
           <el-table-column
               prop="shippingTypeName"
               label="运输方式"
-              min-width="100">
+              width="70px">
           </el-table-column>
 
           <el-table-column
@@ -116,15 +118,16 @@
               min-width="120">
           </el-table-column>
           <el-table-column
-              prop="warehouseName"
+              prop="isPlfDistVeh"
               label="平台派车"
-              min-width="100">
-          </el-table-column>
+              width="70"
+              :formatter="(row,self,val)=>{return val ? '是' : '否'}"
+          ></el-table-column>
           <el-table-column
               prop="deliverPlanDate"
               label="计划发货日期"
               :formatter="timeFormater"
-              min-width="120">
+              width="100px">
           </el-table-column>
           <el-table-column
               prop="remark"
@@ -143,7 +146,7 @@
           <el-table-column
               prop="orderState.description"
               label="订单状态"
-              min-width="100">
+              width="80">
             <!--<template slot-scope="scope">
                 <span v-show="scope.row.orderState === 'orderState'">未提交</span>
                 <span v-show="scope.row.orderState === 1">待审核</span>
@@ -218,7 +221,7 @@
   import audit from './audit.vue'
 
   export default {
-    name: "out_stock_homePage",
+    name: "homePage",
     components: {
       audit
     },
@@ -259,7 +262,7 @@
         orderNo: '',//订单号
         tableRow: {},//选中的表格数据
         dialogVisible: false,//是否显示弹出窗,
-        incommingCount: {},//头部入仓统计,
+        incommingCount: {},//头部出仓统计,
 
         isCheckProp: false,//是否为查看状态,
         isHeightSearch: false,//是否高级搜索;
@@ -273,7 +276,7 @@
       },
       modalTitle() {
         if (!this.tableRow.customerName) return ''
-        return `订单号: ${this.tableRow.orderNo} - 客户名称: ${this.tableRow.customerName} - 订单状态: ${this.tableRow.orderState.description}`
+        return `${this.tableRow.orderNo} - ${this.tableRow.customerName} - ${this.tableRow.orderState.description}`
       },
     },
     methods: {
@@ -282,7 +285,7 @@
         if (value) {
           return value.slice(0, 11)
         }
-        return value
+        return '--'
       },
 
       //订单状态改变
@@ -372,10 +375,10 @@
             id: row.id,
             orderState: 'PENDING'
           };
-          api_warehouse.storage.outSrockSubmit(this, data).then((res) => {
+          api_warehouse.storage.inComingSubmit(this, data).then((res) => {
             this.$message.info(res.data.msg);
             this.get_data();
-            api_warehouse.storage.getOutStockCount().then(res => {
+            api_warehouse.storage.getIncomingCount().then(res => {
               this.incommingCount = res.data.data;
             });
           })
@@ -386,10 +389,10 @@
       closeDialog(payload) {
         this.$message.info(payload.msg)
         this.dialogVisible = false;
-        api_warehouse.storage.getOutStockCount().then(res => {
+        api_warehouse.storage.getIncomingCount().then(res => {
           this.incommingCount = res.data.data;
         });
-        this.get_data();
+        this.get_data()
       },
 
       //查询
@@ -413,7 +416,7 @@
       //新建订单
       addNew() {
         sessionStorage.setItem('warehouse-incoming-edit', 'false');
-        this.$router.push({name: 'out_stock_add'});
+        this.$router.push({name: 'Incoming_add'});
       }
     },
     mounted() {
@@ -426,10 +429,15 @@
 </script>
 
 <style scoped lang="less">
+  @import "../../common.less";
 
   /deep/ .el-table {
     border-collapse: collapse;
     border-bottom: 1px solid #e0e0e0;
+
+    .cell {
+      padding: 0;
+    }
 
     th, td {
       padding: 10px 0;
@@ -555,20 +563,22 @@
     height: 100%;
     .flex;
     flex-flow: column;
-    padding: 10px;
-    background: #eaeaea;
+    padding: 1px;
+    background: #fff;
   }
 
   header {
     .flex-center-y;
+    justify-content: space-between;
     height: 80px;
 
     .item {
       padding: 10px;
       .flex-center-y;
-      margin-right: 10px;
+      margin: 10px;
       height: 80px;
       width: 220px;
+      flex: 1;
 
       i {
         font-size: 30px;
@@ -612,6 +622,14 @@
         }
       }
 
+      &:nth-child(5) {
+        background: #67C23A;
+
+        i {
+          color: white;
+        }
+      }
+
       p:first-child {
         color: white;
         font-size: 18px;
@@ -628,8 +646,8 @@
 
   .filters {
     background: white;
-    margin: 10px 0;
-    padding: 10px;
+    margin: 0px 0;
+    padding: 5px;
 
     .search {
       span {
@@ -711,7 +729,7 @@
     flex: 1;
 
     .table {
-      height: calc(100% - 50px);
+      height: calc(100% - 40px);
     }
   }
 </style>

@@ -16,6 +16,11 @@ export default [
     component: () => import("@/views/warehouse/operating/incoming/add.vue")
   },
   {
+    path: '/warehouse/Incoming/edit',
+    name: 'Incoming_edit',
+    component: () => import("@/views/warehouse/operating/incoming/edit.vue")
+  },
+  {
     path: '/warehouse/Incoming/audit',
     name: 'Incoming_audit',
     component: () => import("@/views/warehouse/operating/incoming/audit.vue")
@@ -41,6 +46,11 @@ export default [
     name: 'out_stock_add',
     component: () => import("@/views/warehouse/operating/out_stock/add.vue")
   },
+  /*{
+    path: '/warehouse/out_stock/edit',
+    name: 'out_stock_edit',
+    component: () => import("@/views/warehouse/operating/out_stock/edit.vue")
+  },*/
   {
     path: '/warehouse/out_stock/audit',
     name: 'out_stock_audit',

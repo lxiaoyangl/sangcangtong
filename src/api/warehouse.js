@@ -19,10 +19,8 @@ warehouse.storage.addStorage = function (that, data) {
 
 //出仓申请
 warehouse.storage.addOutStorage = function (that, data) {
-  api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/out/addStorage/CUSTOMER', data).then(res => {
-    console.log('新增结果', res);
-    // this.$message.success(res.data.data);
-    that.go_back();
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/out/addStorage/CUSTOMER', data).then(res => {
+    return res
   }, err => {
     console.log('新增报错', err);
 
@@ -64,7 +62,7 @@ warehouse.storage.inComingList = function (that, data) {
       url += `&${row}=${timestampToTime(data[row])}`
     }
   }
-  return  api.post(url, data).then(res => {
+  return api.post(url, data).then(res => {
     that.table_data = [...res.data.data.records];
     that.page.total = res.data.data.total;
     return res
@@ -84,7 +82,7 @@ warehouse.storage.outStockList = function (that, data) {
       url += `&${row}=${timestampToTime(data[row])}`
     }
   }
-  return  api.post(url, data).then(res => {
+  return api.post(url, data).then(res => {
     that.table_data = [...res.data.data.records];
     that.page.total = res.data.data.total;
     return res
