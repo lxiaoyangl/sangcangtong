@@ -1,14 +1,11 @@
 <template>
   <div class="container">
-    <div class="tips">
-      订单号: {{prepPageParams.orderNo}} - 客户名称: {{prepPageParams.customerName}} - 订单状态: {{prepPageParams.orderState}} <span style="color: red"></span>
-    </div>
-    <div class="base-info">
+    <div class="base-info" style="width: 1000px;">
       <p class="title">入仓基本信息</p>
       <div class="bi-content">
-        <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index">
+        <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index" :style="{width:i.width,visibility:i.hidden}">
           <span class="label">{{i.name}}:</span>
-          <span class="value">{{i.value}}</span>
+          <span class="value">{{i.value ? i.value : '--'}}</span>
         </div>
       </div>
     </div>
@@ -24,79 +21,79 @@
         <el-table-column
             prop="name"
             label="品名"
-            min-width="160">
+            width="160px">
         </el-table-column>
         <el-table-column
             prop="placeOrigin"
             label="产地"
-            min-width="120">
+            width="80px">
         </el-table-column>
         <el-table-column
             prop="textureMaterial"
             label="材质"
-            min-width="160">
+            width="80">
         </el-table-column>
         <el-table-column
             prop="specifications"
             label="规格"
-            min-width="120">
+            width="80">
         </el-table-column>
 
         <el-table-column
             prop="inPlanNum"
             label="计划入仓数量"
-            min-width="120">
+            width="100px">
         </el-table-column>
         <el-table-column
             prop="numUnit"
             label="数量单位"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="inPlanWeight"
             label="计划入仓重量"
-            min-width="120">
+            width="100">
         </el-table-column>
         <el-table-column
             prop="weightUnit"
             label="重量单位"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="weightCoefficient"
-            label="里重"
-            min-width="120">
+            label="理重"
+            width="40">
         </el-table-column>
         <el-table-column
             prop="measureMethod"
             label="计量方式"
-            min-width="120">
+           width="70">
         </el-table-column>
 
         <el-table-column
             prop="carNum"
             label="车牌号"
-            min-width="120">
+            width="80">
         </el-table-column>
         <el-table-column
             prop="driver"
             label="司机"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="idCardType"
             label="证件类型"
-            min-width="120">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="idCardNum"
             label="证件号码"
-            min-width="120">
+            width="120">
         </el-table-column>
         <el-table-column
             prop="contactPhone"
             label="联系电话"
-            min-width="120">
+            width="120">
         </el-table-column>
         <el-table-column
             prop="remark"
@@ -128,8 +125,7 @@
             requeire
             type="textarea"
             placeholder="请输入拒绝理由"
-            :disabled="isPass"
-            v-model="textarea">
+            v-model="denyInfo">
         </el-input>
       </div>
       <div class="btn-div">
@@ -155,7 +151,7 @@
           page_size: 20,
         },
         table_data: [],
-        textarea: '',//拒绝意见
+        denyInfo: '',//拒绝意见
         isPass: '',
       }
     },
@@ -165,24 +161,27 @@
         if (!info) return [];
         return [
           {name: '订单号', key: 'orderNo', value: info.orderNo},
-          {name: '是否平台派车', key: 'isPlfDistVeh', value: info.isPlfDistVeh},
-          {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo},
+          {name: '平台派车', key: 'isPlfDistVeh', value: info.isPlfDistVeh ? '是' : '否'},
+          {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo ? info.linkedOrderNo : '--'},
           {name: '客户号', key: 'customerId', value: info.customerId},
           {name: '计划发货日期', key: 'deliverPlanDate', value: info.deliverPlanDate},
           {name: '经办人', key: 'operatorName', value: info.operatorName},
           {name: '客户名称', key: 'customerName', value: info.customerName},
           {name: '发货点', key: 'deliverPlace', value: info.deliverPlace},
           {name: '最后修改人', key: 'updateUser', value: info.updateUser},
-          {name: '订单状态', key: 'orderState', value: info.orderState},
-          {name: '送货点', key: 'acceptPlace', value: info.acceptPlace},
+          {name: '订单状态', key: 'orderState', value: info.orderState.description},
+          {name: '发货详细地址', key: 'deliverLocation', value: info.deliverLocation},
           {name: '最后修改时间', key: 'updateTime', value: info.updateTime},
           {name: '入仓名称', key: 'warehouseName', value: info.warehouseName},
-          {name: '送货详细地址', key: 'deliverLocation', value: info.deliverLocation},
-          {name: '订单备注', key: 'remark', value: info.remark},
+          {name: '发货点联系人', key: 'deliverName', value: info.deliverName},
+          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
           {name: '计划入仓日期', key: 'putInPlanDate', value: info.putInPlanDate},
-          {name: '送货点联系人', key: 'deliverName', value: info.deliverName},
+          {name: '发货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
+          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
           {name: '运输方式', key: 'shippingTypeName', value: info.shippingTypeName},
-          {name: '送货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
+          {name: '送货点', key: 'acceptPlace', value: info.acceptPlace},
+          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
+          {name: '订单备注', key: 'remark', value: info.remark,width:'100%'},
         ]
       }
     },
@@ -198,11 +197,36 @@
           pageNo: this.page.page_num,
           pageSize: this.page.page_size,
         };
-        api_warehouse.storage.getMaterialList(this, data)
+        api_warehouse.storage.getMaterialList(this, data).then(res => {
+          this.table_data = [...res.data.data.records];
+          this.page.total = res.data.data.total;
+        })
       },
       doAudit() {
-        this.$confirm("是否确定提交?").then(()=>{
-          this.$emit('onAudit');
+
+        if (this.isPass === '') {
+          this.$message.error("请选择同意或者拒绝");
+          return
+        }
+
+        if (this.isPass === false) {
+          if (!this.denyInfo) {
+            this.$message.error("请输入拒绝申请理由");
+            return
+          }
+        }
+
+        this.$confirm("是否确定提交?").then(() => {
+          let data = {
+            orderNo: this.orderNo,
+            result: this.isPass === true ? 1 : 0,
+            suggest: this.denyInfo,
+            businessType: "PUT_IN"
+          }
+          api_warehouse.storage.inComingAudit(this, data).then((res) => {
+            this.$emit('onAudit', res.data);
+          });
+
         })
       }
     },
@@ -224,7 +248,6 @@
   }
 
   .container {
-    padding: 10px;
     height: 100%;
     width: 100%;
     overflow: auto;
@@ -241,13 +264,15 @@
       height: 16px;
       font-size: 16px;
       font-weight: bold;
-      margin-bottom: 20px;
+      position: relative;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 5px;
 
       &:before {
         content: '';
         display: inline-block;
         margin-right: 5px;
-        height: 100%;
+        height: 18px;
         width: 3px;
         background: #409EFF;
       }
@@ -255,12 +280,11 @@
 
     .base-info {
       height: auto;
-      width: 100%;
+      width: 100% !important;
       overflow: auto;
-      margin-top: 10px;
 
       .bi-content {
-        margin-top: 30px;
+        margin-top: 0px;
         font-size: 14px;
         display: flex;
         flex-flow: row wrap;
@@ -268,6 +292,7 @@
         .bic-item {
           margin-right: 20px;
           margin-bottom: 10px;
+          display: flex;
 
           span {
             display: inline-block;
@@ -275,19 +300,19 @@
 
           span:first-child {
             width: 115px;
+            flex: 0 0 115px;
           }
 
           span:last-child {
             width: 180px;
             color: #999999;
+            flex: 1;
           }
         }
       }
     }
 
     .goods-list {
-      margin-top: 20px;
-
 
     }
 
@@ -299,8 +324,7 @@
       }
 
       .input-div {
-        width: 200px;
-        margin-bottom: 30px;
+        margin-bottom: 5px;
       }
     }
   }

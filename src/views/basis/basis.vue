@@ -12,6 +12,7 @@
                 </div>
                 <div :class="one_level_selected===item.id?'basis_top_left_nav basis_top_left_nav_active':'basis_top_left_nav'" v-for="(item,index) in one_level_nav_arr" :key="index" @click="change_one_level(item)">
                     <span><i :class="item.icon"></i> {{item.name}}</span>
+                    <div class="line"></div>
                 </div>
             </div>
 
@@ -658,7 +659,7 @@ export default {
                 align-items: center;
                 justify-content: center;
                 color: rgba(0,0,0,1);
-                font-size: 13px;
+                font-size: 17px;
                 box-sizing: border-box;
                 border-bottom: 2px solid #fff;
             }
@@ -669,6 +670,13 @@ export default {
                 border-bottom: 2px solid #ee6e18;
                 color: #ee6e18;
             }
+        }
+        .line {
+            display: inline-block;
+            height: 20px;
+            width: 1px;
+            background: #e0e0e0;
+            margin: 0 2px;
         }
         .basis_top_right{
             height: 100%;

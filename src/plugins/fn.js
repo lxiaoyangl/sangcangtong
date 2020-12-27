@@ -121,7 +121,7 @@ can.get_idType = function(that){
 // 获取计量方式下拉信息
 can.get_valuationType = function(that){
     that.$axios.post('/dictionaryData/baseList',{
-        dictionaryType:'valuationType'
+        dictionaryType:'measure_method'
     }).then(res=>{
         console.log(res);
         res.data.data.map(item=>{

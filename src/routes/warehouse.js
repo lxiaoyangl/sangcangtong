@@ -16,6 +16,11 @@ export default [
     component: () => import("@/views/warehouse/operating/incoming/add.vue")
   },
   {
+    path: '/warehouse/Incoming/edit',
+    name: 'Incoming_edit',
+    component: () => import("@/views/warehouse/operating/incoming/edit.vue")
+  },
+  {
     path: '/warehouse/Incoming/audit',
     name: 'Incoming_audit',
     component: () => import("@/views/warehouse/operating/incoming/audit.vue")
@@ -27,6 +32,11 @@ export default [
   },
   // 仓储协同，业务操作，出库预报
   {
+    path: '/warehouse/out_stock/homePage',
+    name: 'out_stock_homePage',
+    component: () => import("@/views/warehouse/operating/out_stock/homePage.vue")
+  },
+  {
     path: '/warehouse/out_stock/list',
     name: 'out_stock_list',
     component: () => import("@/views/warehouse/operating/out_stock/list.vue")
@@ -36,6 +46,11 @@ export default [
     name: 'out_stock_add',
     component: () => import("@/views/warehouse/operating/out_stock/add.vue")
   },
+  /*{
+    path: '/warehouse/out_stock/edit',
+    name: 'out_stock_edit',
+    component: () => import("@/views/warehouse/operating/out_stock/edit.vue")
+  },*/
   {
     path: '/warehouse/out_stock/audit',
     name: 'out_stock_audit',
