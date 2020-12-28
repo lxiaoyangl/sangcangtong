@@ -1,14 +1,14 @@
 <template>
   <div class="add" v-loading="loading">
     <div class="tips" v-show="isEdit">
-      订单号: {{prevPageData.orderNo}} - 客户名称: {{prevPageData.customerName}} - 订单状态: {{prevPageData.orderState.description}} <span style="color: red"></span>
+      {{prevPageData.orderNo}} - <span style="color: red">{{prevPageData.orderState.description}}</span> -  {{prevPageData.customerName}}
     </div>
     <div class="base-info">
       <p class="title">过户基本信息</p>
     </div>
     <!--新增的表单-->
     <div class="detail_content_form">
-      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
+      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="right" label-width="125px">
         <div>
           <el-form-item label="过出方名称" prop="inp1">
             <el-select clearable v-model="form.inp1" placeholder="过出方名称" filterable size="mini">
@@ -399,7 +399,7 @@
           inp9: '',
           inp10: '',
           inp11: '',
-          inp12: true,
+          inp12: false,
           inp13: '',
           inp14: '',
           inp15: '',
@@ -522,8 +522,6 @@
           inp3: {required: true, message: '请选计划过出日期', trigger: 'blur'},
           inp4: {required: true, message: '请选计仓库名称', trigger: 'blur'},
           inp5: {required: true, message: '请选择经办人', trigger: 'blur'},
-          inp6: {required: true, message: '请输入备注', trigger: 'blur'}
-          ,
         }
       },
     },
@@ -548,12 +546,14 @@
           this.enclosure_loading = false;
         })
       },
-      "form.inp12"(val) {
-        this.form.inp7 = '';
-        this.form.inp9 = '';
-        this.form.inp4 = '';
-        this.form.inp5 = '';
-        this.form.inp15 = '';
+      "form.inp12"(newVal,oldVal) {
+        if(!newVal){
+          this.form.inp7 = '';
+          this.form.inp9 = '';
+          this.form.inp4 = '';
+          this.form.inp5 = '';
+          this.form.inp15 = '';
+        }
       },
     },
     mounted() {
@@ -858,6 +858,7 @@
               updateUser: getUserInfo().username,
               updateTime: timestampToTime(new Date()),
               remark: this.form.inp6,
+              orderSource:'PLATFORM',
 
               /* putInPlanDate: timestampToTime(this.form.inp3),
                deliverName: this.form.inp4,
@@ -1173,6 +1174,7 @@
 </script>
 
 <style lang="less" scoped>
+  @import "../../common.less";
   /deep/ .dialog_close {
     top: 13px !important;
   }

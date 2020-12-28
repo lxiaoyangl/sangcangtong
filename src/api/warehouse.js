@@ -7,7 +7,7 @@ let warehouse = {
 };
 //入仓申请
 warehouse.storage.addStorage = function (that, data) {
-  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/addStorage/CUSTOMER', data).then(res => {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/addStorage', data).then(res => {
     return res
   }, err => {
 
@@ -19,7 +19,7 @@ warehouse.storage.addStorage = function (that, data) {
 
 //出仓申请
 warehouse.storage.addOutStorage = function (that, data) {
-  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/out/addStorage/CUSTOMER', data).then(res => {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/out/addStorage', data).then(res => {
     return res
   }, err => {
     console.log('新增报错', err);

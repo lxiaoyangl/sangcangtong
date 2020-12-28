@@ -1,14 +1,14 @@
 <template>
   <div class="add" v-loading="loading">
     <div class="tips" v-show="isEdit">
-      订单号: {{prevPageData.orderNo}} - 客户名称: {{prevPageData.customerName}} - 订单状态: {{prevPageData.orderState.description}} <span style="color: red"></span>
+      {{prevPageData.orderNo}} - <span style="color: red">{{prevPageData.orderState.description}}</span> -  {{prevPageData.customerName}}
     </div>
     <div class="base-info">
       <p class="title">入仓基本信息</p>
     </div>
     <!--新增的表单-->
     <div v-if="!isEdit" class="detail_content_form">
-      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
+      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="right" label-width="125px">
         <div>
           <el-form-item label="客户名称" prop="inp6">
             <el-select clearable v-model="form.inp6" placeholder="请选择客户" filterable size="mini">
@@ -63,7 +63,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="是否平台派车" prop="inp12">
+          <el-form-item label="平台派车" prop="inp12">
             <template>
               <el-radio v-model="form.inp12" :label="true">是</el-radio>
               <el-radio v-model="form.inp12" :label="false">否</el-radio>
@@ -83,7 +83,7 @@
           <el-form-item style="width: 33.33%" label="发货点" prop="inp7">
             <el-input v-model="form.inp7" placeholder="发货点" size="mini"></el-input>
           </el-form-item>
-          <el-form-item style="width: 33.33%" label="发货详细地址" prop="inp9">
+          <el-form-item style="width: 66.66%" label="发货详细地址" prop="inp9">
             <el-input v-model="form.inp9" placeholder="发货详细地址" size="mini"></el-input>
           </el-form-item>
         </div>
@@ -117,7 +117,7 @@
     </div>
     <!--修改的表单-->
     <div v-if="isEdit" class="detail_content_form">
-      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="left" label-width="125px">
+      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="right" label-width="125px">
 
         <div>
           <el-form-item label="订单号">
@@ -198,12 +198,12 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="width: 33.33%" label="是否平台派车" prop="inp12">
+          <el-form-item style="width: 33.33%" label="平台派车" prop="inp12">
             <template>
               <el-radio v-model="form.inp12" :label="true">是</el-radio>
               <el-radio v-model="form.inp12" :label="false">否</el-radio>
             </template>
-            <!--<el-select clearable v-model="form.inp12" placeholder="是否平台派车" size="mini">
+            <!--<el-select clearable v-model="form.inp12" placeholder="平台派车" size="mini">
               <el-option
                   v-for="item in is_platform_send_car_arr"
                   :key="item.value"
@@ -218,7 +218,7 @@
           <el-form-item style="width: 33.33%" label="发货点" prop="inp7">
             <el-input v-model="form.inp7" placeholder="发货点" size="mini"></el-input>
           </el-form-item>
-          <el-form-item style="width: 33.33%" label="发货详细地址" prop="inp9">
+          <el-form-item style="width: 66.66%" label="发货详细地址" prop="inp9">
             <el-input v-model="form.inp9" placeholder="发货详细地址" size="mini"></el-input>
           </el-form-item>
         </div>
@@ -630,7 +630,7 @@
           inp9: '',
           inp10: '',
           inp11: '',
-          inp12: true,
+          inp12: false,
           inp13: '',
           inp14: '',
           inp15: '',
@@ -767,7 +767,6 @@
           ],*/
           inp12: {required: true, message: '请选择是否平台派车', trigger: 'blur'},
           inp15: {required: this.form.inp12, message: '请选择计划发货日期', trigger: 'blur'},
-          inp16: {required: true, message: '请输入装车备注', trigger: 'blur'},
         }
       },
     },
@@ -792,12 +791,14 @@
           this.enclosure_loading = false;
         })
       },
-      "form.inp12"(val) {
-        this.form.inp7 = '';
-        this.form.inp9 = '';
-        this.form.inp4 = '';
-        this.form.inp5 = '';
-        this.form.inp15 = '';
+      "form.inp12"(newVal,oldVal) {
+        if(!newVal){
+          this.form.inp7 = '';
+          this.form.inp9 = '';
+          this.form.inp4 = '';
+          this.form.inp5 = '';
+          this.form.inp15 = '';
+        }
       },
     },
     mounted() {
@@ -844,6 +845,8 @@
         this.form.inp12 = obj.isPlfDistVeh;
         this.form.inp15 = obj.deliverPlanDate;
         this.form.inp16 = obj.remark;
+
+
 
 
         // 物资查询
@@ -1119,7 +1122,8 @@
               // orderState:'',
               materialList: [...itemList],
               fileList: [...this.file_list],
-              customerNo:'1',
+              customerNo:this.getNameById(this.cusNameArr, this.form.inp6, 'id').companyNo,
+              orderSource:'PLATFORM',
             };
             this.options.map(item => {
               if (item.value === this.form.inp1) {
@@ -1412,6 +1416,7 @@
 </script>
 
 <style lang="less" scoped>
+  @import "../../common.less";
   /deep/ .dialog_close {
     top: 13px !important;
   }

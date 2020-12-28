@@ -65,10 +65,7 @@
           <el-button type="success" @click="search" size="mini">查询</el-button>
           <el-button type="primary" @click="resetFilter" size="mini">重置</el-button>
           <el-button type="warning" @click="heightFilter" size="mini">高级筛选</el-button>
-
-          <div class="add-new">
-            <el-button type="success" @click="addNew" size="mini" v-show="tabsArr[tabsAc].type === 0">新建订单</el-button>
-          </div>
+          <el-button type="success" @click="addNew" size="mini" v-show="tabsArr[tabsAc].type === 0">新建订单</el-button>
         </div>
         <div class="height-search" v-show="isHeightSearch">
           <span>计划入仓时间</span>
@@ -109,7 +106,7 @@
           <el-table-column
               prop="transferInName"
               label="过入方名称"
-              width="70px">
+              width="100px">
           </el-table-column>
 
           <el-table-column
@@ -150,18 +147,18 @@
               fixed="right"
               label="操作"
               align="center"
-              width="130">
+              width="110">
             <template slot-scope="scope">
               <div class="tableButton">
                 <el-tooltip effect="dark" content="审核" placement="top">
                   <el-button v-show="filterType == 1" @click="auditRow(scope.row)" type="primary" icon="el-icon-reading" circle></el-button>
                 </el-tooltip>
                 <el-tooltip effect="dark" content="修改" placement="top">
-                  <el-button v-show="filterType == 1 || filterType == 3" @click="editRow(scope.row)" type="primary" icon="el-icon-edit" circle></el-button>
+                  <el-button v-show="filterType == 1 || filterType == 4" @click="editRow(scope.row)" type="primary" icon="el-icon-edit" circle></el-button>
                 </el-tooltip>
 
                 <el-tooltip effect="dark" content="查看" placement="top">
-                  <el-button v-show="filterType == 0 || filterType == 2 || filterType == 3" @click="checkRow(scope.row)" type="primary" icon="el-icon-search" circle></el-button>
+                  <el-button v-show="filterType == 0 || filterType == 2 || filterType == 4" @click="checkRow(scope.row)" type="primary" icon="el-icon-search" circle></el-button>
                 </el-tooltip>
 
                 <el-tooltip effect="dark" content="提交" placement="top">
@@ -193,6 +190,11 @@
         :visible.sync="dialogVisible"
         width="90%"
     >
+      <template slot="title">
+        <div class='titleZise'>
+          {{modalTitle.orderNo}} - <span style="color: red">{{modalTitle.description}}</span> - {{modalTitle.customerName}}
+        </div>
+      </template>
       <audit
           :is-check="isCheckProp"
           :order-no="orderNo"
@@ -212,13 +214,13 @@
   export default {
     name: "homePage",
     components: {
-       audit
+      audit
     },
     data() {
       return {
         tabsArr: [
           {name: '待审核', key: 'pendingNum', type: 1},
-          {name: '已拒绝', key: 'rejectNum', type: 3},
+          {name: '已拒绝', key: 'rejectNum', type: 4},
           {name: '已通过', key: 'acceptNum', type: 2},
           {name: '平台代办', key: 'platfromPendingNum', type: 0},
         ],//tabs数组
@@ -264,9 +266,13 @@
         return this.tabsArr[this.tabsAc].type;
       },
       modalTitle() {
-        if (!this.tableRow.orderNo) return ''
-        return `${this.tableRow.orderNo} -  ${this.tableRow.orderState.description}`
-      },
+        if (!this.tableRow.orderNo) return '';
+        return {
+          orderNo: this.tableRow.orderNo,
+          description: this.tableRow.orderState.description,
+          customerName: this.tableRow.customerName,
+        }
+      }
     },
     methods: {
 
@@ -376,6 +382,10 @@
       },
       //关闭弹出窗
       closeDialog(payload) {
+        if(!payload){
+          this.dialogVisible = false;
+          return
+        }
         this.$message.info(payload.msg)
         this.dialogVisible = false;
         api_warehouse.storage.getTransferCount().then(res => {
@@ -418,7 +428,7 @@
 </script>
 
 <style scoped lang="less">
- @import "../../common.less";
+  @import "../../common.less";
 
   /deep/ .el-table {
     border-collapse: collapse;

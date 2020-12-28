@@ -10,7 +10,9 @@
       </div>
     </div>
     <div class="goods-list">
-      <p class="title">过户商品列表</p>
+      <div class="base-info">
+        <p class="title">出仓商品列表</p>
+      </div>
       <el-table
           :data="table_data"
           style="width: 100%"
@@ -145,7 +147,7 @@
 
           {name: '过出方名称', key: 'transferOutName', value: info.transferOutName},
           {name: '过入方名称', key: 'transferInName', value: info.transferInName},
-          {name: '计划过户日期', key: 'transferPlanDate', value: info.transferPlanDate},
+          {name: '计划过户日期', key: 'transferPlanDate', value: info.transferPlanDate.slice(0,10)},
 
 
           {name: '最后修改人', key: 'updateUser', value: info.updateUser},
@@ -215,6 +217,7 @@
 </script>
 
 <style scoped lang="less">
+  @import "../../common.less";
   * {
     box-sizing: border-box;
   }
@@ -233,7 +236,6 @@
     .title {
       display: flex;
       align-items: center;
-      height: 16px;
       font-size: 16px;
       font-weight: bold;
       position: relative;
@@ -260,6 +262,7 @@
         font-size: 14px;
         display: flex;
         flex-flow: row wrap;
+        width: 1000px;
 
         .bic-item {
           margin-right: 20px;

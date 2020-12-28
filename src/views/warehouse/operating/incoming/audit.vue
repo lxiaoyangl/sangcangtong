@@ -10,7 +10,9 @@
       </div>
     </div>
     <div class="goods-list">
-      <p class="title">入仓商品列表</p>
+      <div class="base-info">
+        <p class="title">出仓商品列表</p>
+      </div>
       <el-table
           :data="table_data"
           style="width: 100%"
@@ -184,8 +186,8 @@
           {name: '订单号', key: 'orderNo', value: info.orderNo},
           {name: '平台派车', key: 'isPlfDistVeh', value: info.isPlfDistVeh ? '是' : '否'},
           {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo ? info.linkedOrderNo : '--'},
-          {name: '客户号', key: 'customerId', value: info.customerId},
-          {name: '计划发货日期', key: 'deliverPlanDate', value: info.deliverPlanDate},
+          {name: '客户号', key: 'customerNo', value: info.customerNo},
+          {name: '计划发货日期', key: 'deliverPlanDate', value: info.deliverPlanDate ? info.deliverPlanDate.slice(0,10) : '--'},
           {name: '经办人', key: 'operatorName', value: info.operatorName},
           {name: '客户名称', key: 'customerName', value: info.customerName},
           {name: '发货点', key: 'deliverPlace', value: info.deliverPlace},
@@ -196,7 +198,7 @@
           {name: '入仓名称', key: 'warehouseName', value: info.warehouseName},
           {name: '发货点联系人', key: 'deliverName', value: info.deliverName},
           {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
-          {name: '计划入仓日期', key: 'putInPlanDate', value: info.putInPlanDate},
+          {name: '计划入仓日期', key: 'putInPlanDate', value: info.putInPlanDate ? info.putInPlanDate.slice(0,10) : '--'},
           {name: '发货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
           {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
           {name: '运输方式', key: 'shippingTypeName', value: info.shippingTypeName},
@@ -264,6 +266,7 @@
 </script>
 
 <style scoped lang="less">
+  @import "../../common.less";
   * {
     box-sizing: border-box;
   }
@@ -282,7 +285,6 @@
     .title {
       display: flex;
       align-items: center;
-      height: 16px;
       font-size: 16px;
       font-weight: bold;
       position: relative;
@@ -309,6 +311,7 @@
         font-size: 14px;
         display: flex;
         flex-flow: row wrap;
+        width: 1000px;
 
         .bic-item {
           margin-right: 20px;

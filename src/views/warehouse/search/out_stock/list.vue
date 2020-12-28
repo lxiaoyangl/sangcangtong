@@ -9,7 +9,7 @@
                 <el-form-item label="签收人">
                     <el-input v-model="form.inp3" placeholder="请输入签收人" size="mini"></el-input>
                 </el-form-item>
-                
+
                 <el-form-item label="仓库">
                     <el-select clearable v-model="form.inp4" placeholder="请选择仓库" size="mini">
                         <el-option
@@ -73,7 +73,7 @@
                         </el-table-column>
                         <el-table-column
                             prop="isSendCar"
-                            label="是否平台派车"
+                            label="平台派车"
                             min-width="180">
                             <tempalte slot-scope="scope">
                                 <span>{{scope.row.isSendCar==1?'是':'不是'}}</span>

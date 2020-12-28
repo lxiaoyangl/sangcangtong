@@ -89,7 +89,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="width: 33.33%" label="是否平台派车" prop="inp12">
+          <el-form-item style="width: 33.33%" label="平台派车" prop="inp12">
             <template>
               <el-radio v-model="form.inp12" :label="true">是</el-radio>
               <el-radio v-model="form.inp12" :label="false">否</el-radio>
@@ -520,7 +520,7 @@
           inp9: '',
           inp10: '',
           inp11: '',
-          inp12: true,
+          inp12: false,
           inp13: '',
           inp14: '',
           inp15: '',
@@ -682,12 +682,14 @@
           this.enclosure_loading = false;
         })
       },
-      "form.inp12"(val) {
-        this.form.inp7 = '';
-        this.form.inp9 = '';
-        this.form.inp4 = '';
-        this.form.inp5 = '';
-        this.form.inp15 = '';
+      "form.inp12"(newVal,oldVal) {
+        if(!newVal){
+          this.form.inp7 = '';
+          this.form.inp9 = '';
+          this.form.inp4 = '';
+          this.form.inp5 = '';
+          this.form.inp15 = '';
+        }
       },
     },
     mounted() {
