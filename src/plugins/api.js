@@ -94,6 +94,8 @@ export function setManageCttEdit(params) { return postApi('/manageCtt/baseEdit',
 export function setManageCttList(url,params) { return postApi('/manageCtt/baseList?&_pageList&column=createTime&order=desc'+url, params) }
 export function setManageCttDelete(params) { return postApi('/manageCtt/baseDel', params) }
 export function setManageCttBatchDelete(params) { return postApi('/manageCtt/baseBatchDel', params) }
+export function setManageCttDetail(params) { return getApi('/manageCtt/baseQueryById', params) }
+export function setManageCttAudit(params) { return postApi('/manageCtt/audit', params) }
 
 export function setserverInfo(params) { return postApi('/base/serverInfo', params) }
 
