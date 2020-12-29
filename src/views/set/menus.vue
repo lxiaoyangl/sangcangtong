@@ -149,7 +149,7 @@
            </el-form-item>
          </div>
           <el-form-item label="角色描述" prop="intro">
-            <el-input type="textarea" :rows="2" v-model="editForm.description" :maxlength="200"
+            <el-input type="textarea" :rows="4" v-model="editForm.description" :maxlength="200"
                       auto-complete="off" placeholder="请输入描述"></el-input>
           </el-form-item>
         </el-form>

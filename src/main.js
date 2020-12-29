@@ -6,6 +6,7 @@ import store from './store'
 
 import "./style/main.less"
 import "./style/all.less"
+import './assets/icon-ali/iconfont.less';
 import 'font-awesome/css/font-awesome.css'
 
 import ElementUI from 'element-ui';

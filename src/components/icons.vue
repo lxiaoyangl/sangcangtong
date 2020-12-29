@@ -12,6 +12,20 @@
       <i class="nav-icon nav_watch"></i>
     </div> -->
    <div class="ico-list" id="icoList" @click="fun">
+      <i class="iconfont-ali icon-ali-mall"></i>
+      <i class="el-icon-s-check"></i>
+      <i class="iconfont-ali icon-ali-wuzicangku"></i>
+      <i class="iconfont-ali icon-ali-icon_function_ruku"></i>
+      <i class="iconfont-ali icon-ali-goodswhoutStock"></i>
+      <i class="iconfont-ali icon-ali-yonghuguohu-"></i>
+      <i class="iconfont-ali icon-ali-yunshu"></i>
+      <i class="iconfont-ali icon-ali-dingdan"></i>
+      <i class="iconfont-ali icon-ali-cheliangrenzheng"></i>
+      <i class="iconfont-ali icon-ali-sijirenzheng"></i>
+      <i class="iconfont-ali icon-ali-gongzuotai-querenbeijian"></i>
+      <i class="iconfont-ali icon-ali-rongzi"></i>
+      <i class="iconfont-ali icon-ali-woyaorongzi00"></i>
+
       <i class="fa fa-address-book"></i>
       <i class="fa fa-address-book-o" aria-hidden="true"></i>
       <i class="fa fa-address-card" aria-hidden="true"></i>
@@ -487,7 +501,7 @@ export default {
     left: 0;
     top: 40px;
     width: 100%;
-    height: 150px;
+    height: 350px;
     overflow: auto;
     background-color: rgba(0,0,0,0.9);
     z-index: 1000;

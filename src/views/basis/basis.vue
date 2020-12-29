@@ -52,7 +52,7 @@
                             <span><i :class="item.icon"></i> {{item.name}}</span>
                         </template>
                         <el-menu-item :index="it.route" v-for="(it,ind) in item.children" :key="ind" :route="it.route">
-                            <span slot="title">{{it.name}}</span>
+                            <span slot="title"><i :class="it.icon"></i>{{it.name}}</span>
                         </el-menu-item>
                     </el-submenu>
                 </el-menu>
@@ -715,12 +715,12 @@ export default {
         //     display: none;
         // }
         .basis_content_right{
-            width: calc(100% - 210px);
+            width: calc(100% - 200px);
             height: 100%;
             .basis_content_right_header{
                 position: relative;
                 width: 100%;
-                height: 30px;
+                height: 40px;
                 // overflow: auto;
                 box-sizing: border-box;
                 border-bottom: 1px solid #eaeaea;
@@ -747,7 +747,7 @@ export default {
                     height: 4px;
                 }
                 .basis_content_right_header_route_box{
-                    width: calc(100% - 30px);
+                    width: calc(100% - 40px);
                     height: 100%;
                     overflow-x: overlay;
                     white-space: nowrap;
@@ -758,7 +758,7 @@ export default {
                         padding: 0 30px;
                         display: inline-block;
                         text-align: center;
-                        line-height: 30px;
+                        line-height: 40px;
                         font-size: 12px;
                         border-right: 1px solid #eaeaea;
                         position: relative;
@@ -804,10 +804,6 @@ export default {
 
 /deep/.el-menu{
     border-right: 0px;
-}
-/deep/.el-menu-item{
-    border-top: 1px solid #eaeaea;
-    background: rgba(#eaeaea, 0.2);
 }
 /deep/.el-menu-item.is-active{
     background: rgba(#fd906f , 0.2);
