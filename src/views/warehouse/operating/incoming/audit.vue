@@ -1,14 +1,22 @@
 <template>
   <div class="container">
-    <div class="base-info" style="width: 1000px;">
-      <p class="title">入仓基本信息</p>
-      <div class="bi-content">
-        <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index" :style="{width:i.width,visibility:i.hidden}">
-          <span class="label">{{i.name}}:</span>
-          <span class="value">{{i.value ? i.value : '--'}}</span>
+      <div class="base-info" style="width: 900px;">
+        <p class="title">入仓基本信息</p>
+        <div class="bi-content">
+          <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index" :style="{width:i.width,visibility:i.hidden}">
+            <span class="label">{{i.name}}:</span>
+            <span class="value">{{i.value ? i.value : '--'}}</span>
+          </div>
+        </div>
+        <div class="files">
+          <div class="files-tip">附件</div>
+          <div class="file-item">
+            <div v-for="(i,index) in files" :key="index"><span :title="i.fileName">{{i.fileName}}</span> <a :href="i.filePath">下载</a></div>
+          </div>
         </div>
       </div>
-    </div>
+
+
     <div class="goods-list">
       <div class="base-info">
         <p class="title">入仓商品信息</p>
@@ -178,6 +186,7 @@
         table_data: [],
         denyInfo: '',//拒绝意见
         isPass: '',
+        files:[],
       }
     },
     computed: {
@@ -253,14 +262,28 @@
           });
 
         })
+      },
+      //获取附件信息
+      getUploadList() {
+        console.log(1);
+        let data = {
+          orderNo: this.orderNo,
+          businessType: 'PUT_IN',
+        };
+        api_warehouse.storage.getStorageUploadFile(this, data).then((res) => {
+          this.files = res.data.data;
+        });
       }
+
     },
     mounted() {
       this.getList();
+      this.getUploadList();
     },
     watch: {
       orderNo(val) {
         this.getList();
+        this.getUploadList();
         this.isPass = '';
       }
     }

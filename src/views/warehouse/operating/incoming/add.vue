@@ -259,6 +259,8 @@
       <el-button type="text" class="s-button" @click="add_goods" icon="el-icon-circle-plus-outline">新增</el-button>
       <div class="line"></div>
       <el-button type="text" @click="del_goods" icon="el-icon-remove-outline" class="top_color_red s-button">删除</el-button>
+      <div class="line"></div>
+      <el-button type="text" size="medium" class="s-button" icon="el-icon-document" @click="enclosure_flag = true">上传附件</el-button>
     </div>
 
     <div class="detail_content">
@@ -772,24 +774,24 @@
     },
     watch: {
       'enclosure_flag': function (val) {
-        if (!val) {
-          return;
-        }
-        if (sessionStorage.getItem('warehouse-incoming-edit') === 'false') {
-          this.enclosure_dialog_content_table_data = [...this.file_list];
-          console.log('1', this.file_list)
-          return;
-        }
-        this.enclosure_loading = true;
-        this.$axios.post('/applicationEnclosure/baseList', {
-          applicationFormType: 0,
-          applicationFormId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1,
-        }).then(res => {
-          console.log('附件', res);
-          this.enclosure_dialog_content_table_data = [...res.data.data];
-        }).finally(() => {
-          this.enclosure_loading = false;
-        })
+        /* if (!val) {
+           return;
+         }
+         if (sessionStorage.getItem('warehouse-incoming-edit') === 'false') {
+           this.enclosure_dialog_content_table_data = [...this.file_list];
+           console.log('1', this.file_list)
+           return;
+         }
+         this.enclosure_loading = true;
+         this.$axios.post('/applicationEnclosure/baseList', {
+           applicationFormType: 0,
+           applicationFormId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1,
+         }).then(res => {
+           console.log('附件', res);
+           this.enclosure_dialog_content_table_data = [...res.data.data];
+         }).finally(() => {
+           this.enclosure_loading = false;
+         })*/
       },
       "form.inp12"(newVal, oldVal) {
         if (!newVal) {
@@ -862,6 +864,7 @@
         this.allDict = res;
         if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
           this.getMaterialList();
+          this.getUploadList();
         }
       });
     },
@@ -1119,7 +1122,7 @@
               updateTime: timestampToTime(new Date()),
               // orderState:'',
               materialList: [...itemList],
-              fileList: [...this.file_list],
+              attachments: [...this.file_list],
               customerNo: this.getNameById(this.cusNameArr, this.form.inp6, 'id').companyNo,
               orderSource: 'PLATFORM',
             };
@@ -1258,13 +1261,18 @@
       // 附件蒙层关闭前触发函数
       enclosure_before_close() {
         this.enclosure_flag = false;
-        this.enclosure_dialog_content_table_data = [];
+        //this.enclosure_dialog_content_table_data = [];
       },
       // 附件蒙层确认函数
       enclosure_sure() {
         this.enclosure_flag = false;
-        this.file_list = [...this.enclosure_dialog_content_table_data];
-        this.enclosure_dialog_content_table_data = [];
+        let ids = [];
+        this.enclosure_dialog_content_table_data.forEach((item) => {
+          ids.push(item.id)
+        });
+        // this.file_list = [...this.enclosure_dialog_content_table_data];
+        this.file_list = ids;
+        //this.enclosure_dialog_content_table_data = [];
       },
       // 文件上传
       enclosure_upload(val) {
@@ -1272,13 +1280,13 @@
         let formdata = new FormData();
         formdata.append('file', val.raw)
         this.enclosure_loading = true;
-        this.$axios.post('/FileController/upload', formdata).then(res => {
+        api_warehouse.storage.storageUploadFile(this, formdata).then(res => {
           console.log('上传结果', res);
           this.enclosure_dialog_content_table_data.push(res.data.data);
           this.enclosure_dialog_content_table_data.map(item => {
-            item.fileName = item.name;
-            item.fileSize = item.size;
-            item.fileType = item.type;
+            item.fileName = item.fileName;
+            item.fileSize = item.fileSize;
+            item.fileType = item.fileType;
           })
         }, err => {
           console.log('上传报错', err);
@@ -1288,14 +1296,22 @@
       },
       // 附件蒙层，文件删除
       enclosure_dialog_content_table_data_del(obj) {
-        console.log('附件删除', obj)
-        let arr = [];
-        this.enclosure_dialog_content_table_data.map(item => {
-          if (item.path !== obj.path) {
-            arr.push(item);
-          }
-        })
-        this.enclosure_dialog_content_table_data = [...arr];
+        this.$confirm('是否删除该附件', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          api_warehouse.storage.deleteStorageUploadFile(this, obj.id).then(() => {
+            let arr = [];
+            this.enclosure_dialog_content_table_data.map(item => {
+              if (item.filePath !== obj.filePath) {
+                arr.push(item);
+              }
+            })
+            this.enclosure_dialog_content_table_data = [...arr];
+          })
+        });
+
       },
       // 计划入库数量修改
       enterNumber_change(val) {
@@ -1392,7 +1408,7 @@
       // 附件文件下载操作
       download_file(obj) {
         console.log(obj);
-        window.open(obj.path);
+        window.open(obj.filePath);
       },
 
       //获取商品数据
@@ -1406,6 +1422,17 @@
           this.table_data = res.data.data.records
         })
       },
+      //获取附件信息
+      getUploadList() {
+        let data = {
+          orderNo: this.prevPageData.orderNo,
+          businessType: 'PUT_IN',
+        };
+        console.log(1);
+        api_warehouse.storage.getStorageUploadFile(this, data).then((res) => {
+          this.enclosure_dialog_content_table_data = res.data.data;
+        });
+      }
     },
     beforeDestroy() {
       //sessionStorage.removeItem('warehouse-incoming-edit');
@@ -1414,208 +1441,5 @@
 </script>
 
 <style lang="less" scoped>
-  @import "../../common.less";
-
-  /deep/ .dialog_close {
-    top: 13px !important;
-  }
-
-  .s-button {
-    padding: 0;
-  }
-
-  /deep/ .cell {
-    padding: 0;
-  }
-
-  /deep/ .el-table th > .cell {
-    padding: 0;
-  }
-
-  .line {
-    display: inline-block;
-    height: 10px;
-    width: 1px;
-    background: #e0e0e0;
-    margin: 0 10px;
-  }
-
-  .cls {
-    width: 100%;
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-    height: 16px;
-    font-size: 16px;
-    font-weight: bold;
-    position: relative;
-    border-bottom: 1px solid #e0e0e0;
-    margin-bottom: 5px;
-
-    &:before {
-      content: '';
-      display: inline-block;
-      margin-right: 5px;
-      height: 18px;
-      width: 3px;
-      background: #409EFF;
-    }
-  }
-
-  /deep/ .el-textarea__inner {
-    min-height: 50px !important;
-    max-height: 50px !important;
-  }
-
-  .detail_content {
-    flex: 1;
-    margin-bottom: 10px;
-  }
-
-  /deep/ .detail_content_table {
-    width: 100%;
-    height: 100%;
-    /*height: 600px;*/
-    box-sizing: border-box;
-    background: #fff;
-    overflow: auto;
-
-    .detail_content_table_btn {
-      width: 100%;
-      height: 40px;
-      line-height: 40px;
-
-      .upload-demo {
-        display: inline-block;
-        margin-left: 10px;
-      }
-    }
-
-    .detail_content_table_box {
-      width: 100%;
-      height: 100%;
-    }
-  }
-
-  /deep/ .dialog_content {
-    width: 100%;
-    // height: 500px;
-    display: flex;
-    flex-direction: column;
-
-    .dialog_content_form {
-      width: 100%;
-    }
-
-    .dialog_content_table {
-      width: 100%;
-      // flex: 1;
-      height: 400px;
-    }
-  }
-
-  /deep/ .import_dialog_content {
-    width: 100%;
-    height: 100px;
-  }
-
-  /deep/ .enclosure_dialog_content {
-    width: 100%;
-    height: 500px;
-    display: flex;
-    flex-direction: column;
-
-    .enclosure_dialog_content_form {
-      width: 100%;
-      height: 50px;
-    }
-
-    .enclosure_dialog_content_table {
-      width: 100%;
-      height: calc(100% - 50px);
-    }
-  }
-
-  .add {
-    display: flex;
-    flex-flow: column;
-    padding: 10px;
-    overflow: auto;
-    height: 100%;
-    width: 100%;
-
-    .tips {
-      font-weight: bold;
-      font-size: 15px;
-      background: rgb(248, 248, 248);
-      padding: 10px 0;
-    }
-
-    /deep/ .detail_content_form {
-      width: 100%;
-
-      .my-el-form {
-        display: flex;
-        flex-flow: row wrap;
-
-        > div {
-          width: 100%;
-          display: flex;
-        }
-      }
-
-      .el-form-item {
-        width: 100%;
-        margin-right: 0px;
-        display: flex;
-
-        .el-form-item__content {
-          textarea {
-            width: 100%;
-          }
-
-          .el-select {
-            width: 100% !important;
-          }
-
-          flex: 1;
-          margin-right: 20px;
-
-          .el-input {
-            width: 100% !important;
-          }
-
-          .el-input__inner {
-            flex: 1;
-            width: 100% !important;
-          }
-
-        }
-      }
-
-      /deep/ .el-textarea__inner {
-        width: 500px;
-      }
-    }
-
-    .detail_content {
-      width: 100%;
-      flex: 1;
-      min-height: 200px;
-
-      .el-select {
-        width: 100% !important;
-      }
-    }
-
-    .sure-btn {
-      height: 50px !important;
-      flex: 0 0 50px;
-    }
-
-  }
-
-
+  @import "../../../../style/views/warehouse/add/incoming.less";
 </style>

@@ -1,11 +1,17 @@
 <template>
   <div class="container">
-    <div class="base-info" style="width: 1000px;">
+    <div class="base-info" style="width: 900px;">
       <p class="title">过户基本信息</p>
       <div class="bi-content">
         <div class="bic-item" v-for="(i,index) in baseInfoArr" :key="index" :style="{width:i.width,visibility:i.hidden}">
           <span class="label">{{i.name}}:</span>
           <span class="value">{{i.value ? i.value : '--'}}</span>
+        </div>
+      </div>
+      <div class="files">
+        <div class="files-tip">附件</div>
+        <div class="file-item">
+          <div v-for="(i,index) in files" :key="index"><span :title="i.fileName">{{i.fileName}}</span> <a :href="i.filePath">下载</a></div>
         </div>
       </div>
     </div>
@@ -69,7 +75,7 @@
         <el-table-column
             prop="measureMethod"
             label="计量方式"
-           width="70">
+            width="70">
         </el-table-column>
         <el-table-column
             prop="remark"
@@ -149,7 +155,7 @@
 
           {name: '过出方名称', key: 'transferOutName', value: info.transferOutName},
           {name: '过入方名称', key: 'transferInName', value: info.transferInName},
-          {name: '计划过户日期', key: 'transferPlanDate', value: info.transferPlanDate.slice(0,10)},
+          {name: '计划过户日期', key: 'transferPlanDate', value: info.transferPlanDate.slice(0, 10)},
 
 
           {name: '最后修改人', key: 'updateUser', value: info.updateUser},
@@ -204,14 +210,26 @@
           });
 
         })
+      },
+      getUploadList() {
+        console.log(1);
+        let data = {
+          orderNo: this.orderNo,
+          businessType: 'TRANSFER',
+        };
+        api_warehouse.storage.getStorageUploadFile(this, data).then((res) => {
+          this.files = res.data.data;
+        });
       }
     },
     mounted() {
       this.getList();
+      this.getUploadList();
     },
     watch: {
       orderNo(val) {
         this.getList();
+        this.getUploadList();
         this.isPass = '';
       }
     }
@@ -219,92 +237,5 @@
 </script>
 
 <style scoped lang="less">
-  @import "../../common.less";
-  * {
-    box-sizing: border-box;
-  }
-
-  .container {
-    height: 100%;
-    width: 100%;
-    overflow: auto;
-
-    .tips {
-      font-weight: bold;
-      font-size: 15px;
-      margin-bottom: 20px;
-    }
-
-    .title {
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      font-weight: bold;
-      position: relative;
-      border-bottom: 1px solid #e0e0e0;
-      margin-bottom: 5px;
-
-      &:before {
-        content: '';
-        display: inline-block;
-        margin-right: 5px;
-        height: 18px;
-        width: 3px;
-        background: #409EFF;
-      }
-    }
-
-    .base-info {
-      height: auto;
-      width: 100% !important;
-      overflow: auto;
-
-      .bi-content {
-        margin-top: 0px;
-        font-size: 14px;
-        display: flex;
-        flex-flow: row wrap;
-        width: 1000px;
-
-        .bic-item {
-          margin-right: 20px;
-          margin-bottom: 10px;
-          display: flex;
-
-          span {
-            display: inline-block;
-          }
-
-          span:first-child {
-            width: 115px;
-            flex: 0 0 115px;
-          }
-
-          span:last-child {
-            width: 180px;
-            color: #999999;
-            flex: 1;
-          }
-        }
-      }
-    }
-
-    .goods-list {
-
-    }
-
-    .audit {
-      margin-top: 10px;
-
-      .btn-div {
-        margin-bottom: 10px;
-      }
-
-      .input-div {
-        margin-bottom: 5px;
-      }
-    }
-  }
-
-
+  @import "../../../../style/views/warehouse/homePage/audit.less";
 </style>

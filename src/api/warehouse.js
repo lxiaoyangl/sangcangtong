@@ -5,6 +5,36 @@ let warehouse = {
   storage: {},
   transfer: {}
 };
+
+//仓储文件上传
+warehouse.storage.storageUploadFile = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/common/attachment/upload', data).then(res => {
+    return res
+  }, err => {
+  }).finally(() => {
+   // that.loading = false;
+  })
+};
+//获取仓储文件上传 businessType orderNo
+warehouse.storage.getStorageUploadFile = function (that, data) {
+  return api.get(`/busmiddle-storage/busmiddle-storage/common/attachment/list/${data.businessType}/${data.orderNo}`).then(res => {
+    return res
+  }, err => {
+  }).finally(() => {
+    // that.loading = false;
+  })
+};
+
+//删除仓储文件上传 传id
+warehouse.storage.deleteStorageUploadFile = function (that, id) {
+  return api.delete(`/busmiddle-storage/busmiddle-storage/common/attachment/remove/${id}`).then(res => {
+    return res
+  }, err => {
+  }).finally(() => {
+    // that.loading = false;
+  })
+};
+
 //入仓申请
 warehouse.storage.addStorage = function (that, data) {
   return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/addStorage', data).then(res => {

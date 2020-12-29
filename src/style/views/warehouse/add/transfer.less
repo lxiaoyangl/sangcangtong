@@ -1,0 +1,204 @@
+
+@import "../common.less";
+/deep/ .dialog_close {
+  top: 13px !important;
+}
+
+.s-button {
+  padding: 0;
+}
+
+/deep/ .cell {
+  padding: 0;
+}
+
+/deep/ .el-table th > .cell {
+  padding: 0;
+}
+
+.line {
+  display: inline-block;
+  height: 10px;
+  width: 1px;
+  background: #e0e0e0;
+  margin: 0 10px;
+}
+
+.cls {
+  width: 100%;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  height: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  position: relative;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 5px;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    margin-right: 5px;
+    height: 18px;
+    width: 3px;
+    background: #409EFF;
+  }
+}
+
+/deep/ .el-textarea__inner {
+  min-height: 50px !important;
+  max-height: 50px !important;
+}
+
+.detail_content {
+  flex: 1;
+  margin-bottom: 10px;
+}
+
+/deep/ .detail_content_table {
+  width: 100%;
+  height: 100%;
+  /*height: 600px;*/
+  box-sizing: border-box;
+  background: #fff;
+  overflow: auto;
+
+  .detail_content_table_btn {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+
+    .upload-demo {
+      display: inline-block;
+      margin-left: 10px;
+    }
+  }
+
+  .detail_content_table_box {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/deep/ .dialog_content {
+  width: 100%;
+  // height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  .dialog_content_form {
+    width: 100%;
+  }
+
+  .dialog_content_table {
+    width: 100%;
+    // flex: 1;
+    height: 400px;
+  }
+}
+
+/deep/ .import_dialog_content {
+  width: 100%;
+  height: 100px;
+}
+
+/deep/ .enclosure_dialog_content {
+  width: 100%;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  .enclosure_dialog_content_form {
+    width: 100%;
+    height: 50px;
+  }
+
+  .enclosure_dialog_content_table {
+    width: 100%;
+    height: calc(100% - 50px);
+  }
+}
+
+.add {
+  display: flex;
+  flex-flow: column;
+  padding: 10px;
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+
+  .tips {
+    font-weight: bold;
+    font-size: 15px;
+    background: rgb(248, 248, 248);
+    padding: 10px 0;
+  }
+
+  /deep/ .detail_content_form {
+    width: 100%;
+
+    .my-el-form {
+      display: flex;
+      flex-flow: row wrap;
+
+      > div {
+        width: 100%;
+        display: flex;
+      }
+    }
+
+    .el-form-item {
+      width: 100%;
+      margin-right: 0px;
+      display: flex;
+
+      .el-form-item__content {
+        textarea {
+          width: 100%;
+        }
+
+        .el-select {
+          width: 100% !important;
+        }
+
+        flex: 1;
+        margin-right: 20px;
+
+        .el-input {
+          width: 100% !important;
+        }
+
+        .el-input__inner {
+          flex: 1;
+          width: 100% !important;
+        }
+
+      }
+    }
+
+    /deep/ .el-textarea__inner {
+      width: 500px;
+    }
+  }
+
+  .detail_content {
+    width: 100%;
+    flex: 1;
+    min-height: 200px;
+
+    .el-select {
+      width: 100% !important;
+    }
+  }
+
+  .sure-btn {
+    height: 50px !important;
+    flex: 0 0 50px;
+  }
+
+}
+
+

@@ -11,7 +11,7 @@
       <div class="item">
         <i class="el-icon-document-checked"></i>
         <div>
-          <p>{{incommingCount.customerNum}}</p>
+          <p>{{incommingCount.todayAcceptNum}}</p>
           <p>当日通过</p>
         </div>
       </div>
@@ -137,7 +137,7 @@
           <el-table-column
               prop="orderState.description"
               label="订单状态"
-              width="80">
+              width="90">
             <!--<template slot-scope="scope">
                 <span v-show="scope.row.orderState === 'orderState'">未提交</span>
                 <span v-show="scope.row.orderState === 1">待审核</span>
@@ -156,22 +156,20 @@
             <template slot-scope="scope">
               <div class="tableButton">
                 <el-tooltip effect="dark" content="审核" placement="top">
-                  <el-button v-show="filterType == 1" @click="auditRow(scope.row)" type="primary" icon="el-icon-reading" circle></el-button>
+                  <el-button v-show="getTabelBtn(1)" @click="auditRow(scope.row)" type="primary" icon="el-icon-reading" circle></el-button>
                 </el-tooltip>
                 <el-tooltip effect="dark" content="修改" placement="top">
-                  <el-button v-show="filterType == 1 || filterType == 4" @click="editRow(scope.row)" type="primary" icon="el-icon-edit" circle></el-button>
+                  <el-button v-show="getTabelBtn(1,4)" @click="editRow(scope.row)" type="primary" icon="el-icon-edit" circle></el-button>
                 </el-tooltip>
 
                 <el-tooltip effect="dark" content="查看" placement="top">
-                  <el-button v-show="filterType == 0 || filterType == 2 || filterType == 4" @click="checkRow(scope.row)" type="primary" icon="el-icon-search" circle></el-button>
+                  <el-button v-show="getTabelBtn(0,2,4)" @click="checkRow(scope.row)" type="primary" icon="el-icon-search" circle></el-button>
                 </el-tooltip>
 
                 <el-tooltip effect="dark" content="提交" placement="top">
-                  <el-button v-show="filterType == 0" @click="submitRow(scope.row)" type="primary" icon="el-icon-document-add" circle></el-button>
+                  <el-button v-show="getTabelBtn(0)" @click="submitRow(scope.row)" type="primary" icon="el-icon-document-add" circle></el-button>
                 </el-tooltip>
               </div>
-
-
             </template>
           </el-table-column>
         </el-table>
@@ -287,7 +285,10 @@
         }
         return '--'
       },
-
+      //判断列表操作栏因该展现哪些按钮
+      getTabelBtn(...rest) {
+        return rest.includes(this.tabsArr[this.tabsAc].type);
+      },
       //订单状态改变
       changeTab(index) {
         this.tabsAc = index;
@@ -375,10 +376,10 @@
             id: row.id,
             orderState: '1'
           };
-          api_warehouse.storage.inComingSubmit(this, data).then((res) => {
+          api_warehouse.storage.outSrockSubmit(this, data).then((res) => {
             this.$message.info(res.data.msg);
             this.get_data();
-            api_warehouse.storage.getIncomingCount().then(res => {
+            api_warehouse.storage.getOutStockCount().then(res => {
               this.incommingCount = res.data.data;
             });
           })
@@ -393,7 +394,7 @@
         }
         this.$message.info(payload.msg)
         this.dialogVisible = false;
-        api_warehouse.storage.getIncomingCount().then(res => {
+        api_warehouse.storage.getOutStockCount().then(res => {
           this.incommingCount = res.data.data;
         });
         this.get_data()
