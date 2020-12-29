@@ -487,7 +487,7 @@ export default {
     left: 0;
     top: 40px;
     width: 100%;
-    height: 150px;
+    height: 350px;
     overflow: auto;
     background-color: rgba(0,0,0,0.9);
     z-index: 1000;
