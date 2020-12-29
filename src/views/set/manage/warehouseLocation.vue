@@ -87,11 +87,19 @@
                 <el-form label-width="120px" ref="editForm" :model="editForm" :rules="rules">
                     <el-row :gutter="120">
                         <el-col :span="12">
+                            <el-form-item label="库位编号" prop="warehouseLocaNo">
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.warehouseLocaNo" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入库位名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
                             <el-form-item label="库位名称" prop="warehouseLocaNm">
                                 <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.warehouseLocaNm" auto-complete="off" :maxlength="50"
                                           placeholder="请输入库位名称"></el-input>
                             </el-form-item>
                         </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
                         <el-col :span="12">
                             <el-form-item label="库区编号" prop="warehouseAreaId">
                                 <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseAreaId" placeholder="请选择" clearable>
@@ -104,8 +112,6 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
-                    </el-row>
-                    <el-row :gutter="120">
                         <el-col :span="12">
                             <el-form-item label="仓库" prop="warehouseId">
                                 <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseId" placeholder="请选择" clearable>
@@ -118,9 +124,23 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
                         <el-col  :span="12">
                             <el-form-item label="库区性质" prop="warehouseLocaType">
                                 <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseLocaType" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('yes_no')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="混堆" prop="mixFlag">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.mixFlag" placeholder="请选择" clearable>
                                     <el-option
                                             v-for="item in getAllDict('yes_no')"
                                             :key="item.value"
@@ -142,32 +162,6 @@
                             <el-form-item label="最大存放重量" prop="maxWeight">
                                 <el-input type="number" :readonly="editForm.type==='view'" v-model.trim="editForm.maxWeight" auto-complete="off" :maxlength="50"
                                           placeholder="请输入最大存放重量"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="120">
-                        <el-col :span="12">
-                            <el-form-item label="混堆" prop="mixFlag">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.mixFlag" placeholder="请选择" clearable>
-                                    <el-option
-                                            v-for="item in getAllDict('yes_no')"
-                                            :key="item.value"
-                                            :label="item.dictLabel"
-                                            :value="item.dictValue">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col  :span="12">
-                            <el-form-item label="控制状态" prop="controlSts">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.controlSts" placeholder="请选择" clearable>
-                                    <el-option
-                                            v-for="item in getAllDict('yes_no')"
-                                            :key="item.value"
-                                            :label="item.dictLabel"
-                                            :value="item.dictValue">
-                                    </el-option>
-                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -206,6 +200,20 @@
                                           placeholder="请输入视频地址"></el-input>
                             </el-form-item>
                         </el-col>
+                        <el-col  :span="12">
+                            <el-form-item label="控制状态" prop="controlSts">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.controlSts" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('yes_no')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
                         <el-col  :span="12">
                             <el-form-item label="状态" prop="status">
                                 <el-select :disabled="editForm.type==='view'" v-model="editForm.status" placeholder="请选择" clearable>
@@ -270,6 +278,7 @@
                 columnOptions: [],
                 postIds: [],
                 rules: {
+                    warehouseLocaNo: [{required: true, message: '请输入库位编号', trigger: 'blur'}],
                     warehouseLocaNm: [{required: true, message: '请输入库位名称', trigger: 'blur'}],
                     warehouseAreaId: [{required: true, message: '请选择库区编号', trigger: 'blur'}],
                     warehouseId:[{required: true, message: '请选择仓库', trigger: 'blur'}],
@@ -431,7 +440,6 @@
                                     }
                                 }
                                 this.loading = true
-                                this.editForm.warehouseLocaNo='11';
                                 let sendData = this.editForm
                                 setWarehouseLocationAdd(sendData).then((res) => {
                                     this.$message({
