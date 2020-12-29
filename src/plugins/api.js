@@ -90,12 +90,19 @@ export function setParameterBatchDelete(params) { return postApi('/parameter/bas
 
 //合同信息表
 export function setManageCttAdd(params) { return postApi('/manageCtt/baseAdd', params) }
-export function setManageCttEdit(params) { return postApi('/manageCtt/baseEdit', params) }
+export function setManageCttEdit(params) { return postApi('/manageCtt/edit', params) }
 export function setManageCttList(url,params) { return postApi('/manageCtt/baseList?&_pageList&column=createTime&order=desc'+url, params) }
 export function setManageCttDelete(params) { return postApi('/manageCtt/baseDel', params) }
 export function setManageCttBatchDelete(params) { return postApi('/manageCtt/baseBatchDel', params) }
 export function setManageCttDetail(params) { return getApi('/manageCtt/baseQueryById', params) }
 export function setManageCttAudit(params) { return postApi('/manageCtt/audit', params) }
+export function setManageCttSubmit(params) { return postApi('/manageCtt/baseEdit', params) }
+
+export function setWarehouseLocationAdd(params) { return postApi('/warehouseLocation/baseAdd', params) }
+export function setWarehouseLocationEdit(params) { return postApi('/warehouseLocation/baseEdit', params) }
+export function setWarehouseLocationList(params) { return postApi('/warehouseLocation/baseList?&_pageList&column=createTime&order=desc', params) }
+export function setWarehouseLocationDelete(params) { return postApi('/warehouseLocation/baseDel', params) }
+export function setWarehouseLocationBatchDelete(params) { return postApi('/warehouseLocation/baseBatchDel', params) }
 
 export function setserverInfo(params) { return postApi('/base/serverInfo', params) }
 

@@ -22,7 +22,7 @@
                     <el-input clearable :maxlength="50" placeholder="请输入客户名称" v-model.trim="formInline.custName"></el-input>
                 </el-form-item>
                 <el-form-item label="合同状态">
-                    <ren-select v-model="formInline.cttStatus" dict-type="car_status" ></ren-select>
+                    <ren-select v-model="formInline.cttStatus" dict-type="ctt_status" ></ren-select>
                 </el-form-item>-->
                 <!--<el-form-item label="到期日期">
                     <el-date-picker
@@ -192,9 +192,9 @@
                                 <el-table-column
                                         prop="costType"
                                         label="费用类型"
-                                        width="125">
+                                        width="150">
                                     <template slot-scope="scope">
-                                        <el-select clearable :disabled="editForm.type==='view' || editForm.type==='audit'" style="width:100px !important;" v-model="scope.row.costType" placeholder="费用类型" size="mini">
+                                        <el-select clearable :disabled="editForm.type==='view' || editForm.type==='audit'" style="width:105px !important;" v-model="scope.row.costType" placeholder="费用类型" size="mini">
                                             <el-option
                                                     v-for="item in getAllDict('cost_type')"
                                                     :key="item.value"
@@ -207,9 +207,9 @@
                                 <el-table-column
                                         prop="warehouseId"
                                         label="仓库名称"
-                                        width="125">
+                                        width="150">
                                     <template slot-scope="scope">
-                                        <el-select style="width:100px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.warehouseId" placeholder="仓库名称" size="mini">
+                                        <el-select style="width:105px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.warehouseId" placeholder="仓库名称" size="mini">
                                             <el-option
                                                     v-for="item in options"
                                                     :key="item.value"
@@ -222,9 +222,9 @@
                                 <el-table-column
                                         prop="settlementMode"
                                         label="结算方式"
-                                        width="125">
+                                        width="150">
                                     <template slot-scope="scope">
-                                        <el-select style="width:100px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.settlementMode" placeholder="结算方式" size="mini">
+                                        <el-select style="width:105px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.settlementMode" placeholder="结算方式" size="mini">
                                             <el-option
                                                     v-for="item in getAllDict('settlement_mode')"
                                                     :key="item.value"
@@ -237,9 +237,9 @@
                                 <el-table-column
                                         prop="chargingMode"
                                         label="计费方式"
-                                        width="125">
+                                        width="150">
                                     <template slot-scope="scope">
-                                        <el-select style="width:100px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.chargingMode" placeholder="计费方式" size="mini">
+                                        <el-select style="width:105px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.chargingMode" placeholder="计费方式" size="mini">
                                             <el-option
                                                     v-for="item in getAllDict('charging_mode')"
                                                     :key="item.value"
@@ -260,9 +260,9 @@
                                 <el-table-column
                                         prop="unit"
                                         label="单位"
-                                        width="125">
+                                        width="150">
                                     <template slot-scope="scope">
-                                        <el-select style="width:100px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.unit" placeholder="单位" size="mini">
+                                        <el-select style="width:105px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.unit" placeholder="单位" size="mini">
                                             <el-option
                                                     v-for="item in getAllDict('unit')"
                                                     :key="item.value"
@@ -275,9 +275,9 @@
                                 <el-table-column
                                         prop="applyBill"
                                         label="适用单据"
-                                        width="125">
+                                        width="150">
                                     <template slot-scope="scope">
-                                        <el-select style="width:100px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.applyBill" placeholder="适用单据" size="mini">
+                                        <el-select style="width:105px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.applyBill" placeholder="适用单据" size="mini">
                                             <el-option
                                                     v-for="item in getAllDict('bill_type')"
                                                     :key="item.value"
@@ -290,7 +290,7 @@
                                 <el-table-column
                                         prop="filterMaterialClass"
                                         label="分类过滤物资"
-                                        width="145">
+                                        width="155">
                                     <template slot-scope="scope">
                                         <el-select style="width:120px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.filterMaterialClass" placeholder="分类过滤物资" size="mini">
                                             <el-option
@@ -305,7 +305,7 @@
                                 <el-table-column
                                         prop="filterMaterialPrdName"
                                         label="品名过滤物资"
-                                        width="145">
+                                        width="155">
                                     <template slot-scope="scope">
                                         <el-select style="width:120px !important;" clearable :disabled="editForm.type==='view' || editForm.type==='audit'" v-model="scope.row.filterMaterialPrdName" placeholder="品名过滤物资" size="mini">
                                             <el-option
@@ -342,7 +342,7 @@
                         <el-col :span="12">
                             <el-form-item label="审核结果" prop="result">
                                 <el-select style="width: 500px !important;" v-model="editAuditForm.result" placeholder="请选择"  clearable>
-                                    <el-option v-for="item in getAllDict('yes_no')" :key="item.value"
+                                    <el-option v-for="item in getAllDict('audit_result')" :key="item.value"
                                                :label="item.dictLabel" :value="item.dictValue">
                                     </el-option>
                                 </el-select>
@@ -373,7 +373,7 @@
         <BasisDialog
                 :title="'附件上传'"
                 :visible="enclosure_flag"
-                @cancel="enclosure_before_close"
+                @cancel="enclosure_sure"
                 @sure="enclosure_sure"
                 v-loading="enclosure_loading"
         >
@@ -512,9 +512,6 @@
                 name: '**',
             }).then(res => {
                 this.allDict = res;
-                if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
-                    this.getMaterialList();
-                }
             });
         },
         computed: {
@@ -525,38 +522,11 @@
                     this.editForm.phoneNumber = curVal.match(/\d/gi) ? curVal.match(/\d/gi).join('') : ''
                 }
             },
-            'enclosure_flag': function (val) {
-                if (!val) {
-                    return;
-                }
-                if (sessionStorage.getItem('warehouse-incoming-edit') === 'false') {
-                    this.enclosure_dialog_content_table_data = [...this.file_list];
-                    console.log('1', this.file_list)
-                    return;
-                }
-                this.enclosure_loading = true;
-                this.$axios.post('/applicationEnclosure/baseList', {
-                    applicationFormType: 0,
-                    applicationFormId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1,
-                }).then(res => {
-                    console.log('附件', res);
-                    this.enclosure_dialog_content_table_data = [...res.data.data];
-                }).finally(() => {
-                    this.enclosure_loading = false;
-                })
-            }
         },
         methods: {
-            // 附件蒙层关闭前触发函数
-            enclosure_before_close() {
-                this.enclosure_flag = false;
-                this.enclosure_dialog_content_table_data = [];
-            },
             // 附件蒙层确认函数
             enclosure_sure() {
                 this.enclosure_flag = false;
-                this.file_list = [...this.enclosure_dialog_content_table_data];
-                this.enclosure_dialog_content_table_data = [];
             },
             // 文件上传
             enclosure_upload(val) {
@@ -571,6 +541,7 @@
                         item.fileName = item.name;
                         item.fileSize = item.size;
                         item.fileType = item.type;
+                        item.filePath = item.path;
                         item.fileView = true;
                     })
                 }, err => {
@@ -754,6 +725,8 @@
                 this.title = '添加'
                 this.detailTableHeight='calc(100vh - 340px)'
                 this.editForm.type = 'add'
+                this.enclosure_dialog_content_table_data = [];
+                this.file_list=[];
                 this.fileView = true
             },
             // 修改之前
@@ -770,9 +743,16 @@
                         }
                     }
                     this.listDetailData = cttData.detailList;
+                    this.file_list = [];
                     this.file_list = cttData.fileList;
-                    this.file_list.map(item => {
+                    this.enclosure_dialog_content_table_data = [];
+                    this.enclosure_dialog_content_table_data = this.file_list;
+                    this.enclosure_dialog_content_table_data.map(item => {
                         item.fileView = true;
+                        item.path = item.filePath;
+                        item.name = item.fileName;
+                        item.size = item.fileSize;
+                        item.type = item.fileType;
                     })
                     this.oldEditForm = JSON.stringify(cttData)
                     this.title = '修改'
@@ -876,6 +856,7 @@
                                 this.editForm.sacDate = this.editForm.cttDate[0];
                                 this.editForm.povDate = this.editForm.cttDate[1];
                                 this.editForm.detailList = dataList;
+                                this.file_list = [...this.enclosure_dialog_content_table_data];
                                 this.editForm.fileList = this.file_list
                                 let sendData = this.editForm
                                 setManageCttAdd(sendData).then((res) => {
@@ -918,6 +899,7 @@
                                 this.editForm.povDate = this.editForm.cttDate[1];
                                 let sendData = this.editForm
                                 sendData.detailList = dataList;
+                                this.file_list = [...this.enclosure_dialog_content_table_data];
                                 this.editForm.fileList = this.file_list
                                 setManageCttEdit(sendData).then((res) => {
                                     this.$message({
@@ -980,9 +962,16 @@
                         }
                     }
                     this.listDetailData = cttData.detailList;
+                    this.file_list = [];
                     this.file_list = cttData.fileList;
-                    this.file_list.map(item => {
+                    this.enclosure_dialog_content_table_data = [];
+                    this.enclosure_dialog_content_table_data = this.file_list;
+                    this.enclosure_dialog_content_table_data.map(item => {
                         item.fileView = false;
+                        item.path = item.filePath;
+                        item.name = item.fileName;
+                        item.size = item.fileSize;
+                        item.type = item.fileType;
                     })
                     this.title = '查看合同信息'
                     this.editForm.type = 'view'
@@ -1005,9 +994,16 @@
                         }
                     }
                     this.listDetailData = cttData.detailList;
+                    this.file_list = [];
                     this.file_list = cttData.fileList;
-                    this.file_list.map(item => {
+                    this.enclosure_dialog_content_table_data = [];
+                    this.enclosure_dialog_content_table_data = this.file_list;
+                    this.enclosure_dialog_content_table_data.map(item => {
                         item.fileView = false;
+                        item.path = item.filePath;
+                        item.name = item.fileName;
+                        item.size = item.fileSize;
+                        item.type = item.fileType;
                     })
                     this.title = '审批合同信息'
                     this.editForm.type = 'audit'
@@ -1021,7 +1017,7 @@
             subAudit (editAuditForm) {
                 this.$refs[editAuditForm].validate((valid) => {
                     if (valid) {
-                        if(this.editAuditForm.result == '0' && this.editAuditForm.suggest == null){
+                        if(this.editAuditForm.result == 'JJ' && this.editAuditForm.suggest == null){
                             this.$message.warning("审核拒绝时，审核意见不能为空！")
                             return;
                         }

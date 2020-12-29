@@ -16,6 +16,7 @@ import SetDepartMent from "@/views/set/departMent";
 import SetNotice from "@/views/set/notice";
 
 const ManageCtt = () => import('@/views/set/manage/ctt')
+const WarehouseLocation = () => import('@/views/set/manage/warehouseLocation')
 const Warehouse = () => import('@/views/set/warehouse')
 
 const SetMaterials = () => import('@/views/set/materials')
@@ -66,6 +67,13 @@ export default new Router({
 					name: '仓库管理',
 					title: '运维管理系统',
 					component: Warehouse,
+					children: []
+				},
+				{
+					path: '/set/manage/warehouseLocation',
+					name: '库位',
+					title: '运维管理系统',
+					component: WarehouseLocation,
 					children: []
 				},
 				{
