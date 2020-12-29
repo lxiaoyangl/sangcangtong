@@ -1,0 +1,89 @@
+@import "../common.less";
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+
+  .tips {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 5px;
+
+    &:before {
+      content: '';
+      display: inline-block;
+      margin-right: 5px;
+      height: 18px;
+      width: 3px;
+      background: #409EFF;
+    }
+  }
+
+  .base-info {
+    height: auto;
+    width: 100% !important;
+    overflow: auto;
+
+    .bi-content {
+      margin-top: 0px;
+      font-size: 14px;
+      display: flex;
+      flex-flow: row wrap;
+      width: 1000px;
+
+      .bic-item {
+        margin-right: 20px;
+        margin-bottom: 10px;
+        display: flex;
+
+        span {
+          display: inline-block;
+        }
+
+        span:first-child {
+          width: 115px;
+          flex: 0 0 115px;
+        }
+
+        span:last-child {
+          width: 180px;
+          color: #999999;
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .goods-list {
+
+  }
+
+  .audit {
+    margin-top: 10px;
+
+    .btn-div {
+      margin-bottom: 10px;
+    }
+
+    .input-div {
+      margin-bottom: 5px;
+    }
+  }
+}
+
+

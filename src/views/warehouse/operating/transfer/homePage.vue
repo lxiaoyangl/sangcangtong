@@ -9,31 +9,25 @@
         </div>
       </div>
       <div class="item">
+        <i class="el-icon-document-checked"></i>
+        <div>
+          <p>{{incommingCount.customerNum}}</p>
+          <p>当日通过</p>
+        </div>
+      </div>
+      <div class="item">
         <i class="el-icon-circle-close"></i>
         <div>
           <p>{{incommingCount.todayRejectNum}}</p>
-          <p>当日已拒绝</p>
+          <p>当日拒绝</p>
         </div>
       </div>
+
       <div class="item">
         <i class="el-icon-document"></i>
         <div>
-          <p>{{incommingCount.customerNum}}</p>
-          <p>客户累计提单</p>
-        </div>
-      </div>
-      <div class="item">
-        <i class="el-icon-document-checked"></i>
-        <div>
-          <p>{{incommingCount.platfromNum}}</p>
-          <p>代办累计提单</p>
-        </div>
-      </div>
-      <div class="item">
-        <i class="el-icon-document-checked"></i>
-        <div>
           <p>{{incommingCount.platfromNum + incommingCount.customerNum}}</p>
-          <p>总提单数量</p>
+          <p>累计受理</p>
         </div>
       </div>
     </header>
@@ -382,7 +376,7 @@
       },
       //关闭弹出窗
       closeDialog(payload) {
-        if(!payload){
+        if (!payload) {
           this.dialogVisible = false;
           return
         }
@@ -428,307 +422,5 @@
 </script>
 
 <style scoped lang="less">
-  @import "../../common.less";
-
-  /deep/ .el-table {
-    border-collapse: collapse;
-    border-bottom: 1px solid #e0e0e0;
-
-    .cell {
-      padding: 0;
-    }
-
-    th, td {
-      padding: 10px 0;
-      border: 1px solid #e0e0e0;
-      border-collapse: collapse;
-      position: relative;
-
-    }
-
-    th {
-      color: #333;
-      border-left: none;
-      border-bottom: none;
-      padding: 5px;
-      background-color: #ecf5ff !important;
-
-      &:first-child {
-        border-left: none;
-      }
-
-      &:after {
-        background-color: #fff;
-      }
-
-      .cell {
-        margin: 8px 0;
-      }
-
-      .caret-wrapper {
-        height: 20px;
-      }
-
-      .sort-caret.ascending {
-        top: -2px;
-      }
-
-      .sort-caret.descending {
-        bottom: 0;
-      }
-    }
-
-    .el-table--border, .el-table--group {
-      border: none;
-      border-left: 1px solid #f0f0f0;
-    }
-
-    .el-table__fixed-right {
-      border-right: 1px solid #f0f0f0;
-    }
-
-    td {
-      padding: 6px;
-      border-bottom: 1px solid #e0e0e0;
-      border-left: none;
-      border-top: none;
-
-      &:after {
-        background-color: #fff;
-      }
-    }
-
-    .sort-caret.ascending {
-      color: #d8d8d8;
-    }
-
-    tr {
-      background-color: #fff !important;
-
-      &:nth-child(2n) {
-        background-color: #ecf5ff !important;
-      }
-
-      td:last-child, th:last-child {
-        border-left: 1px solid #e0e0e0;;
-      }
-    }
-
-    .cell {
-      white-space: nowrap;
-
-      .el-button {
-        border: none;
-        background-color: transparent;
-        border-bottom: 1px solid;
-        color: #409eff;
-        border-radius: 0;
-        padding: 5px 0;
-
-        &:hover {
-          color: #000;
-        }
-      }
-    }
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  .flex {
-    display: flex;
-  }
-
-  .flex-center {
-    .flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .flex-center-x {
-    .flex;
-    justify-content: center;
-  }
-
-  .flex-center-y {
-    .flex;
-    align-items: center;
-
-  }
-
-  .homePage {
-    width: 100%;
-    height: 100%;
-    .flex;
-    flex-flow: column;
-    padding: 1px;
-    background: #fff;
-  }
-
-  header {
-    .flex-center-y;
-    justify-content: space-between;
-    height: 80px;
-
-    .item {
-      padding: 10px;
-      .flex-center-y;
-      margin: 10px;
-      height: 80px;
-      width: 220px;
-      flex: 1;
-
-      i {
-        font-size: 30px;
-        margin-right: 10px;
-      }
-
-      &:nth-child(1) {
-        background: #409EFF;
-
-        i {
-          color: white;
-        }
-      }
-
-      &:nth-child(2) {
-        background: #BCBCBC;
-
-        i {
-          color: #F14254;
-          font-weight: bold;
-        }
-
-        p:first-child {
-          color: #F14254;
-        }
-      }
-
-      &:nth-child(3) {
-        background: #BCBCBC;
-
-        i {
-          color: white;
-        }
-      }
-
-      &:nth-child(4) {
-        background: #67C23A;
-
-        i {
-          color: white;
-        }
-      }
-
-      &:nth-child(5) {
-        background: #67C23A;
-
-        i {
-          color: white;
-        }
-      }
-
-      p:first-child {
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-      }
-
-      p:last-child {
-        color: white;
-        font-size: 14px;
-      }
-    }
-  }
-
-
-  .filters {
-    background: white;
-    margin: 0px 0;
-    padding: 5px;
-
-    .search {
-      span {
-        font-size: 14px;
-        font-weight: bold;
-        margin-right: 20px;
-      }
-
-      .normal-search {
-        > div {
-          margin-right: 20px;
-        }
-
-        .d-input {
-          width: 160px !important;
-        }
-      }
-
-      .height-search {
-        margin-top: 15px;
-
-        .time-picker {
-          margin-right: 20px;
-        }
-      }
-
-    }
-
-    .tabs {
-      height: 40px;
-      .flex-center-y;
-
-      > div {
-        position: relative;
-        margin-right: 60px;
-        cursor: pointer;
-
-        .badeg {
-          position: relative;
-          color: red;
-          top: -8px;
-          font-size: 14px;
-        }
-      }
-
-      .tabs-ac {
-        font-weight: bold;
-        color: #409EFF;
-
-        &:before {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 1px;
-          background: #409EFF;
-          bottom: -5px;
-        }
-      }
-    }
-
-    .normal-search {
-      .flex-center-y;
-
-      .add-new {
-        margin-left: auto;
-      }
-    }
-  }
-
-  .body {
-    height: calc(100% - 80px);
-
-    .el-tabs__content {
-      height: calc(100% - 40px);
-    }
-  }
-
-  .table_box {
-    flex: 1;
-
-    .table {
-      height: calc(100% - 40px);
-    }
-  }
+  @import "../../../../style/views/warehouse/homePage/transfer.less";
 </style>

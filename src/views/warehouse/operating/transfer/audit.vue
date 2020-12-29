@@ -11,7 +11,7 @@
     </div>
     <div class="goods-list">
       <div class="base-info">
-        <p class="title">出仓商品列表</p>
+        <p class="title">过户商品信息</p>
       </div>
       <el-table
           :data="table_data"
@@ -96,7 +96,9 @@
     </div>
 
     <div class="audit" v-if="!isCheck">
-      <p class="title">审核操作</p>
+      <div class="base-info">
+        <p class="title">审核操作</p>
+      </div>
       <div class="btn-div">
         <el-button :type="isPass === true ? 'success' : 'info'" size="mini" @click="isPass = true">通过</el-button>
         <el-button :type="isPass === false ? 'danger' : 'info'" size="mini" @click="isPass = false">拒绝</el-button>

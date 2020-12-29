@@ -1,7 +1,7 @@
 <template>
   <div class="add" v-loading="loading">
-    <div class="tips" v-show="isEdit">
-      {{prevPageData.orderNo}} - <span style="color: red">{{prevPageData.orderState.description}}</span> -  {{prevPageData.customerName}}
+    <div class="tips" v-if="isEdit">
+      {{prevPageData.orderNo}} - <span style="color: red">{{prevPageData.orderState.description}}</span> - {{prevPageData.customerName}}
     </div>
     <div class="base-info">
       <p class="title">入仓基本信息</p>
@@ -21,7 +21,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="入仓名称" prop="inp1">
-            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" filterable size="mini">
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -43,7 +43,7 @@
 
         <div>
           <el-form-item label="运输方式" prop="inp2">
-            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" filterable size="mini">
               <el-option
                   v-for="item in getAllDict('transportType')"
                   :key="item.value"
@@ -53,7 +53,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="经办人" prop="inp10">
-            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" filterable size="mini">
               <el-option
                   v-for="item in operator"
                   :key="item.value"
@@ -110,7 +110,7 @@
         </el-form-item>
         <div style="margin-top: 5px;">
           <el-form-item label="备注" prop="inp16" style="width: 100%;">
-            <el-input  style="padding-bottom: 10px"  type="textarea" v-model="form.inp16" placeholder="请输入备注" size="medium" ></el-input>
+            <el-input style="padding-bottom: 10px" type="textarea" v-model="form.inp16" placeholder="请输入备注" size="medium"></el-input>
           </el-form-item>
         </div>
       </el-form>
@@ -155,7 +155,7 @@
         <div>
 
           <el-form-item label="入仓名称" prop="inp1">
-            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" filterable size="mini">
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -174,7 +174,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="运输方式" prop="inp2">
-            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" filterable size="mini">
               <el-option
                   v-for="item in getAllDict('transportType')"
                   :key="item.value"
@@ -188,7 +188,7 @@
         <div>
 
           <el-form-item style="width: 33.33%" label="经办人" prop="inp10">
-            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" filterable size="mini">
               <el-option
                   v-for="item in operator"
                   :key="item.value"
@@ -740,7 +740,7 @@
         if (data) {
           return JSON.parse(data)
         } else {
-          return {}
+          return {orderState: ''}
         }
       },
       isEdit() {
@@ -791,8 +791,8 @@
           this.enclosure_loading = false;
         })
       },
-      "form.inp12"(newVal,oldVal) {
-        if(!newVal){
+      "form.inp12"(newVal, oldVal) {
+        if (!newVal) {
           this.form.inp7 = '';
           this.form.inp9 = '';
           this.form.inp4 = '';
@@ -845,8 +845,6 @@
         this.form.inp12 = obj.isPlfDistVeh;
         this.form.inp15 = obj.deliverPlanDate;
         this.form.inp16 = obj.remark;
-
-
 
 
         // 物资查询
@@ -1122,8 +1120,8 @@
               // orderState:'',
               materialList: [...itemList],
               fileList: [...this.file_list],
-              customerNo:this.getNameById(this.cusNameArr, this.form.inp6, 'id').companyNo,
-              orderSource:'PLATFORM',
+              customerNo: this.getNameById(this.cusNameArr, this.form.inp6, 'id').companyNo,
+              orderSource: 'PLATFORM',
             };
             this.options.map(item => {
               if (item.value === this.form.inp1) {
@@ -1417,6 +1415,7 @@
 
 <style lang="less" scoped>
   @import "../../common.less";
+
   /deep/ .dialog_close {
     top: 13px !important;
   }
@@ -1550,7 +1549,7 @@
     .tips {
       font-weight: bold;
       font-size: 15px;
-      background: rgb(248,248,248);
+      background: rgb(248, 248, 248);
       padding: 10px 0;
     }
 

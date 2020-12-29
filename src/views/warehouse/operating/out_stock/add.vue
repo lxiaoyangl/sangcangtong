@@ -21,7 +21,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="出仓名称" prop="inp1">
-            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" filterable size="mini">
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -43,7 +43,7 @@
 
         <div>
           <el-form-item label="运输方式" prop="inp2">
-            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" filterable size="mini">
               <el-option
                   v-for="item in getAllDict('transportType')"
                   :key="item.value"
@@ -53,7 +53,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="经办人" prop="inp10">
-            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" filterable size="mini">
               <el-option
                   v-for="item in operator"
                   :key="item.value"
@@ -156,7 +156,7 @@
         <div>
 
           <el-form-item label="入仓名称" prop="inp1">
-            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" size="mini">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" filterable size="mini">
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -175,7 +175,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="运输方式" prop="inp2">
-            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" size="mini">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" filterable size="mini">
               <el-option
                   v-for="item in getAllDict('transportType')"
                   :key="item.value"
@@ -189,7 +189,7 @@
         <div>
 
           <el-form-item style="width: 33.33%" label="经办人" prop="inp10">
-            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" size="mini">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" filterable size="mini">
               <el-option
                   v-for="item in operator"
                   :key="item.value"
@@ -253,7 +253,7 @@
     </div>
 
     <div class="base-info">
-      <p class="title">出仓商品列表</p>
+      <p class="title">出仓商品信息</p>
     </div>
 
     <div style="margin-bottom: 10px">
@@ -740,7 +740,7 @@
         if (data) {
           return JSON.parse(data)
         } else {
-          return {}
+          return {orderState: ''}
         }
       },
       isEdit() {

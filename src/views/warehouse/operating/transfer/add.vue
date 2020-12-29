@@ -11,7 +11,7 @@
       <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="right" label-width="125px">
         <div>
           <el-form-item label="过出方名称" prop="inp1">
-            <el-select clearable v-model="form.inp1" placeholder="过出方名称" filterable size="mini">
+            <el-select clearable v-model="form.inp1"  placeholder="过出方名称" filterable size="mini">
               <el-option
                   v-for="item in cusNameArr"
                   :key="item.value"
@@ -21,7 +21,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="过入方名称" prop="inp2">
-            <el-select clearable v-model="form.inp2" placeholder="过入方名称" size="mini">
+            <el-select clearable v-model="form.inp2" placeholder="过入方名称" filterable size="mini">
               <el-option
                   v-for="item in cusNameArr"
                   :key="item.value"
@@ -43,7 +43,7 @@
 
         <div>
           <el-form-item style="width: 33.33%;" label="仓库名称" prop="inp4">
-            <el-select clearable v-model="form.inp4" placeholder="仓库名称" size="mini">
+            <el-select clearable v-model="form.inp4" placeholder="仓库名称" filterable size="mini">
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -53,7 +53,7 @@
             </el-select>
           </el-form-item>
           <el-form-item style="width: 33.33%;" label="经办人" prop="inp5">
-            <el-select clearable v-model="form.inp5" placeholder="请选择经办人" size="mini">
+            <el-select clearable v-model="form.inp5" placeholder="请选择经办人" filterable size="mini">
               <el-option
                   v-for="item in operator"
                   :key="item.value"
@@ -509,7 +509,7 @@
         if (data) {
           return JSON.parse(data)
         } else {
-          return {}
+          return {orderState: ''}
         }
       },
       isEdit() {

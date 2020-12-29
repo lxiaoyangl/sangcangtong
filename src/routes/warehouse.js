@@ -16,11 +16,6 @@ export default [
     component: () => import("@/views/warehouse/operating/incoming/add.vue")
   },
   {
-    path: '/warehouse/Incoming/edit',
-    name: 'Incoming_edit',
-    component: () => import("@/views/warehouse/operating/incoming/edit.vue")
-  },
-  {
     path: '/warehouse/Incoming/audit',
     name: 'Incoming_audit',
     component: () => import("@/views/warehouse/operating/incoming/audit.vue")

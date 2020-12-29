@@ -11,7 +11,7 @@
     </div>
     <div class="goods-list">
       <div class="base-info">
-        <p class="title">出仓商品列表</p>
+        <p class="title">入仓商品信息</p>
       </div>
       <el-table
           :data="table_data"
@@ -69,7 +69,7 @@
         <el-table-column
             prop="measureMethod"
             label="计量方式"
-           width="70">
+            width="70">
         </el-table-column>
 
         <el-table-column
@@ -138,7 +138,9 @@
     </div>
 
     <div class="audit" v-if="!isCheck">
-      <p class="title">审核操作</p>
+      <div class="base-info">
+        <p class="title">审核操作</p>
+      </div>
       <div class="btn-div">
         <el-button :type="isPass === true ? 'success' : 'info'" size="mini" @click="isPass = true">通过</el-button>
         <el-button :type="isPass === false ? 'danger' : 'info'" size="mini" @click="isPass = false">拒绝</el-button>
@@ -187,7 +189,7 @@
           {name: '平台派车', key: 'isPlfDistVeh', value: info.isPlfDistVeh ? '是' : '否'},
           {name: '关联交易订单号', key: 'linkedOrderNo', value: info.linkedOrderNo ? info.linkedOrderNo : '--'},
           {name: '客户号', key: 'customerNo', value: info.customerNo},
-          {name: '计划发货日期', key: 'deliverPlanDate', value: info.deliverPlanDate ? info.deliverPlanDate.slice(0,10) : '--'},
+          {name: '计划发货日期', key: 'deliverPlanDate', value: info.deliverPlanDate ? info.deliverPlanDate.slice(0, 10) : '--'},
           {name: '经办人', key: 'operatorName', value: info.operatorName},
           {name: '客户名称', key: 'customerName', value: info.customerName},
           {name: '发货点', key: 'deliverPlace', value: info.deliverPlace},
@@ -197,14 +199,14 @@
           {name: '最后修改时间', key: 'updateTime', value: info.updateTime},
           {name: '入仓名称', key: 'warehouseName', value: info.warehouseName},
           {name: '发货点联系人', key: 'deliverName', value: info.deliverName},
-          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
-          {name: '计划入仓日期', key: 'putInPlanDate', value: info.putInPlanDate ? info.putInPlanDate.slice(0,10) : '--'},
+          {name: 'none', key: 'none', value: 'none', hidden: 'hidden'},
+          {name: '计划入仓日期', key: 'putInPlanDate', value: info.putInPlanDate ? info.putInPlanDate.slice(0, 10) : '--'},
           {name: '发货点联系方式', key: 'deliverPhone', value: info.deliverPhone},
-          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
+          {name: 'none', key: 'none', value: 'none', hidden: 'hidden'},
           {name: '运输方式', key: 'shippingTypeName', value: info.shippingTypeName},
           {name: '送货点', key: 'acceptPlace', value: info.acceptPlace},
-          {name: 'none', key: 'none', value: 'none',hidden:'hidden'},
-          {name: '订单备注', key: 'remark', value: info.remark,width:'100%'},
+          {name: 'none', key: 'none', value: 'none', hidden: 'hidden'},
+          {name: '订单备注', key: 'remark', value: info.remark, width: '100%'},
         ]
       }
     },
@@ -266,92 +268,5 @@
 </script>
 
 <style scoped lang="less">
-  @import "../../common.less";
-  * {
-    box-sizing: border-box;
-  }
-
-  .container {
-    height: 100%;
-    width: 100%;
-    overflow: auto;
-
-    .tips {
-      font-weight: bold;
-      font-size: 15px;
-      margin-bottom: 20px;
-    }
-
-    .title {
-      display: flex;
-      align-items: center;
-      font-size: 16px;
-      font-weight: bold;
-      position: relative;
-      border-bottom: 1px solid #e0e0e0;
-      margin-bottom: 5px;
-
-      &:before {
-        content: '';
-        display: inline-block;
-        margin-right: 5px;
-        height: 18px;
-        width: 3px;
-        background: #409EFF;
-      }
-    }
-
-    .base-info {
-      height: auto;
-      width: 100% !important;
-      overflow: auto;
-
-      .bi-content {
-        margin-top: 0px;
-        font-size: 14px;
-        display: flex;
-        flex-flow: row wrap;
-        width: 1000px;
-
-        .bic-item {
-          margin-right: 20px;
-          margin-bottom: 10px;
-          display: flex;
-
-          span {
-            display: inline-block;
-          }
-
-          span:first-child {
-            width: 115px;
-            flex: 0 0 115px;
-          }
-
-          span:last-child {
-            width: 180px;
-            color: #999999;
-            flex: 1;
-          }
-        }
-      }
-    }
-
-    .goods-list {
-
-    }
-
-    .audit {
-      margin-top: 10px;
-
-      .btn-div {
-        margin-bottom: 10px;
-      }
-
-      .input-div {
-        margin-bottom: 5px;
-      }
-    }
-  }
-
-
+  @import "../../../../style/views/warehouse/homePage/audit.less";
 </style>
