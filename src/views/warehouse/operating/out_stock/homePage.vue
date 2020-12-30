@@ -43,12 +43,28 @@
         <div class="normal-search">
           <span>出仓名称</span>
           <div class="d-input">
-            <el-input v-model="form.warehouseName" placeholder="请输入出仓名称" size="mini" clearable></el-input>
+            <!--            <el-input v-model="form.warehouseName" placeholder="请输入出仓名称" size="mini" clearable></el-input>-->
+            <el-select clearable v-model="form.warehouseName" placeholder="仓库名称" filterable size="mini">
+              <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.name">
+              </el-option>
+            </el-select>
           </div>
 
           <span>客户名称</span>
           <div class="d-input">
-            <el-input v-model="form.customerName" placeholder="客户名称" size="mini" clearable></el-input>
+<!--            <el-input v-model="form.customerName" placeholder="客户名称" size="mini" clearable></el-input>-->
+            <el-select clearable v-model="form.transferOutName" placeholder="过出方名称" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.name">
+              </el-option>
+            </el-select>
           </div>
 
           <span>订单号</span>
@@ -213,6 +229,7 @@
 <script>
   import api_warehouse from "@/api/warehouse.js";
   import audit from './audit.vue'
+  import {setCompanyData} from '@/plugins/apis'
 
   export default {
     name: "homePage",
@@ -261,6 +278,11 @@
         isCheckProp: false,//是否为查看状态,
         isHeightSearch: false,//是否高级搜索;
 
+        //客户名称下拉数据
+        cusNameArr: [],
+        //仓库下拉数据
+        options: [],
+
       }
     },
     computed: {
@@ -278,7 +300,16 @@
       },
     },
     methods: {
-
+      // 获取仓库数据
+      get_warehouse_data() {
+        // 获取仓库数据
+        this.$fn.get_warehouse_data(this).then(res => {
+          console.log('res', res);
+          this.options = [...res.data.data];
+        }, err => {
+          console.log('err', err);
+        })
+      },
       timeFormater(row, self, value) {
         if (value) {
           return value.slice(0, 11)
@@ -429,6 +460,12 @@
       api_warehouse.storage.getOutStockCount().then(res => {
         this.incommingCount = res.data.data;
       });
+      //获取客户下拉数据
+      setCompanyData({}).then((res) => {
+        this.cusNameArr = res
+      });
+      // 获取仓库下拉数据
+      this.get_warehouse_data();
     }
   }
 </script>

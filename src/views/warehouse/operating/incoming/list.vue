@@ -309,7 +309,8 @@
       // 数据查询
       get_data() {
         let senddata = {
-          companyId: sessionStorage.getItem('companyId')
+          //
+          // companyId: sessionStorage.getItem('companyId')
         };
         let url = '/applicationIn/baseList?_pageList&ascColumn=documentState,createTime';
         if (this.form.inp1 !== '') {

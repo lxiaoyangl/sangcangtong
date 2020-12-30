@@ -1,17 +1,18 @@
 <template>
   <div class="add" v-loading="loading">
-    <div class="tips" v-show="isEdit">
-      {{prevPageData.orderNo}} - <span style="color: red">{{prevPageData.orderState.description}}</span> -  {{prevPageData.transferOutName}}
+    <div class="tips" v-if="isEdit">
+      {{prevPageData.orderNo}} - <span style="color: red">{{prevPageData.orderState.description}}</span> - {{prevPageData.customerName}}
     </div>
     <div class="base-info">
-      <p class="title">过户基本信息</p>
+      <p class="title">入仓基本信息</p>
+      <el-button type="primary" size="mini" @click="getQuoteOrder">引用入仓订单</el-button>
     </div>
     <!--新增的表单-->
-    <div class="detail_content_form">
+    <div v-if="!isEdit" class="detail_content_form">
       <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="right" label-width="125px">
         <div>
-          <el-form-item label="过出方名称" prop="inp1">
-            <el-select clearable v-model="form.inp1"  placeholder="过出方名称" filterable size="mini">
+          <el-form-item label="客户名称" prop="inp6">
+            <el-select clearable v-model="form.inp6" placeholder="请选择客户" filterable size="mini">
               <el-option
                   v-for="item in cusNameArr"
                   :key="item.value"
@@ -20,17 +21,17 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="过入方名称" prop="inp2">
-            <el-select clearable v-model="form.inp2" placeholder="过入方名称" filterable size="mini">
+          <el-form-item label="入仓名称" prop="inp1">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" filterable size="mini">
               <el-option
-                  v-for="item in cusNameArr"
+                  v-for="item in options"
                   :key="item.value"
-                  :label="item.name"
-                  :value="item.id">
+                  :label="item.label"
+                  :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="计划过出日期" prop="inp3">
+          <el-form-item label="计划入仓日期" prop="inp3">
             <el-date-picker
                 v-model="form.inp3"
                 type="date"
@@ -42,18 +43,18 @@
         </div>
 
         <div>
-          <el-form-item style="width: 33.33%;" label="仓库名称" prop="inp4">
-            <el-select clearable v-model="form.inp4" placeholder="仓库名称" filterable size="mini">
+          <el-form-item label="运输方式" prop="inp2">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" filterable size="mini">
               <el-option
-                  v-for="item in options"
+                  v-for="item in getAllDict('transportType')"
                   :key="item.value"
-                  :label="item.name"
-                  :value="item.id">
+                  :label="item.dictLabel"
+                  :value="item.dictValue">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item style="width: 33.33%;" label="经办人" prop="inp5">
-            <el-select clearable v-model="form.inp5" placeholder="请选择经办人" filterable size="mini">
+          <el-form-item label="经办人" prop="inp10">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" filterable size="mini">
               <el-option
                   v-for="item in operator"
                   :key="item.value"
@@ -63,18 +64,196 @@
               </el-option>
             </el-select>
           </el-form-item>
-
+          <el-form-item label="平台派车" prop="inp12">
+            <template>
+              <el-radio v-model="form.inp12" :label="true">是</el-radio>
+              <el-radio v-model="form.inp12" :label="false">否</el-radio>
+            </template>
+            <!--<el-select clearable v-model="form.inp12" placeholder="是否平台派车" size="mini">
+              <el-option
+                  v-for="item in is_platform_send_car_arr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>-->
+          </el-form-item>
         </div>
+
+        <div v-show="form.inp12">
+          <el-form-item style="width: 33.33%" label="发货点" prop="inp7">
+            <el-input v-model="form.inp7" placeholder="发货点" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item style="width: 66.66%" label="发货详细地址" prop="inp9">
+            <el-input v-model="form.inp9" placeholder="发货详细地址" size="mini"></el-input>
+          </el-form-item>
+        </div>
+
+        <div v-show="form.inp12">
+          <el-form-item label="发货点联系人" prop="inp4">
+            <el-input v-model="form.inp4" placeholder="请输入发货点联系人" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="发货点联系方式" prop="inp5">
+            <el-input v-model="form.inp5" placeholder="货运联系方式" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="计划发货日期" prop="inp15">
+            <el-date-picker
+                v-model="form.inp15"
+                type="date"
+                placeholder="选择日期时间"
+                size="mini"
+                :picker-options="time_option">
+            </el-date-picker>
+          </el-form-item>
+        </div>
+        <el-form-item v-show="0" label="送货点" prop="inp8">
+          <el-input v-model="form.inp8" placeholder="送货点" size="mini"></el-input>
+        </el-form-item>
         <div style="margin-top: 5px;">
-          <el-form-item label="备注" prop="inp6" style="width: 100%;">
-            <el-input style="padding-bottom: 10px" type="textarea" v-model="form.inp6" placeholder="请输入备注" size="medium"></el-input>
+          <el-form-item label="备注" prop="inp16" style="width: 100%;">
+            <el-input style="padding-bottom: 10px" type="textarea" v-model="form.inp16" placeholder="请输入备注" size="medium"></el-input>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+    <!--修改的表单-->
+    <div v-if="isEdit" class="detail_content_form">
+      <el-form class="my-el-form" ref="application_form" :model="form" :rules="form_rules" :inline="true" label-position="right" label-width="125px">
+
+        <div>
+          <el-form-item label="订单号">
+            <el-input clearable readonly v-model="prevPageData.orderNo" placeholder="请选择客户" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="订单状态">
+            <el-input clearable readonly v-model="prevPageData.orderState.description" placeholder="请选择客户" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="客户名称" prop="inp6">
+            <el-select clearable v-model="form.inp6" placeholder="请选择客户" filterable size="mini">
+              <el-option
+                  v-for="item in cusNameArr"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <div>
+
+          <el-form-item label="入仓名称" prop="inp1">
+            <el-select clearable v-model="form.inp1" placeholder="请选择仓库" filterable size="mini">
+              <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="计划入仓日期" prop="inp3">
+            <el-date-picker
+                v-model="form.inp3"
+                type="date"
+                placeholder="选择日期时间"
+                size="mini"
+                :picker-options="time_option">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="运输方式" prop="inp2">
+            <el-select clearable v-model="form.inp2" placeholder="请选择运输方式" filterable size="mini">
+              <el-option
+                  v-for="item in getAllDict('transportType')"
+                  :key="item.value"
+                  :label="item.dictLabel"
+                  :value="item.dictValue">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <div>
+
+          <el-form-item style="width: 33.33%" label="经办人" prop="inp10">
+            <el-select clearable v-model="form.inp10" placeholder="请选择经办人" filterable size="mini">
+              <el-option
+                  v-for="item in operator"
+                  :key="item.value"
+                  filterable
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item style="width: 33.33%" label="平台派车" prop="inp12">
+            <template>
+              <el-radio v-model="form.inp12" :label="true">是</el-radio>
+              <el-radio v-model="form.inp12" :label="false">否</el-radio>
+            </template>
+            <!--<el-select clearable v-model="form.inp12" placeholder="平台派车" size="mini">
+              <el-option
+                  v-for="item in is_platform_send_car_arr"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>-->
+          </el-form-item>
+        </div>
+
+        <div v-show="form.inp12">
+          <el-form-item style="width: 33.33%" label="发货点" prop="inp7">
+            <el-input v-model="form.inp7" placeholder="发货点" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item style="width: 66.66%" label="发货详细地址" prop="inp9">
+            <el-input v-model="form.inp9" placeholder="发货详细地址" size="mini"></el-input>
+          </el-form-item>
+        </div>
+
+        <div v-show="form.inp12">
+          <el-form-item label="发货点联系人" prop="inp4">
+            <el-input v-model="form.inp4" placeholder="请输入发货点联系人" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="发货点联系方式" prop="inp5">
+            <el-input v-model="form.inp5" placeholder="货运联系方式" size="mini"></el-input>
+          </el-form-item>
+          <el-form-item label="计划发货日期" prop="inp15">
+            <el-date-picker
+                v-model="form.inp15"
+                type="date"
+                placeholder="选择日期时间"
+                size="mini"
+                :picker-options="time_option">
+            </el-date-picker>
+          </el-form-item>
+        </div>
+        <el-form-item v-show="0" label="送货点" prop="inp8">
+          <el-input v-model="form.inp8" placeholder="送货点" size="mini"></el-input>
+        </el-form-item>
+        <div style="margin-top: 5px">
+          <el-form-item label="备注" prop="inp16" style="width: 100%;">
+            <el-input style="padding-bottom: 10px" type="textarea" v-model="form.inp16" placeholder="请输入备注" size="mini"></el-input>
           </el-form-item>
         </div>
       </el-form>
     </div>
 
     <div class="base-info">
-      <p class="title">过户商品列表</p>
+      <p class="title">入仓商品列表</p>
     </div>
 
     <div style="margin-bottom: 10px">
@@ -124,11 +303,11 @@
             </el-table-column>
 
             <el-table-column
-                prop="transferPlanNum"
-                label="计划过户数量"
+                prop="inPlanNum"
+                label="计划入仓数量"
                 width="120">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.transferPlanNum" type="number" placeholder="过户数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
+                <el-input v-model="scope.row.inPlanNum" type="number" placeholder="计划入仓数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
               </template>
             </el-table-column>
 
@@ -149,11 +328,11 @@
             </el-table-column>
 
             <el-table-column
-                prop="transferPlanWeight"
-                label="计划过户重量"
+                prop="inPlanWeight"
+                label="计划入库重量"
                 width="100">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.transferPlanWeight" type="number" placeholder="过户重量" size="mini"></el-input>
+                <el-input v-model="scope.row.inPlanWeight" type="number" placeholder="入库重量" size="mini"></el-input>
               </template>
             </el-table-column>
 
@@ -199,9 +378,62 @@
               </template>
             </el-table-column>
             <el-table-column
+                prop="carNum"
+                label="车牌号"
+                width="120">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.carNum" placeholder="车牌号" size="mini"></el-input>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+                prop="driver"
+                label="司机"
+                width="120">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.driver" placeholder="司机" size="mini"></el-input>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+                prop="idCardType"
+                label="证件类型"
+                width="150">
+              <template slot-scope="scope">
+                <el-select clearable v-model="scope.row.idCardType" placeholder="证件类型" size="mini">
+                  <el-option
+                      v-for="item in getAllDict('idType')"
+                      :key="item.value"
+                      :label="item.dictLabel"
+                      :value="item.dictLabel">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+                prop="idCardNum"
+                label="证件号码"
+                min-width="190">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.idCardNum" placeholder="证件号码" size="mini"></el-input>
+              </template>
+            </el-table-column>
+
+
+            <el-table-column
+                prop="contactPhone"
+                label="联系电话"
+                width="140">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.contactPhone" placeholder="联系电话" size="mini"></el-input>
+              </template>
+            </el-table-column>
+
+            <el-table-column
                 prop="remark"
                 label="备注"
-                min-width="180">
+                width="180">
               <template slot-scope="scope">
                 <el-input v-model="scope.row.remark" placeholder="备注" size="mini"></el-input>
               </template>
@@ -217,6 +449,120 @@
       <el-button type="primary" size="small" @click="save">保存</el-button>
       <el-button plain size="small" @click="go_back">取消</el-button>
     </div>
+
+
+    <!-- 入仓订单信息 -->
+    <BasisDialog
+        :title="'入仓订单'"
+        :visible="true"
+        @cancel="order_before_close"
+        @sure="order_sure"
+        v-loading="false"
+        width="90%"
+    >
+      <div slot="dialog_content" class="dialog_content">
+        <div class="dialog_content_form dia-search-item">
+          <el-form ref="form" :model="add_dialog_form" :inline="true" label-width="100px">
+            <el-form-item label="入仓订单号">
+              <el-input v-model="search.orderNo" placeholder="品名" size="mini" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="车牌号">
+              <el-input v-model="search.carNo" placeholder="材质" size="mini" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="入仓名称">
+              <div class="efi-div">
+                <el-select clearable v-model="search.warehouseName" placeholder="请选择仓库" filterable size="mini">
+                  <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.label">
+                  </el-option>
+                </el-select>
+              </div>
+            </el-form-item>
+
+            <el-form-item label="客户名称">
+              <el-select clearable v-model="search.cusName" placeholder="请选择客户" filterable size="mini">
+                <el-option
+                    v-for="item in cusNameArr"
+                    :key="item.value"
+                    :label="item.name"
+                    :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+
+
+            <el-form-item label="">
+              <el-button size="mini" icon="el-icon-search" type="primary" @click="get_goods">查询</el-button>
+              <el-button size="mini" icon="el-icon-refresh" type="info" @click="get_goods_refresh">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+
+        <div class="dialog_content_table">
+          <el-table
+              ref="add_dialog_table"
+              :data="orderList"
+              style="width: 100%"
+              height="100%"
+              stripe
+              @selection-change="add_dialog_table_selection_change"
+              header-row-class-name="table_header"
+          >
+            <el-table-column
+                type="selection"
+                width="55">
+            </el-table-column>
+            <el-table-column
+                prop="orderNo"
+                label="入仓订单"
+                width="150">
+            </el-table-column>
+            <el-table-column
+                prop="placeOrigin"
+                label="车牌号"
+                width="150">
+            </el-table-column>
+            <el-table-column
+                prop="textureMaterial"
+                label="材质"
+                width="150">
+            </el-table-column>
+            <el-table-column
+                prop="specifications"
+                label="规格"
+                width="150">
+            </el-table-column>
+            <el-table-column
+                prop="unitQuantity"
+                label="数量单位"
+                width="150">
+            </el-table-column>
+            <el-table-column
+                prop="weight"
+                label="重量单位"
+                width="150">
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+
+      <div slot="dialog_page" class="dialog_page">
+        <el-pagination
+            background
+            layout="total, prev, pager, next, jumper"
+            :total="add_dialog_page_obj.total"
+            :current-page="add_dialog_page_obj.page_num"
+            :page-size="add_dialog_page_obj.page_size"
+            @current-change="add_dialog_page_change">
+        </el-pagination>
+      </div>
+    </BasisDialog>
+
     <!-- 新增物资蒙层 -->
     <BasisDialog
         :title="'物资选择'"
@@ -380,7 +726,7 @@
   import {setDictionaryDataList} from '@/plugins/api'
   import config from "Public/config.js";
   import api_warehouse from "@/api/warehouse.js";
-  import {getUserInfo, timestampToTime} from "../../../../utils";
+  import {getUserInfo, timestampToTime} from "../../../utils";
   import {setCompanyData} from '@/plugins/apis'
   import {setUserList, loadDictList} from '@/plugins/api'
 
@@ -490,6 +836,8 @@
         enclosure_loading: false,
         // 附件蒙层显示标识
         enclosure_flag: false,
+        //订单蒙层显示标识
+        order_flag: false,
         // 附件蒙层表格数据
         enclosure_dialog_content_table_data: [],
 
@@ -503,6 +851,22 @@
           }
         },
         SITE_CONFIG: window.SITE_CONFIG,
+
+
+        //订单列表数据
+        orderList: [],
+        //订单分页数据
+        page: {
+          page_num: 1,
+          page_size: 20,
+        },
+        //订单搜索条件
+        search: {
+          customerName: '',
+          warehouseName: '',
+          orderNo: '',
+          carNo: '',
+        },
       }
     },
     computed: {
@@ -519,37 +883,51 @@
       },
       form_rules() {
         return {
-          inp1: {required: true, message: '请选择过出方名称', trigger: 'blur'},
-          inp2: {required: true, message: '请选择过入方名称', trigger: 'blur'},
-          inp3: {required: true, message: '请选计划过出日期', trigger: 'blur'},
-          inp4: {required: true, message: '请选计仓库名称', trigger: 'blur'},
-          inp5: {required: true, message: '请选择经办人', trigger: 'blur'},
+          inp1: {required: true, message: '请选择仓库', trigger: 'blur'},
+          inp2: {required: true, message: '请选择运输方式', trigger: 'blur'},
+          inp3: {required: true, message: '请选择入仓时间', trigger: 'blur'},
+          inp4: {required: this.form.inp12, message: '请输入发货点联系人', trigger: 'blur'},
+          inp5: [
+            {required: this.form.inp12, message: '请输入发货点联系方式', trigger: 'blur'},
+            {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
+          ],
+          inp6: {required: true, message: '请输入客户名称', trigger: 'blur'},
+          inp7: {required: this.form.inp12, message: '请输入发货点', trigger: 'blur'},
+          inp8: {required: false, message: '请输入送货点', trigger: 'blur'},
+          inp9: {required: this.form.inp12, message: '请输入发货详细地址', trigger: 'blur'},
+          inp10: {required: true, message: '请输入联系人', trigger: 'blur'},
+          /*inp11: [
+            {required: true, message: '请输入联系电话', trigger: 'blur'},
+            {pattern: /^1[34578]\d{9}$/, message: '目前只支持中国大陆的手机号码'}
+          ],*/
+          inp12: {required: true, message: '请选择是否平台派车', trigger: 'blur'},
+          inp15: {required: this.form.inp12, message: '请选择计划发货日期', trigger: 'blur'},
         }
       },
     },
     watch: {
       'enclosure_flag': function (val) {
-        /*if (!val) {
-          return;
-        }
-        if (sessionStorage.getItem('warehouse-incoming-edit') === 'false') {
-          this.enclosure_dialog_content_table_data = [...this.file_list];
-          console.log('1', this.file_list)
-          return;
-        }
-        this.enclosure_loading = true;
-        this.$axios.post('/applicationEnclosure/baseList', {
-          applicationFormType: 0,
-          applicationFormId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1,
-        }).then(res => {
-          console.log('附件', res);
-          this.enclosure_dialog_content_table_data = [...res.data.data];
-        }).finally(() => {
-          this.enclosure_loading = false;
-        })*/
+        /* if (!val) {
+           return;
+         }
+         if (sessionStorage.getItem('warehouse-incoming-edit') === 'false') {
+           this.enclosure_dialog_content_table_data = [...this.file_list];
+           console.log('1', this.file_list)
+           return;
+         }
+         this.enclosure_loading = true;
+         this.$axios.post('/applicationEnclosure/baseList', {
+           applicationFormType: 0,
+           applicationFormId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1,
+         }).then(res => {
+           console.log('附件', res);
+           this.enclosure_dialog_content_table_data = [...res.data.data];
+         }).finally(() => {
+           this.enclosure_loading = false;
+         })*/
       },
-      "form.inp12"(newVal,oldVal) {
-        if(!newVal){
+      "form.inp12"(newVal, oldVal) {
+        if (!newVal) {
           this.form.inp7 = '';
           this.form.inp9 = '';
           this.form.inp4 = '';
@@ -588,12 +966,22 @@
       if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
         // 申请单详情查询
         let obj = this.prevPageData;
-        this.form.inp1 = obj.transferOutId;
-        this.form.inp2 = obj.transferInId;
-        this.form.inp3 = obj.transferPlanDate;
-        this.form.inp4 = obj.warehouseId;
-        this.form.inp5 = obj.operatorId;
-        this.form.inp6 = obj.remark;
+        this.form.inp1 = obj.warehouseId;
+        this.form.inp2 = obj.shippingTypeId;
+        this.form.inp3 = obj.putInPlanDate;
+        this.form.inp4 = obj.deliverName;
+        this.form.inp5 = obj.deliverPhone;
+        this.form.inp6 = obj.customerId;
+        this.form.inp7 = obj.deliverPlace;
+        this.form.inp8 = obj.acceptPlace;
+        this.form.inp9 = obj.deliverLocation;
+        this.form.inp10 = obj.operatorId;
+        // this.form.inp11 = obj.consigneeNumber;
+        this.form.inp12 = obj.isPlfDistVeh;
+        this.form.inp15 = obj.deliverPlanDate;
+        this.form.inp16 = obj.remark;
+
+
         // 物资查询
         /*this.$axios.post('/applicationInItem/baseList', {
           applicationId: sessionStorage.getItem('warehouse-incoming-aplicationid') * 1
@@ -608,10 +996,12 @@
       }).then(res => {
         this.allDict = res;
         if (sessionStorage.getItem('warehouse-incoming-edit') === 'true') {
-          this.getMaterialTransferList();
+          this.getMaterialList();
           this.getUploadList();
         }
       });
+
+      this.getOrderList();
     },
     methods: {
       //获取字典参数,主要用于下拉框选择参数
@@ -666,7 +1056,7 @@
       },
       // 返回入库预报
       go_back() {
-        this.$router.push({name: 'transfer_homePage'})
+        this.$router.push({name: 'Incoming_homePage'})
       },
       // 蒙层关闭前触发函数
       add_dialog_before_close() {
@@ -822,10 +1212,10 @@
                 textureMaterial: item.textureMaterial,
                 specifications: item.specifications,
                 placeOrigin: item.placeOrigin,
-                transferPlanNum: item.transferPlanNum,
+                inPlanNum: item.inPlanNum,
                 numUnitId: item.numUnitId,
                 numUnit: this.getNameById('numunit', item.numUnitId).dictLabel,
-                transferPlanWeight: item.transferPlanWeight,
+                inPlanWeight: item.inPlanWeight,
                 weightUnitId: item.weightUnitId,
                 weightUnit: this.getNameById('weightunit', item.weightUnitId).dictLabel,
                 weightCoefficient: item.weightCoefficient,
@@ -843,48 +1233,33 @@
 
             let sendData = {
               documentState: 0,
-              transferOutId: this.form.inp1,
-              transferOutName: this.getNameById(this.cusNameArr, this.form.inp1, 'id').name,
-
-              transferInId: this.form.inp2,
-              transferInName: this.getNameById(this.cusNameArr, this.form.inp2, 'id').name,
-
-              transferPlanDate: timestampToTime(this.form.inp3),
-
-              warehouseId: this.form.inp4,
-              warehouseName: this.getNameById(this.options, this.form.inp4, 'id').name,
-
-              operatorId: this.form.inp5,
-              operatorName: this.getNameById(this.operator, this.form.inp5, 'id').name,
-
+              warehouseId: this.form.inp1,
+              warehouseName: this.getNameById(this.options, this.form.inp1, 'id').name,
+              shippingTypeId: this.form.inp2,
+              shippingTypeName: this.getNameById('transportType', this.form.inp2).dictLabel,
+              putInPlanDate: timestampToTime(this.form.inp3),
+              deliverName: this.form.inp4,
+              deliverPhone: this.form.inp5,
+              customerId: this.form.inp6,
+              customerName: this.getNameById(this.cusNameArr, this.form.inp6, 'id').name,
+              deliverPlace: this.form.inp7,
+              deliverLocation: this.form.inp9,
+              loadingLocation: this.form.inp8,
+              operatorId: this.form.inp10,
+              operatorName: this.getNameById(this.operator, this.form.inp10, 'id').name,
+              // goodsSenderPhone: this.form.inp11,
+              isPlfDistVeh: this.form.inp12,
+              deliverPlanDate: timestampToTime(this.form.inp15),
+              acceptPlace: this.getNameById(this.options, this.form.inp1, 'id').name,
+              remark: this.form.inp16,
               updateUserId: getUserInfo().userId,
               updateUser: getUserInfo().username,
               updateTime: timestampToTime(new Date()),
-              remark: this.form.inp6,
-              orderSource:'PLATFORM',
-
-              /* putInPlanDate: timestampToTime(this.form.inp3),
-               deliverName: this.form.inp4,
-               deliverPhone: this.form.inp5,
-               customerId: this.form.inp6,
-               customerName: this.getNameById(this.cusNameArr, this.form.inp6, 'id').name,
-               deliverPlace: this.form.inp7,
-               deliverLocation: this.form.inp9,
-               loadingLocation: this.form.inp8,
-               operatorId: this.form.inp10,
-               operatorName: this.getNameById(this.operator, this.form.inp10, 'id').name,
-               // goodsSenderPhone: this.form.inp11,
-               isPlfDistVeh: this.form.inp12,
-               deliverPlanDate: timestampToTime(this.form.inp15),
-               acceptPlace: this.getNameById(this.options, this.form.inp1, 'id').name,
-
-               updateUserId: getUserInfo().userId,
-               updateUser: getUserInfo().username,
-               updateTime: timestampToTime(new Date()),
-               // orderState:'',*/
+              // orderState:'',
               materialList: [...itemList],
               attachments: [...this.file_list],
-              customerNo: '1',
+              customerNo: this.getNameById(this.cusNameArr, this.form.inp6, 'id').companyNo,
+              orderSource: 'PLATFORM',
             };
             this.options.map(item => {
               if (item.value === this.form.inp1) {
@@ -912,12 +1287,12 @@
                 id: this.prevPageData.id,
                 orderNo: this.prevPageData.orderNo,
               }
-              api_warehouse.storage.updateTransferStorage(this, {...sendData, ...upData}).then(res => {
+              api_warehouse.storage.updateStorage(this, {...sendData, ...upData}).then(res => {
                 this.$message.info(res.data.msg);
                 this.go_back();
               });
             } else {
-              api_warehouse.storage.addTransferStorage(this, sendData).then((res) => {
+              api_warehouse.storage.addStorage(this, sendData).then((res) => {
                 this.$message.info(res.data.msg);
                 this.go_back();
               });
@@ -1021,7 +1396,10 @@
       // 附件蒙层关闭前触发函数
       enclosure_before_close() {
         this.enclosure_flag = false;
-       // this.enclosure_dialog_content_table_data = [];
+        //this.enclosure_dialog_content_table_data = [];
+      },
+      order_before_close() {
+        this.order_flag = false;
       },
       // 附件蒙层确认函数
       enclosure_sure() {
@@ -1033,6 +1411,10 @@
         // this.file_list = [...this.enclosure_dialog_content_table_data];
         this.file_list = ids;
         //this.enclosure_dialog_content_table_data = [];
+      },
+      // 附件蒙层确认函数
+      order_sure() {
+        this.order_flag = false;
       },
       // 文件上传
       enclosure_upload(val) {
@@ -1172,13 +1554,13 @@
       },
 
       //获取商品数据
-      getMaterialTransferList() {
+      getMaterialList() {
         let data = {
           orderNo: this.prevPageData.orderNo,
           /* pageNo: this.page.page_num,
            pageSize: this.page.page_size,*/
         };
-        api_warehouse.storage.getMaterialTransferList(this, data).then(res => {
+        api_warehouse.storage.getMaterialList(this, data).then(res => {
           this.table_data = res.data.data.records
         })
       },
@@ -1186,12 +1568,35 @@
       getUploadList() {
         let data = {
           orderNo: this.prevPageData.orderNo,
-          businessType: 'TRANSFER',
+          businessType: 'PUT_IN',
         };
+        console.log(1);
         api_warehouse.storage.getStorageUploadFile(this, data).then((res) => {
           this.enclosure_dialog_content_table_data = res.data.data;
         });
-      }
+      },
+
+
+      //引用入仓订单
+      getQuoteOrder() {
+        this.order_flag = true;
+      },
+      //获取入仓订单列表
+      getOrderList() {
+        let senddata = {
+          ...this.search,
+        };
+
+        api_warehouse.storage.inComingList(null, {
+          pageNo: this.page.page_num,
+          pageSize: this.page.page_size,
+          orderState:2,//已通过
+          ...senddata
+        }).then(res => {
+          this.orderList = res.data.data.records
+          console.log(res.data.data.records);
+        })
+      },
     },
     beforeDestroy() {
       //sessionStorage.removeItem('warehouse-incoming-edit');
@@ -1200,5 +1605,5 @@
 </script>
 
 <style lang="less" scoped>
-  @import "../../../../style/views/warehouse/add/transfer.less";
+  @import "../../../style/views/warehouse/add/arrange.less";
 </style>

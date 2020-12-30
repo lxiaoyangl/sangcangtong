@@ -140,4 +140,17 @@ export default [
     name: 'search_contract_list',
     component: () => import("@/views/warehouse/search/contract/list.vue")
   },
+
+  // 仓储协同，入仓库位编排列表
+  {
+    path: '/warehouse/arrange_incoming/homePage',
+    name: 'arrange_incoming_homePage',
+    component: () => import("@/views/warehouse/arrange/homePage.vue")
+  },
+  // 仓储协同，入仓库位编排新增/修改
+  {
+    path: '/warehouse/arrange_incoming/add',
+    name: 'arrange_incoming_add',
+    component: () => import("@/views/warehouse/arrange/add.vue")
+  },
 ]

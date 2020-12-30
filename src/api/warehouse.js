@@ -113,12 +113,15 @@ warehouse.storage.inComingList = function (that, data) {
     }
   }
   return api.post(url, data).then(res => {
-    that.table_data = [...res.data.data.records];
-    that.page.total = res.data.data.total;
+    if(that){
+      that.table_data = [...res.data.data.records];
+      that.page.total = res.data.data.total;
+    }
     return res
   }, err => {
 
   }).finally(() => {
+    if(!that)return
     that.loading = false
   })
 };
@@ -272,8 +275,11 @@ warehouse.storage.getTransferCount = function (that, data) {
     console.log('获取信息失败', err);
   })
 };
-//暂时
-warehouse.transfer.addtransfer = function (that, data) {
+
+
+
+warehouse.arrange = {};
+warehouse.arrange.getIncomingOrders = function (that, data) {
   api.post('/busmiddle-storage/busmiddle-storage/storage/transfer/apply/add/transfer/CUSTOMER', data).then(res => {
     console.log('新增结果', res);
     // this.$message.success(res.data.data);
