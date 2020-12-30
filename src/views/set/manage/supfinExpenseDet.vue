@@ -2,17 +2,26 @@
     <div class="outer-box relative" style="height:100%;">
         <div class="right-box" :class="{'full': !showLeft }">
             <el-form :inline="true" :model="formInline" class="search-box">
-                <el-form-item label="库位编号">
-                    <el-input clearable :maxlength="50" placeholder="请输入库位编号" v-model.trim="formInline.warehouseLocaNo"></el-input>
+                <el-form-item label="单据号">
+                    <el-input clearable :maxlength="50" placeholder="请输入单据号" v-model.trim="formInline.billNo"></el-input>
                 </el-form-item>
-                <el-form-item label="库位名称">
-                    <el-input clearable :maxlength="200" placeholder="请输入库位名称" v-model.trim="formInline.warehouseLocaNm"></el-input>
-                </el-form-item>
-                <el-form-item label="库区编号">
-                    <el-select clearable v-model="formInline.warehouseAreaId" >
+                <el-form-item label="仓库名称">
+                    <el-select v-model="formInline.warehouseId" placeholder="请选择" clearable>
                         <el-option
-                                v-for="item in getAllDict('yes_no')"
+                                v-for="item in options"
                                 :key="item.value"
+                                size="mini"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="业务大类">
+                    <el-select v-model="formInline.bussTypeId" placeholder="请选择" clearable>
+                        <el-option
+                                v-for="item in getAllDict('buss_type')"
+                                :key="item.value"
+                                size="mini"
                                 :label="item.dictLabel"
                                 :value="item.dictValue">
                         </el-option>
@@ -33,26 +42,31 @@
                           @row-click="rowClick" highlight-current-row class="mt10" ref="multipleTable"
                           v-loading="loading" style="width: 100%;">
                     <el-table-column type="selection" width="55"></el-table-column>
-                    <el-table-column sortable prop="warehouseLocaNo" align="center" label="库位编号" min-width="160"></el-table-column>
-                    <el-table-column prop="warehouseLocaNm" align="center" label="库位名称" min-width="200"></el-table-column>
-                    <el-table-column sortable prop="warehouseArea" align="center" label="库区编号" min-width="160"></el-table-column>
-                    <el-table-column prop="warehouseNm" align="center" label="仓库名称" min-width="200"></el-table-column>
-                    <el-table-column sortable prop="warehouseLocaTypeNm" align="center" label="库位性质名称" min-width="160"></el-table-column>
-                    <el-table-column sortable prop="maxQuantity" align="center" label="最大存放数量" min-width="160"></el-table-column>
-                    <el-table-column sortable prop="maxWeight" align="center" label="最大存放重量" min-width="160"></el-table-column>
-                    <el-table-column sortable prop="mixFlag" align="center" label="混堆" min-width="160"></el-table-column>
-                    <el-table-column sortable prop="controlSts" align="center" label="控制状态" min-width="160">
+                    <el-table-column sortable prop="billNo" align="center" label="单据号" min-width="160"></el-table-column>
+                    <el-table-column sortable prop="warehouseName" align="center" label="仓库名称" min-width="160"></el-table-column>
+                    <el-table-column sortable prop="bussType" align="center" label="业务大类" min-width="160"></el-table-column>
+                    <el-table-column sortable prop="billType" align="center" label="业务类型" min-width="160"></el-table-column>
+                    <el-table-column sortable prop="bussBillNo" align="center" label="业务单号" min-width="160"></el-table-column>
+                    <el-table-column prop="costName" align="center" label="费用名称" min-width="200"></el-table-column>
+                    <el-table-column sortable prop="settDirection" align="center" label="结算方向" min-width="160">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.controlSts === '0'">正常</span>
-                            <span v-show="scope.row.controlSts === '1'">只如不出</span>
-                            <span v-show="scope.row.controlSts === '2'">只出不如</span>
+                            <span v-show="scope.row.settDirection === 'YS'">应收</span>
+                            <span v-show="scope.row.settDirection === 'YF'">应付</span>
                         </template>
                     </el-table-column>
-
-                    <el-table-column sortable prop="status" align="center" label="状态" min-width="130">
+                    <el-table-column sortable prop="custName" align="center" label="客户名称" min-width="160"></el-table-column>
+                    <el-table-column sortable prop="amtTotal" align="center" label="总金额" min-width="160"></el-table-column>
+                    <el-table-column sortable prop="amtReceive" align="center" label="已收金额" min-width="160"></el-table-column>
+                    <el-table-column sortable prop="creareType" align="center" label="创建方式" min-width="160">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.status === '0'">停用</span>
-                            <span v-show="scope.row.status === '1'">启用</span>
+                            <span v-show="scope.row.creareType === 'XT'">系统</span>
+                            <span v-show="scope.row.creareType === 'RG'">人工</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column sortable prop="status" align="center" label="状态" min-width="160">
+                        <template slot-scope="scope">
+                            <span v-show="scope.row.status === 'XT'">系统</span>
+                            <span v-show="scope.row.status === 'RG'">人工</span>
                         </template>
                     </el-table-column>
                     <el-table-column fixed="right" align="center" label="操作" width="140">
@@ -87,27 +101,10 @@
                 <el-form label-width="120px" ref="editForm" :model="editForm" :rules="rules">
                     <el-row :gutter="120">
                         <el-col :span="12">
-                            <el-form-item label="库位编号" prop="warehouseLocaNo">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.warehouseLocaNo" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入库位名称"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="库位名称" prop="warehouseLocaNm">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.warehouseLocaNm" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入库位名称"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="120">
-                        <el-col :span="12">
-                            <el-form-item label="库区编号" prop="warehouseAreaId">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseAreaId" placeholder="请选择" clearable>
-                                    <el-option
-                                            v-for="item in getAllDict('yes_no')"
-                                            :key="item.value"
-                                            :label="item.dictLabel"
-                                            :value="item.dictValue">
+                            <el-form-item label="客户" prop="custId">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.custId" placeholder="请选择"   @change="getChangeName" clearable>
+                                    <el-option v-for="item in companyDatas" :key="item.companyNo"
+                                               :label="item.name" :value="item.companyNo">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -126,11 +123,11 @@
                         </el-col>
                     </el-row>
                     <el-row :gutter="120">
-                        <el-col  :span="12">
-                            <el-form-item label="库区性质" prop="warehouseLocaType">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseLocaType" placeholder="请选择" clearable>
+                        <el-col :span="12">
+                            <el-form-item label="业务大类" prop="bussTypeId">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.bussTypeId" placeholder="请选择" clearable>
                                     <el-option
-                                            v-for="item in getAllDict('warehouse_loca_type')"
+                                            v-for="item in getAllDict('buss_type')"
                                             :key="item.value"
                                             :label="item.dictLabel"
                                             :value="item.dictValue">
@@ -139,8 +136,110 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="混堆" prop="mixFlag">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.mixFlag" placeholder="请选择" clearable>
+                            <el-form-item label="业务类型" prop="billTypeId">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.billTypeId" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('bill_type')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
+                        <el-col :span="12">
+                            <el-form-item label="业务单号" prop="bussBillNo">
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.bussBillNo" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入业务单号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="费用名称" prop="costName">
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.costName" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入费用名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
+                        <el-col :span="12">
+                            <el-form-item label="结算方向" prop="settDirection">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.settDirection" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('sett_direction')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="计费方式" prop="charginaMode">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.charginaMode" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('charging_mode')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
+                        <el-col :span="12">
+                            <el-form-item label="结算方式" prop="settlementMode">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.settlementMode" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('settlement_mode')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="结算量" prop="settVolume">
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.settVolume" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入结算量"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
+                        <el-col :span="12">
+                            <el-form-item label="单价" prop="unitPrice">
+                                <el-input :readonly="editForm.type==='view' " v-model.trim="editForm.unitPrice" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入单价"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="单价单位" prop="unit">
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.unit" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入单价单位"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
+                        <el-col :span="12">
+                            <el-form-item label="总金额" prop="amtTotal">
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.amtTotal" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入总金额"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="已收金额" prop="amtReceive">
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.amtReceive" auto-complete="off" :maxlength="50"
+                                          placeholder="请输入已收金额"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="120">
+                        <el-col :span="12">
+                            <el-form-item label="免费" prop="freeFlag">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.freeFlag" placeholder="请选择" clearable>
                                     <el-option
                                             v-for="item in getAllDict('yes_no')"
                                             :key="item.value"
@@ -151,90 +250,10 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row :gutter="120">
-                        <el-col :span="12">
-                            <el-form-item label="最大存放数量" prop="maxQuantity">
-                                <el-input type="number" :readonly="editForm.type==='view'" v-model.trim="editForm.maxQuantity" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入最大存放数量"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="最大存放重量" prop="maxWeight">
-                                <el-input type="number" :readonly="editForm.type==='view'" v-model.trim="editForm.maxWeight" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入最大存放重量"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="120">
-                        <el-col :span="12">
-                            <el-form-item label="品名" prop="catalogNm">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.catalogNm" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入品名"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="规格" prop="specifications">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.specifications" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入规格"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="120">
-                        <el-col :span="12">
-                            <el-form-item label="材质" prop="textureMaterial">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.textureMaterial" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入材质"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="产地" prop="placeOrigin ">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.placeOrigin" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入库位名称"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="120">
-                        <el-col :span="12">
-                            <el-form-item label="视频地址" prop="videoUrl">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.videoUrl" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入视频地址"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col  :span="12">
-                            <el-form-item label="控制状态" prop="controlSts">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.controlSts" placeholder="请选择" clearable>
-                                    <el-option
-                                            v-for="item in getAllDict('warehouse_loca_control_sts')"
-                                            :key="item.value"
-                                            :label="item.dictLabel"
-                                            :value="item.dictValue">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="120" style="padding-bottom: 4px">
-                        <el-col  :span="12">
-                            <el-form-item label="状态" prop="status">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.status" placeholder="请选择" clearable>
-                                    <el-option
-                                            v-for="item in getAllDict('common_status')"
-                                            :key="item.value"
-                                            :label="item.dictLabel"
-                                            :value="item.dictValue">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row :gutter="120">
-                        <el-col :span="24">
-                            <el-form-item label="备注" prop="remark">
-                                <el-input :readonly="editForm.type==='view'" type="textarea" :rows="3" v-model="editForm.remark" :maxlength="1000"
-                                          auto-complete="off" placeholder="请输入备注"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
+                    <el-form-item label="备注" prop="remark">
+                        <el-input :readonly="editForm.type==='view' || editForm.type==='audit'" type="textarea" :rows="3" v-model="editForm.remark" :maxlength="1000"
+                                  auto-complete="off" placeholder="请输入备注"></el-input>
+                    </el-form-item>
                 </el-form>
                 <div class="dialog-footer">
                     <el-button plain @click="editFormVisible=false">取消</el-button>
@@ -254,8 +273,8 @@
 </template>
 <script type="text/ecmascript-6">
     import { sureDelete,getValidButton,deleteAllNext } from '@/utils'
-    import { setWarehouseLocationList,setWarehouseLocationAdd,setWarehouseLocationEdit,setWarehouseLocationDelete ,setWarehouseLocationBatchDelete,setDictionaryDataList,loadDictList} from '@/plugins/api'
-
+    import { setSupfinExpenseDetList,setSupfinExpenseDetAdd,setSupfinExpenseDetEdit,setSupfinExpenseDetDelete ,setSupfinExpenseDetBatchDelete,setDictionaryDataList,loadDictList} from '@/plugins/api'
+    import { setCompanyData } from '@/plugins/apis'
     export default {
         data () {
             return {
@@ -296,13 +315,14 @@
 
                 // 仓库下拉数据
                 options: [],
+                companyDatas:[],
             }
         },
         components: {
         },
         created () {
             this.permissionButtons = getValidButton(this.$route.path)
-            this.getList()
+            this.getCompanyDatas()
             this.getSelects()
             this.getWarehouseData();
             //获取全部数据字典
@@ -311,6 +331,7 @@
             }).then(res => {
                 this.allDict = res;
             });
+            //this.getList()
         },
         computed: {
         },
@@ -318,6 +339,18 @@
 
         },
         methods: {
+            getCompanyDatas () {
+                setCompanyData({}).then((res) => {
+                    this.companyDatas = res
+                })
+            },
+            getChangeName (data) {
+                const temp = this.companyDatas.filter(v => data === v.companyNo)
+                if (temp && temp.length > 0) {
+                    this.editForm.custName = temp[0].name;
+                    this.editForm.custId = temp[0].companyNo;
+                }
+            },
             // 获取仓库数据
             getWarehouseData() {
                 // 获取仓库数据
@@ -345,14 +378,13 @@
                 }
             },
             getList (data) {
-                this.loading = true
+                //this.loading = true
                 let sendData = {
                     ...this.formInline,
-                    warehouseLocaNo: `*${this.formInline.warehouseLocaNo || ''}*`,
-                    warehouseLocaNm: `*${this.formInline.warehouseLocaNm || ''}*`,
+                    billNo: `*${this.formInline.billNo || ''}*`,
                     ...data
                 }
-                setWarehouseLocationList(sendData).then((res) => {
+                setSupfinExpenseDetList(sendData).then((res) => {
                     this.listData = res.records
                     this.loading = false
                     this.pageParams.currentPage = res.current
@@ -445,7 +477,7 @@
                                 }
                                 this.loading = true
                                 let sendData = this.editForm
-                                setWarehouseLocationAdd(sendData).then((res) => {
+                                setSupfinExpenseDetAdd(sendData).then((res) => {
                                     this.$message({
                                         message: res,
                                         type: 'success'
@@ -488,7 +520,7 @@
                                 }
                                 this.loading = true
                                 let sendData = this.editForm
-                                setWarehouseLocationEdit(sendData).then((res) => {
+                                setSupfinExpenseDetEdit(sendData).then((res) => {
                                     this.$message({
                                         message: res,
                                         type: 'success'
@@ -509,7 +541,7 @@
                     const sendData = {
                         id: data.id
                     }
-                    setWarehouseLocationDelete(sendData).then((res) => {
+                    setSupfinExpenseDetDelete(sendData).then((res) => {
                         this.$message({
                             message: res,
                             type: 'success'
@@ -529,7 +561,7 @@
                     return
                 }
                 sureDelete(() => {
-                    setWarehouseLocationBatchDelete(sendData).then((res) => {
+                    setSupfinExpenseDetBatchDelete(sendData).then((res) => {
                         this.$message({
                             message: res,
                             type: 'success'

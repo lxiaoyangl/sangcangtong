@@ -104,5 +104,11 @@ export function setWarehouseLocationList(params) { return postApi('/warehouseLoc
 export function setWarehouseLocationDelete(params) { return postApi('/warehouseLocation/baseDel', params) }
 export function setWarehouseLocationBatchDelete(params) { return postApi('/warehouseLocation/baseBatchDel', params) }
 
+export function setSupfinExpenseDetAdd(params) { return postApi('/supfinExpenseDet/baseAdd', params) }
+export function setSupfinExpenseDetEdit(params) { return postApi('/supfinExpenseDet/baseEdit', params) }
+export function setSupfinExpenseDetList(params) { return postApi('/supfinExpenseDet/baseList?&_pageList&column=createTime&order=desc', params) }
+export function setSupfinExpenseDetDelete(params) { return postApi('/supfinExpenseDet/baseDel', params) }
+export function setSupfinExpenseDetBatchDelete(params) { return postApi('/supfinExpenseDet/baseBatchDel', params) }
+
 export function setserverInfo(params) { return postApi('/base/serverInfo', params) }
 

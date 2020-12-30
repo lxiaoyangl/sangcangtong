@@ -3,41 +3,46 @@
         <div class="right-box" :class="{'full': !showLeft }">
             <el-form :inline="true" :model="formInline" class="search-box">
                 <el-form-item label="合同号">
-                    <el-input clearable :maxlength="50" placeholder="请输入合同号" v-model.trim="formInline.cttNo"></el-input>
+                    <el-input clearable style="width:150px" :maxlength="50" placeholder="请输入合同号" v-model.trim="formInline.cttNo"></el-input>
                 </el-form-item>
                 <el-form-item label="合同名称">
-                    <el-input clearable :maxlength="200" placeholder="请输入合同名称" v-model.trim="formInline.cttName"></el-input>
+                    <el-input style="width:150px" clearable :maxlength="200" placeholder="请输入合同名称" v-model.trim="formInline.cttName"></el-input>
                 </el-form-item>
                 <el-form-item label="签署日期">
-                    <el-date-picker
+                    <el-date-picker style="width:200px"
                             v-model="formInline.sacDateList"
                             type="daterange"
+                            size="mini"
                             range-separator="至"
                             value-format="yyyy-MM-dd"
                             start-placeholder="起始日期"
                             end-placeholder="结束日期">
                     </el-date-picker>
                 </el-form-item>
-                <!--<el-form-item label="客户名称">
-                    <el-input clearable :maxlength="50" placeholder="请输入客户名称" v-model.trim="formInline.custName"></el-input>
-                </el-form-item>
-                <el-form-item label="合同状态">
-                    <ren-select v-model="formInline.cttStatus" dict-type="ctt_status" ></ren-select>
-                </el-form-item>-->
-                <!--<el-form-item label="到期日期">
-                    <el-date-picker
-                            v-model="formInline.povDateList"
-                            type="daterange"
-                            range-separator="至"
-                            value-format="yyyy-MM-dd"
-                            start-placeholder="起始日期"
-                            end-placeholder="结束日期">
-                    </el-date-picker>
-                </el-form-item>-->
-                <el-button type="primary" icon="el-icon-search" @click="searchList">搜索</el-button>
-                <el-button type="primary" icon="el-icon-refresh" plain @click="searchReset">重置</el-button>
-            </el-form>
-            <!--列表-->
+                <el-button type="primary" style="margin-top: 5px;" icon="el-icon-search" size="mini" @click="searchList">搜索</el-button>
+                <el-button type="primary" style="margin-top: 5px;" icon="el-icon-refresh" size="mini" plain @click="searchReset">重置</el-button>
+                <el-button type="warning" style="margin-top: 5px;" @click="heightFilter" size="mini">高级筛选</el-button>
+                <div class="height-search" v-show="isHeightSearch">
+                    <el-form-item label="客户名称">
+                        <el-input clearable :maxlength="50" placeholder="请输入客户名称" v-model.trim="formInline.custName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="合同状态">
+                        <ren-select v-model="formInline.cttStatus" dict-type="yes_no" ></ren-select>
+                    </el-form-item>
+                    <el-form-item label="到期日期">
+                        <el-date-picker
+                                v-model="formInline.povDateList"
+                                type="daterange"
+                                range-separator="至"
+                                size="mini"
+                                value-format="yyyy-MM-dd"
+                                start-placeholder="起始日期"
+                                end-placeholder="结束日期">
+                        </el-date-picker>
+                    </el-form-item>
+                    </div>
+                </el-form>
+                <!--列表-->
             <div class="content-box mt10">
                 <div>
                     <template >
@@ -45,7 +50,7 @@
                         <el-button :disabled="multipleSelection.length===0" v-show="$hasPermission('批量删除')" type="danger" icon="el-icon-delete" @click="batchDelete">批量删除</el-button>
                     </template>
                 </div>
-                <el-table border :data="listData" height="calc(100vh - 287px)" @selection-change="handleSelectionChange"
+                <el-table border :data="listData" :height="listHeight" @selection-change="handleSelectionChange"
                           @row-click="rowClick" highlight-current-row class="mt10" ref="multipleTable"
                           v-loading="loading" style="width: 100%;">
                     <el-table-column type="selection" width="55"></el-table-column>
@@ -101,7 +106,7 @@
         <div  v-if="editFormVisible" class="fixed-box show">
             <div class="fixed-container">
                 <el-form label-width="90px" ref="editForm" :model="editForm" :rules="rules">
-                    <el-row :gutter="120">
+                    <el-row :gutter="120" style="padding-bottom: 3px">
                         <el-col :span="12">
                             <el-form-item label="合同名称" prop="cttName">
                                 <el-input :readonly="editForm.type==='view' || editForm.type==='audit'" v-model.trim="editForm.cttName" auto-complete="off" :maxlength="50"
@@ -134,13 +139,14 @@
                             </el-col>
                         </el-row>
                     </div>
-                    <el-row :gutter="120">
+                    <el-row :gutter="120" style="padding-bottom: 5px">
                         <el-col :span="12">
                             <el-form-item label="合同日期" prop="cttDate">
                                 <el-date-picker
                                         :readonly="editForm.type==='view' || editForm.type==='audit'"
                                         v-model="editForm.cttDate"
                                         type="daterange"
+                                        size="mini"
                                         value-format="yyyy-MM-dd"
                                         range-separator="至"
                                         start-placeholder="签署日期"
@@ -497,6 +503,8 @@
                 // 准备上传的附件列表
                 file_list: [],
                 fileView:true,
+                isHeightSearch: false,//是否高级搜索;
+                listHeight:'calc(100vh - 265px)',
             }
         },
         components: {
@@ -524,6 +532,14 @@
             },
         },
         methods: {
+            heightFilter() {
+                if(this.isHeightSearch){
+                    this.listHeight='calc(100vh - 265px)';
+                }else{
+                    this.listHeight='calc(100vh - 306px)';
+                }
+                this.isHeightSearch = !this.isHeightSearch
+            },
             // 附件蒙层确认函数
             enclosure_sure() {
                 this.enclosure_flag = false;
@@ -976,7 +992,7 @@
                     this.title = '查看合同信息'
                     this.editForm.type = 'view'
                     this.editFormVisible = true
-                    this.detailTableHeight='calc(100vh - 340px)'
+                    this.detailTableHeight='calc(100vh - 360px)'
                     this.uploadStatus = true
                     this.fileView = false
                 })
@@ -1008,7 +1024,7 @@
                     this.title = '审批合同信息'
                     this.editForm.type = 'audit'
                     this.editFormVisible = true
-                    this.detailTableHeight='calc(100vh - 440px)'
+                    this.detailTableHeight='calc(100vh - 460px)'
                     this.uploadStatus = true
                     this.fileView = false
                 })

@@ -17,6 +17,7 @@ import SetNotice from "@/views/set/notice";
 
 const ManageCtt = () => import('@/views/set/manage/ctt')
 const WarehouseLocation = () => import('@/views/set/manage/warehouseLocation')
+const SupfinExpenseDet = () => import('@/views/set/manage/supfinExpenseDet')
 const Warehouse = () => import('@/views/set/warehouse')
 
 const SetMaterials = () => import('@/views/set/materials')
@@ -71,9 +72,16 @@ export default new Router({
 				},
 				{
 					path: '/set/manage/warehouseLocation',
-					name: '库位',
+					name: '库位管理',
 					title: '运维管理系统',
 					component: WarehouseLocation,
+					children: []
+				},
+				{
+					path: '/set/manage/supfinExpenseDet',
+					name: '明细流水',
+					title: '运维管理系统',
+					component: SupfinExpenseDet,
 					children: []
 				},
 				{
