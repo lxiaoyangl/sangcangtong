@@ -41,6 +41,7 @@
       </div>
       <div class="search">
         <div class="normal-search">
+
           <span>入仓名称</span>
           <div class="d-input">
             <!--            <el-input v-model="form.warehouseName" placeholder="请输入入仓名称" size="mini" clearable></el-input>-->
@@ -54,28 +55,20 @@
             </el-select>
           </div>
 
-          <span>客户名称</span>
-          <div class="d-input">
-            <!--            <el-input v-model="form.customerName" placeholder="客户名称" size="mini" clearable></el-input>-->
-            <el-select clearable v-model="form.transferOutName" placeholder="过出方名称" filterable size="mini">
-              <el-option
-                  v-for="item in cusNameArr"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.name">
-              </el-option>
-            </el-select>
-          </div>
-
-          <span>订单号</span>
+          <span>入仓订单号</span>
           <div class="d-input">
             <el-input v-model="form.orderNo" placeholder="请输入订单号" size="mini" clearable></el-input>
+          </div>
+
+          <span>单据号</span>
+          <div class="d-input">
+            <el-input v-model="form.billNo" placeholder="请输入单据号" size="mini" clearable></el-input>
           </div>
 
           <el-button type="success" @click="search" size="mini">查询</el-button>
           <el-button type="primary" @click="resetFilter" size="mini">重置</el-button>
           <el-button type="warning" @click="heightFilter" size="mini">高级筛选</el-button>
-          <el-button type="success" @click="addNew" size="mini" v-show="tabsArr[tabsAc].type === 0">新建订单</el-button>
+          <el-button type="success" @click="addNew" size="mini" v-show="tabsArr[tabsAc].type === 0">新建库位编排</el-button>
         </div>
         <div class="height-search" v-show="isHeightSearch">
           <span>计划入仓时间</span>
@@ -268,6 +261,7 @@
           putInPlanDate_end: '',
           deliverPlanDate_begin: '',
           deliverPlanDate_end: '',
+          billNo:'',
         },
         orderNo: '',//订单号
         tableRow: {},//选中的表格数据
@@ -331,7 +325,7 @@
       // 数据查询
       get_data(data) {
         let senddata = {
-          //companyId: sessionStorage.getItem('companyId')
+          companyId: sessionStorage.getItem('companyId')
         };
         let url = '/applicationIn/baseList?_pageList&ascColumn=documentState,createTime';
         if (this.form.inp1 !== '') {
@@ -474,5 +468,5 @@
 </script>
 
 <style scoped lang="less">
-  @import "../../../../style/views/warehouse/homePage/incoming.less";
+  @import "../../../style/views/warehouse/homePage/arrange.less";
 </style>
