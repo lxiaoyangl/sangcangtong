@@ -37,7 +37,7 @@
         <!-- 底部数据栏 -->
         <div class="basis_content">
             <!-- 底部左侧导航栏 -->
-            <div class="basis_content_left">
+            <div :class="one_level_menu_type===1?'basis_content_left_index basis_content_left':'basis_content_left'">
                 <el-menu
                     class="el-menu-vertical-demo"
                     :active-text-color="'#ee6e18'"
@@ -47,18 +47,45 @@
                     :router="true"
                     @select="menu_select"
                 >
-                    <el-submenu :index="item.id+''" v-for="(item,index) in two_level_nav_arr" :key="index" v-show="item.show_flag">
+                    <div v-for="(item,index) in two_level_nav_arr" :key="index">
+                        <el-submenu :index="item.id+''" v-show="item.show_flag && item.menuType===2">
+                            <template slot="title">
+                                <span><i :class="item.icon"></i> {{item.name}}</span>
+                            </template>
+                            <el-menu-item :index="it.route" v-for="(it,ind) in item.children" :key="ind" :route="it.route">
+                                <span slot="title"><i :class="it.icon"></i>{{it.name}}</span>
+                            </el-menu-item>
+                            <div v-for="(item1,index) in item.children" :key="index">
+                                <el-submenu :index="item1.id+''" v-show="item1.show_flag && item1.menuType===2">
+                                    <template slot="title">
+                                        <span><i :class="item1.icon"></i> {{item1.name}}</span>
+                                    </template>
+                                    <el-menu-item :index="it.route" v-for="(it,ind) in item1.children" :key="ind" :route="it.route">
+                                        <span slot="title"><i :class="it.icon"></i>{{it.name}}</span>
+                                    </el-menu-item>
+                                </el-submenu>
+                                <el-menu-item :index="item1.id+''" :route="item1.route" v-show="item1.show_flag && item1.menuType===3">
+                                    <span slot="title">{{item1.name}}</span>
+                                </el-menu-item>
+                            </div>
+                        </el-submenu>
+
+                        <el-menu-item :index="item.id+''" :route="item.route" v-show="item.show_flag && item.menuType===3">
+                            <span slot="title">{{item.name}}</span>
+                        </el-menu-item>
+                    </div>
+                    <!-- <el-submenu :index="item.id+''" v-for="(item,index) in two_level_nav_arr" :key="index" v-show="item.show_flag">
                         <template slot="title">
                             <span><i :class="item.icon"></i> {{item.name}}</span>
                         </template>
                         <el-menu-item :index="it.route" v-for="(it,ind) in item.children" :key="ind" :route="it.route">
-                            <span slot="title"><i :class="it.icon"></i>{{it.name}}</span>
+                            <span slot="title">{{it.name}}</span>
                         </el-menu-item>
-                    </el-submenu>
+                    </el-submenu> -->
                 </el-menu>
             </div>
             <!-- 底部右侧数据块 -->
-            <div class="basis_content_right">
+            <div :class="one_level_menu_type===1?'basis_content_right_index basis_content_right':'basis_content_right'">
                 <!-- 底部右侧头部导航栏 -->
                 <div class="basis_content_right_header">
                     <div class="basis_content_right_header_home" @click="go_home">
@@ -228,6 +255,9 @@ export default {
 
             // 权限存储数组
             right_arr:[],
+
+            // 一级菜单类型 1主页   2目录   3菜单    4按钮
+            one_level_menu_type: 1,
         }
     },
     watch:{
@@ -252,7 +282,7 @@ export default {
             let arr = [];
             // 获取一级导航
             menu.map(item=>{
-                if(item.parentId === null && item.menuType === 2){
+                if(item.parentId === null && (item.menuType === 1 || item.menuType === 2)){
                     item.children = [];
                     arr.push(item);
                 }
@@ -263,6 +293,7 @@ export default {
                     if(it.id === item.parentId){
                         item.children = [];
                         item.id_str = ''+item.id;
+                        item.route = item.path;
                         it.children.push(item);
                     }
                 })
@@ -302,9 +333,9 @@ export default {
             let flag = sessionStorage.getItem('one-level-selected');
             console.log(flag);
             if(flag !== 'undefined' && flag !== '' && flag !== 'null' && flag !== null){
-                this.change_one_level({id:(sessionStorage.getItem('one-level-selected') * 1)});
+                this.change_one_level({id:(sessionStorage.getItem('one-level-selected') * 1), menuType: (sessionStorage.getItem('one-level-selected-menu-type') * 1)});
             }else{
-                this.change_one_level({id:this.one_level_nav_arr[0].id});
+                this.change_one_level({...this.one_level_nav_arr[0]});
             }
             // 写入用户信息
             this.userinfo = JSON.parse(sessionStorage.getItem('login-userinfo'));
@@ -325,14 +356,22 @@ export default {
         change_one_level(obj){
             console.log('一级导航改变函数',obj);
             this.one_level_selected = obj.id;
+            this.one_level_menu_type = obj.menuType;
             sessionStorage.setItem('one-level-selected',obj.id);
+            sessionStorage.setItem('one-level-selected-menu-type',obj.menuType);
             let arr = [];
             let defaule_arr = [];
             this.one_level_nav_arr.map(item=>{
                 if(item.id === obj.id){
                     item.children.map(it=>{
                         it.show_flag = true;
+                        console.log(it.id+'');
                         defaule_arr.push(it.id+'');
+                        it.children.map(it1=>{
+                            it1.show_flag = true;
+                            console.log(it1.id+'');
+                            defaule_arr.push(it1.id+'');
+                        })
                     })
                 }else{
                     item.children.map(it=>{
@@ -342,6 +381,7 @@ export default {
                 arr = [...arr,...item.children];
             })
             this.two_level_nav_arr = [...arr];
+            console.log('二级导航10',this.two_level_nav_arr)
             this.defaultOpeneds = [...defaule_arr];
             console.log('默认展开id',this.defaultOpeneds)
             this.check_lighthigh();
@@ -386,19 +426,29 @@ export default {
         menu_select(index,indexpath){
             console.log('菜单',index,indexpath)
             let obj = {};
+            console.log('二级导航11',this.two_level_nav_arr)
             for(let key in this.two_level_nav_arr){
                 if(this.two_level_nav_arr[key].show_flag === true && this.two_level_nav_arr[key].id+'' === indexpath[0]){
-                    for(let key_children in this.two_level_nav_arr[key].children){
-                        if(this.two_level_nav_arr[key].children[key_children].route === index){
-                            obj.name = this.two_level_nav_arr[key].children[key_children].name;
-                            obj.route = index;
-                            obj.popover_flag = false;
-                            this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children];
-                            sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
-                            break;
+                    if(this.two_level_nav_arr[key].menuType === 2){
+                        for(let key_children in this.two_level_nav_arr[key].children){
+                            if(this.two_level_nav_arr[key].children[key_children].path === index){
+                                obj.name = this.two_level_nav_arr[key].children[key_children].name;
+                                obj.route = index;
+                                obj.popover_flag = false;
+                                this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children];
+                                sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                                break;
+                            }
                         }
+                        break;
+                    }else{
+                        obj.name = this.two_level_nav_arr[key].name;
+                        obj.route = this.two_level_nav_arr[key].path;
+                        obj.popover_flag = false;
+                        this.right_arr = [...this.two_level_nav_arr[key].children];
+                        sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                        break;
                     }
-                    break;
                 }
             }
             console.log('组装的三级菜单对象',obj,this.right_arr);
@@ -483,58 +533,11 @@ export default {
             // 接收webscoket服务的数据
             webSocket.onmessage = (e) => {
                 console.log(e)
-                // if(e !== '连接成功'){
-                //     this.detail_notice = true;
-                // }
-                // heartCheck.reset().start()
-                // if (!e || !e.data) {
-                //     return
-                // }
-                // try {
-                //     const { type, msg } = JSON.parse(e.data)
-                //     // console.log(msg)
-                //     // 收到消息更新数据
-                //     if (type === 'notice') {
-                //         this.noticeNum += 1
-                //     }
-                //     // 人员坐标更新
-                //     if (type === 'personCoordinate') {
-                //         this.$store.commit('setTempCoordinate', msg)
-                //     }
-                //     // 消息列表更新
-                //     if (type === 'lastTenSecond') {
-                //         this.$store.commit('setTmpMessage', msg)
-                //     }
-                // } catch (e) {
-                //     // console.log(e)
-                // }
             }
             // 监听窗口事件，当窗口关闭时，主动断开websocket连接，防止连接没断开就关闭窗口，server端报错
             window.onbeforeunload = function () {
                 webSocket.close()
             }
-            // 心跳检测, 每隔一段时间检测连接状态，如果处于连接中，就向server端主动发送消息，
-            // 来重置server端与客户端的最大连接时间，如果已经断开了，发起重连。
-            // var heartCheck = {
-            //     timeout: 60000, // 60s发一次心跳，比server端设置的连接时间稍微小一点，在接近断开的情况下以通信的方式去重置连接时间。
-            //     serverTimeoutObj: null,
-            //     reset: function () {
-            //         clearTimeout(this.serverTimeoutObj)
-            //         return this
-            //     },
-            //     start: function () {
-            //         this.serverTimeoutObj = setInterval(function () {
-            //             if (webSocket.readyState === 1) {
-            //             // console.log('连接状态，发送消息保持连接')
-            //             webSocket.send('ping')
-            //             heartCheck.reset().start() // 如果获取到消息，说明连接是正常的，重置心跳检测
-            //             } else {
-            //             // console.log('断开状态，尝试重连')
-            //                 newSocketInit()
-            //             }
-            //         }, this.timeout)
-            //     }
-            // }
         },
         // 修改密码
         change_psd_form_sure(){
@@ -626,7 +629,7 @@ export default {
             height: 100%;
             display: flex;
             .basis_top_left_title{
-                width: 350px;
+                width: 300px;
                 height: 100%;
                 display: flex;
                 align-items: center;
@@ -643,7 +646,7 @@ export default {
                     justify-content: center;
                     color: rgba(32, 32, 32, 0.644);
                     span:nth-of-type(1){
-                        font-size: 23px;
+                        font-size: 20px;
                         font-weight: 600;
                     }
                     span:nth-of-type(2){
@@ -653,7 +656,7 @@ export default {
             }
             .basis_top_left_nav{
                 cursor: pointer;
-                width: 100px;
+                width: 98px;
                 height: 100%;
                 display: flex;
                 align-items: center;
@@ -683,7 +686,7 @@ export default {
             display: flex;
             align-items: center;
             box-sizing: border-box;
-            padding: 0 20px;
+            padding: 0 0px;
             .icon-set{
                 font-size: 18px;
                 margin-right: 10px;
@@ -695,7 +698,7 @@ export default {
             }
             .basis_top_right_logo{
                 height: 40px;
-                width: 40px;
+                width: 35px;
                 border-radius: 50%;
                 margin:0 20px;
             }
@@ -711,9 +714,10 @@ export default {
             overflow: auto;
             box-sizing: border-box;
         }
-        // .defaultActive::-webkit-scrollbar{
-        //     display: none;
-        // }
+        .basis_content_left_index{
+            width: 0px;
+        }
+
         .basis_content_right{
             width: calc(100% - 200px);
             height: 100%;
@@ -790,6 +794,9 @@ export default {
                 // padding: 10px;
             }
         }
+        .basis_content_right_index{
+            width: 100%;
+        }
     }
 }
 
@@ -850,7 +857,7 @@ export default {
         border: 1px solid #eaeaea;
         padding: 10px;
         .detail_dialog_content_title_title{
-            font-size: 18px;
+            font-size: 16px;
             height: 40px;
             display: flex;
             align-items: flex-end;
