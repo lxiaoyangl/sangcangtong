@@ -322,16 +322,12 @@ export default {
                     })
                 })
             })
-
-            console.log('菜单', menu);
             this.one_level_nav_arr = [...arr];
 
             // // 初始二级导航写入仓储协同
             this.two_level_nav_arr = [...this.one_level_nav_arr[0].children];
-            console.log('二级导航',this.two_level_nav_arr)
             // 查看是否已有一级导航进入缓存
             let flag = sessionStorage.getItem('one-level-selected');
-            console.log(flag);
             if(flag !== 'undefined' && flag !== '' && flag !== 'null' && flag !== null){
                 this.change_one_level({id:(sessionStorage.getItem('one-level-selected') * 1), menuType: (sessionStorage.getItem('one-level-selected-menu-type') * 1)});
             }else{
@@ -343,8 +339,6 @@ export default {
             this.three_level_nav_arr = JSON.parse(sessionStorage.getItem('three-nav-menu'))===null?[]:JSON.parse(sessionStorage.getItem('three-nav-menu'));
             // 写入按钮权限数组
             this.right_arr = JSON.parse(sessionStorage.getItem('right-arr'))===null?[]:JSON.parse(sessionStorage.getItem('right-arr'));
-            console.log(this.right_arr);
-
             // 建立ws链接
             this.initScoket();
 //        }).finally(()=>{
@@ -354,7 +348,6 @@ export default {
     methods:{
         // 头部一级导航改变函数,同步更新二级导航，写入默认展示的菜单第一模块
         change_one_level(obj){
-            console.log('一级导航改变函数',obj);
             this.one_level_selected = obj.id;
             this.one_level_menu_type = obj.menuType;
             sessionStorage.setItem('one-level-selected',obj.id);
@@ -365,11 +358,9 @@ export default {
                 if(item.id === obj.id){
                     item.children.map(it=>{
                         it.show_flag = true;
-                        console.log(it.id+'');
                         defaule_arr.push(it.id+'');
                         it.children.map(it1=>{
                             it1.show_flag = true;
-                            console.log(it1.id+'');
                             defaule_arr.push(it1.id+'');
                         })
                     })
@@ -381,9 +372,7 @@ export default {
                 arr = [...arr,...item.children];
             })
             this.two_level_nav_arr = [...arr];
-            console.log('二级导航10',this.two_level_nav_arr)
             this.defaultOpeneds = [...defaule_arr];
-            console.log('默认展开id',this.defaultOpeneds)
             this.check_lighthigh();
         },
         // 返回主页
@@ -392,7 +381,6 @@ export default {
         },
         // 返回登录页
         go_login(val){
-            console.log('返回',val)
             if(val === 'go_login'){
                 this.$fn.go_login(this);
             }
@@ -418,15 +406,11 @@ export default {
                 case '/logistics/operating/waybill/add': this.defaultActive = '/logistics/operating/waybill/list'; break;
 
                 default: this.defaultActive = str;
-
-                console.log('默认高亮',this.defaultActive);
             }
         },
         // 导航栏选择触发函数
         menu_select(index,indexpath){
-            console.log('菜单',index,indexpath)
             let obj = {};
-            console.log('二级导航11',this.two_level_nav_arr)
             for(let key in this.two_level_nav_arr){
                 if(this.two_level_nav_arr[key].show_flag === true && this.two_level_nav_arr[key].id+'' === indexpath[0]){
                     if(this.two_level_nav_arr[key].menuType === 2){
@@ -437,8 +421,6 @@ export default {
                                         obj.name = this.two_level_nav_arr[key].children[key_children].children[key_children1].name;
                                         obj.route = index;
                                         obj.popover_flag = false;
-                                        this.right_arr = [];
-                                        sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
                                         if(typeof(this.two_level_nav_arr[key].children[key_children].children[key_children1].children) != 'undefined'){
                                             this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children[key_children1].children];
                                             sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
@@ -451,8 +433,10 @@ export default {
                                     obj.name = this.two_level_nav_arr[key].children[key_children].name;
                                     obj.route = index;
                                     obj.popover_flag = false;
-                                    this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children];
-                                    sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                                    if(this.two_level_nav_arr[key].children[key_children].children.length > 0){
+                                        this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children];
+                                        sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                                    }
                                     break;
                                 }
                             }
@@ -461,13 +445,14 @@ export default {
                         obj.name = this.two_level_nav_arr[key].name;
                         obj.route = this.two_level_nav_arr[key].path;
                         obj.popover_flag = false;
-                        this.right_arr = [...this.two_level_nav_arr[key].children];
-                        sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                        if(this.two_level_nav_arr[key].children.length > 0){
+                            this.right_arr = [...this.two_level_nav_arr[key].children];
+                            sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                        }
                         break;
                     }
                 }
             }
-            console.log('组装的三级菜单对象',obj,this.right_arr);
             let have_flag = false;
             this.three_level_nav_arr.map(item=>{
                 if(item.route === obj.route){
@@ -510,7 +495,6 @@ export default {
                 pageNo:this.info_dialog_page.page_num,
                 pageSize:this.info_dialog_page.page_size,
             }).then(res=>{
-                console.log(res);
                 this.info_dialog_arr = [...res.data.data.records];
                 this.info_dialog_page.total = res.data.data.total;
             })
@@ -569,7 +553,6 @@ export default {
                     newPassword:this.$md5(this.change_psd_form.newPassword),
                     oldPassword:this.$md5(this.change_psd_form.oldPassword),
                 }).then(res=>{
-                    console.log(res);
                     this.change_psd_flag = false;
                     this.change_psd_form.newPassword = '';
                     this.change_psd_form.oldPassword = '';
@@ -579,13 +562,11 @@ export default {
         },
         // 消息列表，页码改变函数
         info_dialog_page_num_change(val){
-            console.log(val);
             this.info_dialog_page.page_num = val;
             this.show_info();
         },
         // 右键事件
         oncontextmenu_fn(obj){
-            console.log('右键触发函数',this.three_level_nav_arr);
             this.three_level_nav_arr.map(item=>{
                 item.popover_flag = false;
             })

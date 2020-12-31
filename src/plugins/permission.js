@@ -5,6 +5,20 @@ const loginUrl = [
   '/login/userLogin',
   '/login/loginByUserId'
 ]
+const supfinUrl = [
+    '/supfinExpenseDet/baseList',
+    '/supfinExpenseDet/baseBatchDel',
+    '/supfinExpenseDet/baseAdd',
+    '/supfinExpenseDet/baseEdit',
+    '/supfinExpenseDet/baseDel',
+    '/supfinSettBill/baseList',
+    '/supfinSettBill/baseBatchDel',
+    '/supfinSettBill/baseAdd',
+    '/supfinSettBill/edit',
+    '/supfinSettBill/baseEdit',
+    '/supfinSettBill/baseDel',
+    '/supfinSettBill/audit'
+]
 const busfrontUrl = [
   '/company/baseList',
   '/warehouse/baseList',
@@ -35,6 +49,11 @@ export function getPermissionUrl (url) {
     if (loginUrl[i] === url) {
       return config.loginUrl
     }
+  }
+  for (var i = 0; i < supfinUrl.length; i++) {
+       if (url.indexOf(supfinUrl[i]) != -1) {
+            return config.supfinUrl
+        }
   }
   for (var j = 0; j < busfrontUrl.length; j++) {
     if (busfrontUrl[j] === url) {
