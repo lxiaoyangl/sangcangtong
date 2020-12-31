@@ -442,7 +442,7 @@
 </template>
 <script type="text/ecmascript-6">
     import { sureDelete, getChangeData,getValidButton,deleteAllNext } from '@/utils'
-    import { setManageCttList,setManageCttAdd,setManageCttEdit,setManageCttDelete,setManageCttBatchDelete,setDictionaryDataList,loadDictList,setManageCttDetail,setManageCttAudit} from '@/plugins/api'
+    import { setManageCttList,setManageCttAdd,setManageCttEdit,setManageCttDelete,setManageCttBatchDelete,setDictionaryDataList,loadDictList,setManageCttDetail,setManageCttAudit,setManageCttSubmit} from '@/plugins/api'
     import { setCompanyData } from '@/plugins/apis'
 
     export default {
@@ -583,7 +583,7 @@
             },
             //点击提交
             submitRow(row) {
-                this.$confirm('订单提交过后将不可修改, 是否继续').then(() => {
+                this.$confirm('合同提交过后将不可修改, 是否继续').then(() => {
                     let data = {
                         id: row.id,
                         orderState: 'PENDING'
@@ -593,7 +593,7 @@
                         cttStatus : '11',
                         ...data
                     }
-                    setManageCttEdit(sendData).then((res) => {
+                    setManageCttSubmit(sendData).then((res) => {
                         this.$message({
                             message: '提交成功',
                             type: 'success'
