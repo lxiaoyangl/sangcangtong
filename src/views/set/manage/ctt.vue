@@ -27,7 +27,14 @@
                         <el-input clearable :maxlength="50" placeholder="请输入客户名称" v-model.trim="formInline.custName"></el-input>
                     </el-form-item>
                     <el-form-item label="合同状态">
-                        <ren-select v-model="formInline.cttStatus" dict-type="yes_no" ></ren-select>
+                        <el-select clearable v-model="formInline.cttStatus" >
+                            <el-option
+                                    v-for="item in getAllDict('ctt_status')"
+                                    :key="item.value"
+                                    :label="item.dictLabel"
+                                    :value="item.dictValue">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item label="到期日期">
                         <el-date-picker
@@ -62,12 +69,7 @@
                     <el-table-column sortable prop="povDate" align="center" label="到期日期" min-width="160"></el-table-column>
                     <el-table-column sortable prop="cttStatus" align="center" label="合同状态" min-width="130">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.cttStatus === '01'">新建</span>
-                            <span v-show="scope.row.cttStatus === '11'">审核中</span>
-                            <span v-show="scope.row.cttStatus === '21'">审核通过</span>
-                            <span v-show="scope.row.cttStatus === '22'">审核拒绝</span>
-                            <span v-show="scope.row.cttStatus === '90'">过期</span>
-                            <span v-show="scope.row.cttStatus === '91'">作废</span>
+                            {{ $getDictLabel("ctt_status", scope.row.cttStatus) }}
                         </template>
                     </el-table-column>
                     <el-table-column fixed="right" align="center" label="操作" width="210">
@@ -143,6 +145,7 @@
                         <el-col :span="12">
                             <el-form-item label="合同日期" prop="cttDate">
                                 <el-date-picker
+                                        style="width:410px !important"
                                         :readonly="editForm.type==='view' || editForm.type==='audit'"
                                         v-model="editForm.cttDate"
                                         type="daterange"

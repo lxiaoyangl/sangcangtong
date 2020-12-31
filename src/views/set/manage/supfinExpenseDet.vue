@@ -17,11 +17,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="业务大类">
-                    <el-select v-model="formInline.bussTypeId" placeholder="请选择" clearable>
+<!--                    <ren-select v-model="formInline.bussTypeId" dict-type="buss_type" ></ren-select>-->
+                    <el-select clearable v-model="formInline.bussTypeId" >
                         <el-option
                                 v-for="item in getAllDict('buss_type')"
                                 :key="item.value"
-                                size="mini"
                                 :label="item.dictLabel"
                                 :value="item.dictValue">
                         </el-option>
@@ -50,8 +50,7 @@
                     <el-table-column prop="costName" align="center" label="费用名称" min-width="200"></el-table-column>
                     <el-table-column sortable prop="settDirection" align="center" label="结算方向" min-width="160">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.settDirection === 'YS'">应收</span>
-                            <span v-show="scope.row.settDirection === 'YF'">应付</span>
+                            {{ $getDictLabel("sett_direction", scope.row.settDirection) }}
                         </template>
                     </el-table-column>
                     <el-table-column sortable prop="custName" align="center" label="客户名称" min-width="160"></el-table-column>
@@ -59,14 +58,12 @@
                     <el-table-column sortable prop="amtReceive" align="center" label="已收金额" min-width="160"></el-table-column>
                     <el-table-column sortable prop="creareType" align="center" label="创建方式" min-width="160">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.creareType === 'XT'">系统</span>
-                            <span v-show="scope.row.creareType === 'RG'">人工</span>
+                            {{ $getDictLabel("create_type", scope.row.creareType) }}
                         </template>
                     </el-table-column>
                     <el-table-column sortable prop="status" align="center" label="状态" min-width="160">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.status === 'XT'">系统</span>
-                            <span v-show="scope.row.status === 'RG'">人工</span>
+                            {{ $getDictLabel("common_status", scope.row.status) }}
                         </template>
                     </el-table-column>
                     <el-table-column fixed="right" align="center" label="操作" width="140">
@@ -111,7 +108,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="仓库" prop="warehouseId">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseId" placeholder="请选择" clearable>
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseId" placeholder="请选择" @change="getWarehouseChangeName" clearable>
                                     <el-option
                                             v-for="item in options"
                                             :key="item.value"
@@ -176,8 +173,8 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="计费方式" prop="charginaMode">
-                                <el-select :disabled="editForm.type==='view'" v-model="editForm.charginaMode" placeholder="请选择" clearable>
+                            <el-form-item label="计费方式" prop="chargingMode">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.chargingMode" placeholder="请选择" clearable>
                                     <el-option
                                             v-for="item in getAllDict('charging_mode')"
                                             :key="item.value"
@@ -203,7 +200,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="结算量" prop="settVolume">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.settVolume" auto-complete="off" :maxlength="50"
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.settVolume" auto-complete="off" type="number"
                                           placeholder="请输入结算量"></el-input>
                             </el-form-item>
                         </el-col>
@@ -211,32 +208,38 @@
                     <el-row :gutter="120">
                         <el-col :span="12">
                             <el-form-item label="单价" prop="unitPrice">
-                                <el-input :readonly="editForm.type==='view' " v-model.trim="editForm.unitPrice" auto-complete="off" :maxlength="50"
+                                <el-input :readonly="editForm.type==='view' " v-model.trim="editForm.unitPrice" auto-complete="off" type="number"
                                           placeholder="请输入单价"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="单价单位" prop="unit">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.unit" auto-complete="off" :maxlength="50"
-                                          placeholder="请输入单价单位"></el-input>
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.unit" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('unit')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row :gutter="120">
                         <el-col :span="12">
                             <el-form-item label="总金额" prop="amtTotal">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.amtTotal" auto-complete="off" :maxlength="50"
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.amtTotal" auto-complete="off" type="number"
                                           placeholder="请输入总金额"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="已收金额" prop="amtReceive">
-                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.amtReceive" auto-complete="off" :maxlength="50"
+                                <el-input :readonly="editForm.type==='view'" v-model.trim="editForm.amtReceive" auto-complete="off" type="number"
                                           placeholder="请输入已收金额"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row :gutter="120">
+                    <el-row :gutter="120" style="padding-bottom: 4px">
                         <el-col :span="12">
                             <el-form-item label="免费" prop="freeFlag">
                                 <el-select :disabled="editForm.type==='view'" v-model="editForm.freeFlag" placeholder="请选择" clearable>
@@ -249,6 +252,18 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
+                        <!--<el-col :span="12">
+                            <el-form-item label="状态" prop="freeFlag">
+                                <el-select :disabled="editForm.type==='view'" v-model="editForm.freeFlag" placeholder="请选择" clearable>
+                                    <el-option
+                                            v-for="item in getAllDict('yes_no')"
+                                            :key="item.value"
+                                            :label="item.dictLabel"
+                                            :value="item.dictValue">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>-->
                     </el-row>
                     <el-form-item label="备注" prop="remark">
                         <el-input :readonly="editForm.type==='view' || editForm.type==='audit'" type="textarea" :rows="3" v-model="editForm.remark" :maxlength="1000"
@@ -269,18 +284,21 @@
                 </div>
             </div>
         </div>
+        <TreeWrap v-model="showTrees" :treeDatas="treeDatas"  :selectData="selectData"
+                  @sureSelectedTree="sureSelectedTree"></TreeWrap>
     </div>
 </template>
 <script type="text/ecmascript-6">
-    import { sureDelete,getValidButton,deleteAllNext } from '@/utils'
-    import { setSupfinExpenseDetList,setSupfinExpenseDetAdd,setSupfinExpenseDetEdit,setSupfinExpenseDetDelete ,setSupfinExpenseDetBatchDelete,setDictionaryDataList,loadDictList} from '@/plugins/api'
+    import TreeWrap from '@/components/treeWrap'
+    import { sureDelete,getValidButton,deleteAllNext,toTreePackage } from '@/utils'
+    import { setSupfinExpenseDetList,setSupfinExpenseDetAdd,setSupfinExpenseDetEdit,setSupfinExpenseDetDelete ,setSupfinExpenseDetBatchDelete,setDictionaryDataList,loadDictList,setDepartmentBaseTree} from '@/plugins/api'
     import { setCompanyData } from '@/plugins/apis'
     export default {
         data () {
             return {
                 loading: false,
                 formInline: {
-
+                    bussTypeId:''
                 },
                 listData: [], // 列表
                 pageParams: {
@@ -301,37 +319,45 @@
                 columnOptions: [],
                 postIds: [],
                 rules: {
-                    warehouseLocaNo: [{required: true, message: '请输入库位编号', trigger: 'blur'}],
-                    warehouseLocaNm: [{required: true, message: '请输入库位名称', trigger: 'blur'}],
-                    warehouseAreaId: [{required: true, message: '请选择库区编号', trigger: 'blur'}],
-                    warehouseId:[{required: true, message: '请选择仓库', trigger: 'blur'}],
-                    warehouseLocaType:[{required: true, message: '请选择库位性质', trigger: 'blur'}],
-                    maxQuantity:[{required: true, message: '请输入最大存放数量', trigger: 'blur'}],
-                    maxWeight:[{required: true, message: '请输入最大存放重量', trigger: 'blur'}],
-                    controlSts:[{required: true, message: '请选择控制状态', trigger: 'blur'}],
-                    status:[{required: true, message: '请选择状态', trigger: 'blur'}],
-
+                    custId: [{required: true, message: '请选择客户', trigger: 'blur'}],
+                    warehouseId: [{required: true, message: '请选择仓库', trigger: 'blur'}],
+                    bussTypeId: [{required: true, message: '请选择业务大类', trigger: 'blur'}],
+                    billTypeId: [{required: true, message: '请选择业务类型', trigger: 'blur'}],
+                    bussBillNo:[{required: true, message: '请输入业务单号', trigger: 'blur'}],
+                    costName:[{required: true, message: '请输入费用名称', trigger: 'blur'}],
+                    settDirection:[{required: true, message: '请选择结算方向', trigger: 'blur'}],
+                    chargingMode:[{required: true, message: '请选择计费方式', trigger: 'blur'}],
+                    settlementMode:[{required: true, message: '请选择结算方式', trigger: 'blur'}],
+                    settVolume:[{required: true, message: '请输入结算量', trigger: 'blur'}],
+                    unitPrice:[{required: true, message: '请输入单价', trigger: 'blur'}],
+                    unit:[{required: true, message: '请选择单价单位', trigger: 'blur'}],
+                    amtTotal:[{required: true, message: '请输入总金额', trigger: 'blur'}],
+                    amtReceive:[{required: true, message: '请输入已收金额', trigger: 'blur'}],
+                    freeFlag:[{required: true, message: '请选择是否免费', trigger: 'blur'}],
                 },
 
                 // 仓库下拉数据
                 options: [],
                 companyDatas:[],
+                treeDatas: [],
             }
         },
         components: {
+            TreeWrap
         },
         created () {
             this.permissionButtons = getValidButton(this.$route.path)
             this.getCompanyDatas()
             this.getSelects()
             this.getWarehouseData();
+            this.getTreeDatas()
             //获取全部数据字典
             loadDictList({
                 name: '**',
             }).then(res => {
                 this.allDict = res;
             });
-            //this.getList()
+            this.getList()
         },
         computed: {
         },
@@ -339,6 +365,17 @@
 
         },
         methods: {
+            getTreeDatas () {
+                setDepartmentBaseTree({}).then((res) => {
+                    this.treeDatas = toTreePackage(res)
+                    this.columnOptions = this.getTreeData(this.treeDatas)
+                })
+            },
+            sureSelectedTree (data) {
+                const { treeCode, name } = data
+                this.editForm.departmentId = treeCode / 1
+                this.editForm.departmentName = name
+            },
             getCompanyDatas () {
                 setCompanyData({}).then((res) => {
                     this.companyDatas = res
@@ -349,6 +386,12 @@
                 if (temp && temp.length > 0) {
                     this.editForm.custName = temp[0].name;
                     this.editForm.custId = temp[0].companyNo;
+                }
+            },
+            getWarehouseChangeName(data) {
+                const temp = this.options.filter(v => data === v.id)
+                if (temp && temp.length > 0) {
+                    this.editForm.warehouseName = temp[0].name;
                 }
             },
             // 获取仓库数据
@@ -452,42 +495,21 @@
             addList (editData) {
                 this.$refs[editData].validate((valid) => {
                     if (valid) {
-                        let dataList = [];
-                        Promise.all([
-                            //库区编号
-                            this.getAllDict('yes_no'),
-                            //库位性质
-                            this.getAllDict('warehouse_loca_type'),
-                        ]).then(res => {
-                            if(res != null && res.length==2){
-                                for (let i = 0; i < res[0].length; i++) {
-                                    if(this.editForm.warehouseAreaId == res[0][i].dictValue){
-                                        this.editForm.warehouseArea = res[0][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < res[1].length; i++) {
-                                    if(this.editForm.warehouseLocaType == res[1][i].dictValue){
-                                        this.editForm.warehouseLocaTypeNm = res[1][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < this.options.length; i++) {
-                                    if(this.editForm.warehouseId == this.options[i].value){
-                                        this.editForm.warehouseNm = this.options[i].label
-                                    }
-                                }
-                                this.loading = true
-                                let sendData = this.editForm
-                                setSupfinExpenseDetAdd(sendData).then((res) => {
-                                    this.$message({
-                                        message: res,
-                                        type: 'success'
-                                    })
-                                    this._initEditForm()
-                                    this.getList()
-                                }).catch((res) => {
-                                    this.$message.error(res.data.data)
-                                })
-                            }
+                        this.loading = true
+                        this.editForm.bussType = this.$getDictLabel("buss_type", this.editForm.bussTypeId)
+                        this.editForm.billType = this.$getDictLabel("bill_type", this.editForm.billTypeId)
+                        this.editForm.chargingModeNm = this.$getDictLabel("charging_mode", this.editForm.chargingMode)
+                        this.editForm.settlementModeNm = this.$getDictLabel("settlement_mode", this.editForm.settlementMode)
+                        let sendData = this.editForm
+                        setSupfinExpenseDetAdd(sendData).then((res) => {
+                            this.$message({
+                                message: res,
+                                type: 'success'
+                            })
+                            this._initEditForm()
+                            this.getList()
+                        }).catch((res) => {
+                            this.$message.error(res.data.data)
                         })
                     }
                 })
@@ -496,41 +518,21 @@
             modifyList (editData) {
                 this.$refs[editData].validate((valid) => {
                     if (valid) {
-                        Promise.all([
-                            //库区编号
-                            this.getAllDict('yes_no'),
-                            //库位性质
-                            this.getAllDict('yes_no'),
-                        ]).then(res => {
-                            if(res != null && res.length==2){
-                                for (let i = 0; i < res[0].length; i++) {
-                                    if(this.editForm.warehouseAreaId == res[0][i].dictValue){
-                                        this.editForm.warehouseArea = res[0][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < res[1].length; i++) {
-                                    if(this.editForm.warehouseLocaType == res[1][i].dictValue){
-                                        this.editForm.warehouseLocaTypeNm = res[1][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < this.options.length; i++) {
-                                    if(this.editForm.warehouseId == this.options[i].value){
-                                        this.editForm.warehouseNm = this.options[i].label
-                                    }
-                                }
-                                this.loading = true
-                                let sendData = this.editForm
-                                setSupfinExpenseDetEdit(sendData).then((res) => {
-                                    this.$message({
-                                        message: res,
-                                        type: 'success'
-                                    })
-                                    this._initEditForm()
-                                    this.getList()
-                                }).catch((res) => {
-                                    this.$message.error(res.data.data)
-                                })
-                            }
+                        this.editForm.bussType = this.$getDictLabel("buss_type", this.editForm.bussTypeId)
+                        this.editForm.billType = this.$getDictLabel("bill_type", this.editForm.billTypeId)
+                        this.editForm.chargingModeNm = this.$getDictLabel("charging_mode", this.editForm.chargingMode)
+                        this.editForm.settlementModeNm = this.$getDictLabel("settlement_mode", this.editForm.settlementMode)
+                        this.loading = true
+                        let sendData = this.editForm
+                        setSupfinExpenseDetEdit(sendData).then((res) => {
+                            this.$message({
+                                message: res,
+                                type: 'success'
+                            })
+                            this._initEditForm()
+                            this.getList()
+                        }).catch((res) => {
+                            this.$message.error(res.data.data)
                         })
                     }
                 })
@@ -615,6 +617,19 @@
                 }
                 return childrenEach(treeData, depth)
             },
+            // 最后一级不为空
+            getTreeData (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].children.length < 1) {
+                        // children若为空数组，则将children设为undefined
+                        data[i].children = undefined
+                    } else {
+                        // children若不为空数组，则继续 递归调用 本方法
+                        this.getTreeData(data[i].children)
+                    }
+                }
+                return data
+            }
         }
     }
 </script>
@@ -673,5 +688,3 @@
         }
     }
 </style>
-
-

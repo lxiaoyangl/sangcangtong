@@ -11,7 +11,7 @@
                 <el-form-item label="库区编号">
                     <el-select clearable v-model="formInline.warehouseAreaId" >
                         <el-option
-                                v-for="item in getAllDict('yes_no')"
+                                v-for="item in getAllDict('warehouse_area')"
                                 :key="item.value"
                                 :label="item.dictLabel"
                                 :value="item.dictValue">
@@ -43,16 +43,12 @@
                     <el-table-column sortable prop="mixFlag" align="center" label="混堆" min-width="160"></el-table-column>
                     <el-table-column sortable prop="controlSts" align="center" label="控制状态" min-width="160">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.controlSts === '0'">正常</span>
-                            <span v-show="scope.row.controlSts === '1'">只如不出</span>
-                            <span v-show="scope.row.controlSts === '2'">只出不如</span>
+                            {{ $getDictLabel("warehouse_loca_control_sts", scope.row.controlSts) }}
                         </template>
                     </el-table-column>
-
                     <el-table-column sortable prop="status" align="center" label="状态" min-width="130">
                         <template slot-scope="scope">
-                            <span v-show="scope.row.status === '0'">停用</span>
-                            <span v-show="scope.row.status === '1'">启用</span>
+                            {{ $getDictLabel("common_status", scope.row.status) }}
                         </template>
                     </el-table-column>
                     <el-table-column fixed="right" align="center" label="操作" width="140">
@@ -420,42 +416,24 @@
             addList (editData) {
                 this.$refs[editData].validate((valid) => {
                     if (valid) {
-                        let dataList = [];
-                        Promise.all([
-                            //库区编号
-                            this.getAllDict('warehouse_area'),
-                            //库位性质
-                            this.getAllDict('warehouse_loca_type'),
-                        ]).then(res => {
-                            if(res != null && res.length==2){
-                                for (let i = 0; i < res[0].length; i++) {
-                                    if(this.editForm.warehouseAreaId == res[0][i].dictValue){
-                                        this.editForm.warehouseArea = res[0][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < res[1].length; i++) {
-                                    if(this.editForm.warehouseLocaType == res[1][i].dictValue){
-                                        this.editForm.warehouseLocaTypeNm = res[1][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < this.options.length; i++) {
-                                    if(this.editForm.warehouseId == this.options[i].value){
-                                        this.editForm.warehouseNm = this.options[i].label
-                                    }
-                                }
-                                this.loading = true
-                                let sendData = this.editForm
-                                setWarehouseLocationAdd(sendData).then((res) => {
-                                    this.$message({
-                                        message: res,
-                                        type: 'success'
-                                    })
-                                    this._initEditForm()
-                                    this.getList()
-                                }).catch((res) => {
-                                    this.$message.error(res.data.data)
-                                })
+                        this.editForm.warehouseArea = this.$getDictLabel("buss_type", this.editForm.warehouseAreaId)
+                        this.editForm.warehouseLocaTypeNm = this.$getDictLabel("bill_type", this.editForm.warehouseLocaType)
+                        for (let i = 0; i < this.options.length; i++) {
+                            if(this.editForm.warehouseId == this.options[i].value){
+                                this.editForm.warehouseNm = this.options[i].label
                             }
+                        }
+                        this.loading = true
+                        let sendData = this.editForm
+                        setWarehouseLocationAdd(sendData).then((res) => {
+                            this.$message({
+                                message: res,
+                                type: 'success'
+                            })
+                            this._initEditForm()
+                            this.getList()
+                        }).catch((res) => {
+                            this.$message.error(res.data.data)
                         })
                     }
                 })
@@ -464,41 +442,24 @@
             modifyList (editData) {
                 this.$refs[editData].validate((valid) => {
                     if (valid) {
-                        Promise.all([
-                            //库区编号
-                            this.getAllDict('warehouse_area'),
-                            //库位性质
-                            this.getAllDict('warehouse_loca_type'),
-                        ]).then(res => {
-                            if(res != null && res.length==2){
-                                for (let i = 0; i < res[0].length; i++) {
-                                    if(this.editForm.warehouseAreaId == res[0][i].dictValue){
-                                        this.editForm.warehouseArea = res[0][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < res[1].length; i++) {
-                                    if(this.editForm.warehouseLocaType == res[1][i].dictValue){
-                                        this.editForm.warehouseLocaTypeNm = res[1][i].dictLabel
-                                    }
-                                }
-                                for (let i = 0; i < this.options.length; i++) {
-                                    if(this.editForm.warehouseId == this.options[i].value){
-                                        this.editForm.warehouseNm = this.options[i].label
-                                    }
-                                }
-                                this.loading = true
-                                let sendData = this.editForm
-                                setWarehouseLocationEdit(sendData).then((res) => {
-                                    this.$message({
-                                        message: res,
-                                        type: 'success'
-                                    })
-                                    this._initEditForm()
-                                    this.getList()
-                                }).catch((res) => {
-                                    this.$message.error(res.data.data)
-                                })
+                        this.editForm.warehouseArea = this.$getDictLabel("buss_type", this.editForm.warehouseAreaId)
+                        this.editForm.warehouseLocaTypeNm = this.$getDictLabel("bill_type", this.editForm.warehouseLocaType)
+                        for (let i = 0; i < this.options.length; i++) {
+                            if(this.editForm.warehouseId == this.options[i].value){
+                                this.editForm.warehouseNm = this.options[i].label
                             }
+                        }
+                        this.loading = true
+                        let sendData = this.editForm
+                        setWarehouseLocationEdit(sendData).then((res) => {
+                            this.$message({
+                                message: res,
+                                type: 'success'
+                            })
+                            this._initEditForm()
+                            this.getList()
+                        }).catch((res) => {
+                            this.$message.error(res.data.data)
                         })
                     }
                 })
