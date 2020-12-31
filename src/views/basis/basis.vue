@@ -52,26 +52,26 @@
                             <template slot="title">
                                 <span><i :class="item.icon"></i> {{item.name}}</span>
                             </template>
-                            <el-menu-item :index="it.route" v-for="(it,ind) in item.children" :key="ind" :route="it.route">
+                            <!--<el-menu-item :index="it.route" v-for="(it,ind) in item.children" :key="ind" :route="it.route">
                                 <span slot="title"><i :class="it.icon"></i>{{it.name}}</span>
-                            </el-menu-item>
+                            </el-menu-item>-->
                             <div v-for="(item1,index) in item.children" :key="index">
                                 <el-submenu :index="item1.id+''" v-show="item1.show_flag && item1.menuType===2">
                                     <template slot="title">
                                         <span><i :class="item1.icon"></i> {{item1.name}}</span>
                                     </template>
-                                    <el-menu-item :index="it.route" v-for="(it,ind) in item1.children" :key="ind" :route="it.route">
+                                    <el-menu-item :index="it.path" v-for="(it,ind) in item1.children" :key="ind" :route="it.route">
                                         <span slot="title"><i :class="it.icon"></i>{{it.name}}</span>
                                     </el-menu-item>
                                 </el-submenu>
-                                <el-menu-item :index="item1.id+''" :route="item1.route" v-show="item1.show_flag && item1.menuType===3">
-                                    <span slot="title">{{item1.name}}</span>
+                                <el-menu-item :index="item1.route" :route="item1.route" v-show="item1.show_flag && item1.menuType===3">
+                                    <span slot="title"><i :class="item1.icon"></i>{{item1.name}}</span>
                                 </el-menu-item>
                             </div>
                         </el-submenu>
 
                         <el-menu-item :index="item.id+''" :route="item.route" v-show="item.show_flag && item.menuType===3">
-                            <span slot="title">{{item.name}}</span>
+                            <span slot="title"><i :class="item.icon"></i>{{item.name}}</span>
                         </el-menu-item>
                     </div>
                     <!-- <el-submenu :index="item.id+''" v-for="(item,index) in two_level_nav_arr" :key="index" v-show="item.show_flag">
@@ -431,16 +431,32 @@ export default {
                 if(this.two_level_nav_arr[key].show_flag === true && this.two_level_nav_arr[key].id+'' === indexpath[0]){
                     if(this.two_level_nav_arr[key].menuType === 2){
                         for(let key_children in this.two_level_nav_arr[key].children){
-                            if(this.two_level_nav_arr[key].children[key_children].path === index){
-                                obj.name = this.two_level_nav_arr[key].children[key_children].name;
-                                obj.route = index;
-                                obj.popover_flag = false;
-                                this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children];
-                                sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
-                                break;
+                            if(this.two_level_nav_arr[key].children[key_children].menuType === 2){
+                                for(let key_children1 in this.two_level_nav_arr[key].children[key_children].children){
+                                    if(this.two_level_nav_arr[key].children[key_children].children[key_children1].path === index){
+                                        obj.name = this.two_level_nav_arr[key].children[key_children].children[key_children1].name;
+                                        obj.route = index;
+                                        obj.popover_flag = false;
+                                        this.right_arr = [];
+                                        sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                                        if(typeof(this.two_level_nav_arr[key].children[key_children].children[key_children1].children) != 'undefined'){
+                                            this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children[key_children1].children];
+                                            sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                                        }
+                                        break;
+                                    }
+                                }
+                            } else {
+                                if(this.two_level_nav_arr[key].children[key_children].path === index){
+                                    obj.name = this.two_level_nav_arr[key].children[key_children].name;
+                                    obj.route = index;
+                                    obj.popover_flag = false;
+                                    this.right_arr = [...this.two_level_nav_arr[key].children[key_children].children];
+                                    sessionStorage.setItem('right-arr',JSON.stringify(this.right_arr));
+                                    break;
+                                }
                             }
                         }
-                        break;
                     }else{
                         obj.name = this.two_level_nav_arr[key].name;
                         obj.route = this.two_level_nav_arr[key].path;

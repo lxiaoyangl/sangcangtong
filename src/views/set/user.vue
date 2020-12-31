@@ -9,8 +9,8 @@
           <el-input clearable :maxlength="50" placeholder="请输入用户电话"  type="number"
                     v-model.trim="formInline.phoneNumber"></el-input>
         </el-form-item>
-        <el-form-item label="用户电话">
-          <ren-select v-model="formInline.userState" dict-type="warning_status" ></ren-select>
+        <el-form-item label="用户状态">
+          <ren-select v-model="formInline.userState" dict-type="common_status" ></ren-select>
         </el-form-item>
         <el-button type="primary" icon="el-icon-search" @click="searchList">搜索</el-button>
         <el-button type="primary" icon="el-icon-refresh" plain @click="searchReset">重置</el-button>
@@ -27,7 +27,7 @@
               :pageParams="pageParams" @handleSizeChange="handleSizeChange">
           <el-table-column sortable prop="userState" align="center" label="用户状态" min-width="120">
             <template slot-scope="scope">
-              {{ $getDictLabel("warning_status", scope.row.userState) }}
+              {{ $getDictLabel("common_status", scope.row.userState) }}
             </template>
           </el-table-column>
            <el-table-column sortable prop="lockState" align="center" label="是否锁定" min-width="120">
@@ -43,16 +43,16 @@
           <el-table-column fixed="right" align="center" label="操作" width="170">
             <template slot-scope="scope">
             <div class="tableButton">
-              <el-tooltip v-if="scope.row.lockState === 1" effect="dark" content="解锁" placement="top">
+              <el-tooltip v-show="scope.row.lockState === 1 && $hasPermission('解锁')" effect="dark" content="解锁" placement="top">
                 <el-button type="primary" icon="el-icon-unlock" circle  @click.stop="unLockFuc(scope.row)"></el-button>
               </el-tooltip>
-              <el-tooltip effect="dark" content="编辑" placement="top">
+              <el-tooltip v-show="$hasPermission('编辑')" effect="dark" content="编辑" placement="top">
                 <el-button type="primary" icon="el-icon-edit" circle  @click.stop="modifyPrev(scope.row)"></el-button>
               </el-tooltip>
-              <el-tooltip effect="dark" content="重置密码" placement="top">
+              <el-tooltip v-show="$hasPermission('重置密码')" effect="dark" content="重置密码" placement="top">
                 <el-button type="primary" icon="el-icon-key" circle  @click.stop="initPasswordFuc(scope.row)"></el-button>
               </el-tooltip>
-              <el-tooltip effect="dark" content="删除" placement="top">
+              <el-tooltip v-show="$hasPermission('删除')" effect="dark" content="删除" placement="top">
                 <el-button type="primary" icon="el-icon-delete" circle  @click.stop="deleteItem(scope.row)"></el-button>
               </el-tooltip>
             </div>
@@ -73,19 +73,14 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="用户状态" prop="userState">
-                <el-radio v-model="editForm.userState" :label="0">停用</el-radio>
-                <el-radio v-model="editForm.userState" :label="1">启用</el-radio>
+                <ren-radio-group v-model="editForm.userState" dict-type="common_status"></ren-radio-group>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="120">
             <el-col :span="12">
               <el-form-item label="性别" prop="sexId">
-                <el-select clearable  @change="getChangeSex" v-model="editForm.sexId" placeholder="请选择">
-                  <el-option v-for="item in sexs" :key="item.keyValue"
-                             :label="item.labels" :value="item.keyValue">
-                  </el-option>
-                </el-select>
+                <ren-radio-group v-model="editForm.sexId" dict-type="gender"></ren-radio-group>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -125,16 +120,14 @@
                           auto-complete="off" placeholder="请输入登录账号" :maxlength="20"></el-input>
               </el-form-item>
               <el-form-item label="角色类型" prop="userType" v-else>
-                <el-radio v-model="editForm.userType" label="1">管理角色</el-radio>
-                <el-radio v-model="editForm.userType" label="2">普通角色</el-radio>
+                <ren-radio-group v-model="editForm.userType" dict-type="userType"></ren-radio-group>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="120">
             <el-col :span="12" v-if="editForm.type=='add'">
               <el-form-item label="角色类型" prop="userType">
-                <el-radio v-model="editForm.userType" label="1">管理角色</el-radio>
-                <el-radio v-model="editForm.userType" label="2">普通角色</el-radio>
+                <ren-radio-group v-model="editForm.userType" dict-type="userType"></ren-radio-group>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -229,11 +222,8 @@ export default {
       columnOptions: [],
 
       postIds: [], // 原岗位
-      sexs: [{'labels': '女', 'keyValue': 0}, {'labels': '男', 'keyValue': 1}],
-//      userStateList: [{'label': '停用', 'value': 0}, {'label': '启用', 'value': 1}],
       lockStateList: [{'label': '未锁定', 'value': 0}, {'label': '锁定', 'value': 1}],
-      companyDatas: [],
-      permissionButtons: []
+      companyDatas: []
     }
   },
   components: {
@@ -241,9 +231,7 @@ export default {
     User
   },
   created () {
-    this.permissionButtons = getValidButton(this.$route.path)
     this.getList()
-    this.getSelects()
     this.getTreeDatas()
   },
   watch: {
@@ -271,29 +259,11 @@ export default {
         deleteAllNext(res, this.getList)
       })
     },
-    getSelects () {
-      // setDictionaryDataList({
-      //   dictionaryType: 'sys_sex'
-      // }).then((res) => {
-      //   this.sexs = res
-      // })
-      setDictionaryDataList({
-        dictionaryType: 'sys_position'
-      }).then((res) => {
-        this.postIds = res
-      })
-    },
     getTreeDatas () {
       setDepartmentBaseTree({}).then((res) => {
         this.treeDatas = toTreePackage(res)
         this.columnOptions = this.getTreeData(this.treeDatas)
       })
-    },
-    getChangeSex (data) {
-      const temp = this.sexs.filter(v => data === v.keyValue)
-      if (temp && temp.length > 0) {
-        this.editForm.sex = temp[0].labels
-      }
     },
     // 添加之前
     addPrev () {
@@ -334,7 +304,7 @@ export default {
         if (valid) {
           this.loading = true
           let sendData = this.editForm
-          sendData.password = md5(sendData.password)
+          sendData.password = this.$md5(sendData.password)
           setUserAdd(sendData).then((res) => {
             this.$message({
               message: res,

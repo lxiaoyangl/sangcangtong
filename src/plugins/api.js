@@ -103,6 +103,7 @@ export function setWarehouseLocationEdit(params) { return postApi('/warehouseLoc
 export function setWarehouseLocationList(params) { return postApi('/warehouseLocation/baseList?&_pageList&column=createTime&order=desc', params) }
 export function setWarehouseLocationDelete(params) { return postApi('/warehouseLocation/baseDel', params) }
 export function setWarehouseLocationBatchDelete(params) { return postApi('/warehouseLocation/baseBatchDel', params) }
+export const setWarehouseLocationData = (params) => { return postApi('/warehouseLocation/baseList', params) }
 
 export function setSupfinExpenseDetAdd(params) { return postApi('/supfinExpenseDet/baseAdd', params) }
 export function setSupfinExpenseDetEdit(params) { return postApi('/supfinExpenseDet/baseEdit', params) }
