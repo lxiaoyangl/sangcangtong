@@ -104,7 +104,7 @@
                             <el-form-item label="库区编号" prop="warehouseAreaId">
                                 <el-select :disabled="editForm.type==='view'" v-model="editForm.warehouseAreaId" placeholder="请选择" clearable>
                                     <el-option
-                                            v-for="item in getAllDict('yes_no')"
+                                            v-for="item in getAllDict('warehouse_area')"
                                             :key="item.value"
                                             :label="item.dictLabel"
                                             :value="item.dictValue">
@@ -423,7 +423,7 @@
                         let dataList = [];
                         Promise.all([
                             //库区编号
-                            this.getAllDict('yes_no'),
+                            this.getAllDict('warehouse_area'),
                             //库位性质
                             this.getAllDict('warehouse_loca_type'),
                         ]).then(res => {
@@ -466,9 +466,9 @@
                     if (valid) {
                         Promise.all([
                             //库区编号
-                            this.getAllDict('yes_no'),
+                            this.getAllDict('warehouse_area'),
                             //库位性质
-                            this.getAllDict('yes_no'),
+                            this.getAllDict('warehouse_loca_type'),
                         ]).then(res => {
                             if(res != null && res.length==2){
                                 for (let i = 0; i < res[0].length; i++) {
