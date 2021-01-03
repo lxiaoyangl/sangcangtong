@@ -290,7 +290,7 @@ warehouse.arrange.getIncomingOrders = function (that, data) {
 };
 //获取所有入库商品列表
 warehouse.arrange.getAllMaterialList = function (that, data) {
-  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/material/baseList?_pageList', data).then(res => {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/material/getList?_pageList', data).then(res => {
     return res
   }, err => {
     console.log('报错', err);

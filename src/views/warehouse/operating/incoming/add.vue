@@ -252,7 +252,7 @@
     </div>
 
     <div class="base-info">
-      <p class="title">入仓商品列表</p>
+      <p class="title">入仓商品信息</p>
     </div>
 
     <div style="margin-bottom: 10px">
@@ -1071,7 +1071,6 @@
             }*/
             //重新匹配字段(后台字段和原始字段不匹配)
             let itemList = this.table_data.map((item) => {
-
               return {
                 name: item.name,
                 textureMaterial: item.textureMaterial,

@@ -99,11 +99,12 @@
     height: 400px;
   }
 
-  .dia-search-item{
-    .efi-div{
+  .dia-search-item {
+    .efi-div {
       width: 130px;
     }
-    .el-input__inner,.el-select,.el-input{
+
+    .el-input__inner, .el-select, .el-input {
       width: 130px;
     }
   }
@@ -131,14 +132,15 @@
   }
 }
 
-.base-info{
+.base-info {
   height: 35px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
   flex-grow: revert;
   margin-bottom: 5px;
-  .title{
+
+  .title {
     border-bottom: none;
     margin: 0;
     margin-right: 30px;
@@ -171,13 +173,19 @@
         width: 100%;
         display: flex;
       }
+      /deep/ .id-info {
+        width: 100% !important;
+        display: flex;
+        .el-form-item__content{
+          display: flex;
+        }
+      }
     }
 
     .el-form-item {
       width: 100%;
       margin-right: 0px;
       display: flex;
-
       .el-form-item__content {
         textarea {
           width: 100%;
