@@ -291,5 +291,5 @@
 </script>
 
 <style scoped lang="less">
-  @import "../../../style/views/warehouse/homePage/audit.less";
+  @import "../../../../style/views/warehouse/homePage/audit.less";
 </style>

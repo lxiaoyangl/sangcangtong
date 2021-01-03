@@ -1,5 +1,5 @@
 import api from "./request";
-import {getUserInfo, timestampToTime} from "@/utils";
+import { getUserInfo, timestampToTime } from "@/utils";
 
 let warehouse = {
   storage: {},
@@ -12,7 +12,7 @@ warehouse.storage.storageUploadFile = function (that, data) {
     return res
   }, err => {
   }).finally(() => {
-   // that.loading = false;
+    // that.loading = false;
   })
 };
 //获取仓储文件上传 businessType orderNo
@@ -113,7 +113,7 @@ warehouse.storage.inComingList = function (that, data) {
     }
   }
   return api.post(url, data).then(res => {
-    if(that){
+    if (that) {
       that.table_data = [...res.data.data.records];
       that.page.total = res.data.data.total;
     }
@@ -121,7 +121,7 @@ warehouse.storage.inComingList = function (that, data) {
   }, err => {
 
   }).finally(() => {
-    if(!that)return
+    if (!that) return
     that.loading = false
   })
 };
@@ -286,6 +286,14 @@ warehouse.arrange.getIncomingOrders = function (that, data) {
     that.go_back();
   }, err => {
     console.log('新增报错', err);
+  })
+};
+//获取所有入库商品列表
+warehouse.arrange.getAllMaterialList = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/in/material/baseList?_pageList', data).then(res => {
+    return res
+  }, err => {
+    console.log('报错', err);
   })
 };
 

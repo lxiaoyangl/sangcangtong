@@ -468,5 +468,5 @@
 </script>
 
 <style scoped lang="less">
-  @import "../../../style/views/warehouse/homePage/arrange.less";
+  @import "../../../../style/views/warehouse/homePage/arrange.less";
 </style>

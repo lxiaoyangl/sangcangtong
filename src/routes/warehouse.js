@@ -145,12 +145,12 @@ export default [
   {
     path: '/warehouse/arrange_incoming/homePage',
     name: 'arrange_incoming_homePage',
-    component: () => import("@/views/warehouse/arrange/homePage.vue")
+    component: () => import("@/views/warehouse/arrange/incoming/homePage.vue")
   },
   // 仓储协同，入仓库位编排新增/修改
   {
     path: '/warehouse/arrange_incoming/add',
     name: 'arrange_incoming_add',
-    component: () => import("@/views/warehouse/arrange/add.vue")
+    component: () => import("@/views/warehouse/arrange/incoming/add.vue")
   },
 ]
