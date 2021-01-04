@@ -315,27 +315,6 @@
       <p class="title">入仓商品信息</p>
       <el-button type="primary" @click="add_goods" size="mini">添加商品信息</el-button>
     </div>
-
-    <!--<div style="margin-bottom: 10px">
-      <el-button
-          type="text"
-          class="s-button"
-          @click="add_goods"
-          icon="el-icon-circle-plus-outline"
-      >新增
-      </el-button
-      >
-      <div class="line"></div>
-      <el-button
-          type="text"
-          @click="del_goods"
-          icon="el-icon-remove-outline"
-          class="top_color_red s-button"
-      >删除
-      </el-button
-      >
-    </div>-->
-
     <div class="detail_content">
       <div class="detail_content_table">
         <div class="detail_content_table_box">
@@ -348,7 +327,8 @@
               border
               header-row-class-name="table_header"
               highlight-current-row
-              @current-change="detail_table_selection_change"
+              :row-class-name="tableRowClassName"
+              @row-click="detail_table_selection_change"
           >
             <el-table-column type="index" width="55"></el-table-column>
             <el-table-column prop="name" label="品名" min-width="100">
@@ -383,7 +363,7 @@
 
     <div class="detail_content">
       <div class="detail_content_table">
-        <div class="detail_content_table_box">
+        <div class="detail_content_table_box tableButton">
           <el-table
               :data="bp_row"
               style="width: 100%"
@@ -395,23 +375,44 @@
           >
             <el-table-column type="index" width="55"></el-table-column>
             <el-table-column prop="name" label="库区库位" min-width="100">
-              <el-select clearable v-model="form.inp2" placeholder="请选择客户" filterable size="mini">
-                <el-option v-for="item in cusNameArr" :key="item.value" :label="item.name" :value="item.id">
-                </el-option>
-              </el-select>
-            </el-table-column>
-            <el-table-column prop="placeOrigin" label="计划存放数量" min-width="80">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.inPlanNum" type="number" placeholder="计划入仓数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
+                <el-select v-show="scope.row.isEdit" clearable v-model="scope.row.warehouse_area" placeholder="请选择区域" filterable size="mini">
+                  <el-option v-for="item in getAllDict('warehouse_area')" :label="item.dictLabel" :value="item.dictLabel">
+                  </el-option>
+                </el-select>
+                <span v-show="!scope.row.isEdit">{{scope.row.warehouse_area}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="textureMaterial" label="计划存放重量" min-width="80">
+            <el-table-column prop="inPlanNum" label="计划存放数量" min-width="80">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.inPlanNum" type="number" placeholder="计划入仓数量" size="mini" @input="enterNumber_change(scope.row)"></el-input>
+                <el-input v-show="scope.row.isEdit" v-model="scope.row.inPlanNum" type="number" placeholder="计划入仓数量" size="mini"></el-input>
+                <span v-show="!scope.row.isEdit">{{scope.row.inPlanNum}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="specifications" label="操作" width="150">
-
+            <el-table-column prop="inPlanWeight" label="计划存放重量" min-width="80">
+              <template slot-scope="scope">
+                <el-input v-show="scope.row.isEdit" v-model="scope.row.inPlanWeight" type="number" placeholder="计划入仓数量" size="mini"></el-input>
+                <span v-show="!scope.row.isEdit">{{scope.row.inPlanWeight}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+                fixed="right"
+                label="操作"
+                width="120">
+              <template slot-scope="scope">
+                <el-tooltip v-show="scope.row.isEdit" effect="dark" content="保存" placement="top">
+                  <el-button @click.native.prevent="saveRow(scope.$index, bp_row)" type="primary" icon="el-icon-folder-checked" circle></el-button>
+                </el-tooltip>
+                <el-tooltip v-show="scope.row.isEdit" effect="dark" content="取消" placement="top">
+                  <el-button @click.native.prevent="cancelRow(scope.$index, bp_row)" type="primary" icon="el-icon-remove-outline" circle></el-button>
+                </el-tooltip>
+                <el-tooltip v-show="!scope.row.isEdit" effect="dark" content="编辑" placement="top">
+                  <el-button @click.native.prevent="editRow(scope.$index, bp_row)" type="primary" icon="el-icon-edit" circle></el-button>
+                </el-tooltip>
+                <el-tooltip v-show="!scope.row.isEdit" effect="dark" content="删除" placement="top">
+                  <el-button @click.native.prevent="deleteRow(scope.$index, bp_row)" type="primary" icon="el-icon-circle-close" circle></el-button>
+                </el-tooltip>
+              </template>
             </el-table-column>
           </el-table>
         </div>
@@ -920,7 +921,7 @@
         currentMaterialRow: {},//当前选择商品列表
         sureRow: {}, //点击确定之后所选的row
         single_M_row: {},// 入仓商品信息单选
-        bp_row:[],//编排表格数据
+        bp_row: [],//编排表格数据
       };
     },
     computed: {
@@ -933,7 +934,7 @@
         }
       },
       c_single_M_tip() {
-        if (!this.single_M_row.name) {
+        if (!this.single_M_row || !this.single_M_row.name) {
           return ''
         } else {
           let row = this.single_M_row;
@@ -1088,11 +1089,11 @@
           let dict = this.allDict.find((item) => {
             return item.dictType === dictType;
           });
-
           dict.dataList.forEach((item) => {
-            item.dictValue = Number(item.dictValue);
+            if (!isNaN(Number(item.dictValue))) {
+              item.dictValue = Number(item.dictValue);
+            }
           });
-
           return dict.dataList;
         }
       },
@@ -1184,9 +1185,16 @@
         });
         this.table_data = [...arr];
       },
+      //获取入仓商品信息表格index
+      tableRowClassName({row, rowIndex}) {
+        row.index = rowIndex;
+
+      },
       // 物资详情多选选择函数
-      detail_table_selection_change(val) {
-        this.single_M_row = val;
+      detail_table_selection_change(row) {
+        this.m_index = row.index;
+        this.single_M_row = row;
+        this.bp_row = row.materialLocationList || [];
         //this.detail_selected_arr = [...val];
       },
       // 新增蒙层多选改变函数
@@ -1274,143 +1282,127 @@
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning",
-        })
-          .then(() => {
-            this.$refs.application_form.validate((valid) => {
-              if (!valid) {
+        }).then(() => {
+          this.$refs.application_form.validate((valid) => {
+            if (!valid) {
+              return;
+            }
+            //重新匹配字段(后台字段和原始字段不匹配)
+            let itemList = this.table_data.map((item) => {
+              return {
+                name: item.name,
+                textureMaterial: item.textureMaterial,
+                specifications: item.specifications,
+                placeOrigin: item.placeOrigin,
+                inPlanNum: item.inPlanNum,
+                numUnitId: item.numUnitId,
+                numUnit: this.getNameById("numunit", item.numUnitId).dictLabel,
+                inPlanWeight: item.inPlanWeight,
+                weightUnitId: item.weightUnitId,
+                weightUnit: this.getNameById("weightunit", item.weightUnitId).dictLabel,
+                weightCoefficient: item.weightCoefficient,
+                measureMethodId: item.measureMethodId,
+                measureMethod: this.getNameById("measure_method", item.measureMethodId).dictLabel,
+                carNum: item.carNum,
+                driver: item.driver,
+                idCardType: item.idCardType,
+                idCardNum: item.idCardNum,
+                contactPhone: item.contactPhone,
+                remark: item.remark,
+                isRefer: true,
+              };
+            });
+
+            /*let sendData = {
+              documentState: 0,
+              orderNo: this.form.inp1,
+              customerId: this.form.inp2,
+              customerName: this.getNameById(this.cusNameArr, this.form.inp2, "id").name,
+              warehouseId: this.form.inp3,
+              warehouseName: this.getNameById(this.options, this.form.inp3, 'id').name,
+              putInPlanDate: timestampToTime(this.form.inp4),
+              shippingTypeId: this.form.inp5,
+              shippingTypeName: this.getNameById("transportType", this.form.inp5).dictLabel,
+              carNum:this.form.inp6,
+              driver:this.form.inp7,
+              idCardType:this.getNameById("idType", this.form.inp8).dictLabel,
+              idCardNum:this.form.inp9,
+              contactPhone:this.form.inp10,
+              remark:this.form.inp11,
+              customerNo:'',
+
+             /!* deliverPlace: this.form.inp7,
+              deliverLocation: this.form.inp9,
+              loadingLocation: this.form.inp8,
+              operatorId: this.form.inp10,
+              operatorName: this.getNameById(this.operator, this.form.inp10, "id").name,
+              // goodsSenderPhone: this.form.inp11,
+              isPlfDistVeh: this.form.inp12,
+              deliverPlanDate: timestampToTime(this.form.inp15),
+              acceptPlace: this.getNameById(this.options, this.form.inp1, "id").name,
+              remark: this.form.inp16,
+              updateUserId: getUserInfo().userId,
+              updateUser: getUserInfo().username,
+              updateTime: timestampToTime(new Date()),
+              // orderState:'',
+              materialList: [...itemList],
+              attachments: [...this.file_list],
+              customerNo: this.getNameById(this.cusNameArr, this.form.inp6, "id").companyNo,
+              orderSource: "PLATFORM",*!/
+            };*/
+            let sendData = {...this.sureRow};
+            sendData.materialList = this.table_data;
+            console.log(sendData);
+            return;
+
+            this.options.map((item) => {
+              if (item.value === this.form.inp1) {
+                sendData.warehouseName = item.label;
+              }
+            });
+            /*if (this.form.inp12 === 1) {
+              if (this.form.inp13) {
+                sendData.loadingTime = this.$fn.timeChange(this.form.inp13);
+              } else {
+                this.$fn.message('请选择计划装车时间', 'error');
                 return;
               }
-              // 判断计划送达事件要大于计划装车时间
-              /*if (this.form.inp12 == 1) {
-                if (new Date(this.form.inp13).getTime() >= new Date(this.form.inp14).getTime()) {
-                  this.$message.error('计划送达事件需要大于计划装车时间');
-                  return;
-                }
-              }*/
-              //重新匹配字段(后台字段和原始字段不匹配)
-              let itemList = this.table_data.map((item) => {
-                return {
-                  name: item.name,
-                  textureMaterial: item.textureMaterial,
-                  specifications: item.specifications,
-                  placeOrigin: item.placeOrigin,
-                  inPlanNum: item.inPlanNum,
-                  numUnitId: item.numUnitId,
-                  numUnit: this.getNameById("numunit", item.numUnitId).dictLabel,
-                  inPlanWeight: item.inPlanWeight,
-                  weightUnitId: item.weightUnitId,
-                  weightUnit: this.getNameById("weightunit", item.weightUnitId).dictLabel,
-                  weightCoefficient: item.weightCoefficient,
-                  measureMethodId: item.measureMethodId,
-                  measureMethod: this.getNameById("measure_method", item.measureMethodId).dictLabel,
-                  carNum: item.carNum,
-                  driver: item.driver,
-                  idCardType: item.idCardType,
-                  idCardNum: item.idCardNum,
-                  contactPhone: item.contactPhone,
-                  remark: item.remark,
-                  isRefer: true,
-                };
-              });
 
-              let sendData = {
-                documentState: 0,
-                warehouseId: this.form.inp1,
-                warehouseName: this.getNameById(
-                  this.options,
-                  this.form.inp1,
-                  "id"
-                ).name,
-                shippingTypeId: this.form.inp2,
-                shippingTypeName: this.getNameById(
-                  "transportType",
-                  this.form.inp2
-                ).dictLabel,
-                putInPlanDate: timestampToTime(this.form.inp3),
-                deliverName: this.form.inp4,
-                deliverPhone: this.form.inp5,
-                customerId: this.form.inp6,
-                customerName: this.getNameById(
-                  this.cusNameArr,
-                  this.form.inp6,
-                  "id"
-                ).name,
-                deliverPlace: this.form.inp7,
-                deliverLocation: this.form.inp9,
-                loadingLocation: this.form.inp8,
-                operatorId: this.form.inp10,
-                operatorName: this.getNameById(
-                  this.operator,
-                  this.form.inp10,
-                  "id"
-                ).name,
-                // goodsSenderPhone: this.form.inp11,
-                isPlfDistVeh: this.form.inp12,
-                deliverPlanDate: timestampToTime(this.form.inp15),
-                acceptPlace: this.getNameById(this.options, this.form.inp1, "id")
-                  .name,
-                remark: this.form.inp16,
-                updateUserId: getUserInfo().userId,
-                updateUser: getUserInfo().username,
-                updateTime: timestampToTime(new Date()),
-                // orderState:'',
-                materialList: [...itemList],
-                attachments: [...this.file_list],
-                customerNo: this.getNameById(
-                  this.cusNameArr,
-                  this.form.inp6,
-                  "id"
-                ).companyNo,
-                orderSource: "PLATFORM",
-              };
-              this.options.map((item) => {
-                if (item.value === this.form.inp1) {
-                  sendData.warehouseName = item.label;
-                }
-              });
-              /*if (this.form.inp12 === 1) {
-                if (this.form.inp13) {
-                  sendData.loadingTime = this.$fn.timeChange(this.form.inp13);
-                } else {
-                  this.$fn.message('请选择计划装车时间', 'error');
-                  return;
-                }
-
-                if (this.form.inp14) {
-                  sendData.serviceTime = this.$fn.timeChange(this.form.inp14);
-                } else {
-                  this.$fn.message('请选择计划送达时间', 'error')
-                  return;
-                }
-              }*/
-              this.loading = true;
-              if (sessionStorage.getItem("warehouse-incoming-edit") === "true") {
-                let upData = {
-                  id: this.prevPageData.id,
-                  orderNo: this.prevPageData.orderNo,
-                };
-                api_warehouse.storage
-                  .updateStorage(this, {...sendData, ...upData})
-                  .then((res) => {
-                    this.$message.info(res.data.msg);
-                    this.go_back();
-                  });
+              if (this.form.inp14) {
+                sendData.serviceTime = this.$fn.timeChange(this.form.inp14);
               } else {
-                api_warehouse.storage.addStorage(this, sendData).then((res) => {
+                this.$fn.message('请选择计划送达时间', 'error')
+                return;
+              }
+            }*/
+            this.loading = true;
+            if (sessionStorage.getItem("warehouse-incoming-edit") === "true") {
+              let upData = {
+                id: this.prevPageData.id,
+                orderNo: this.prevPageData.orderNo,
+              };
+              api_warehouse.storage
+                .updateStorage(this, {...sendData, ...upData})
+                .then((res) => {
                   this.$message.info(res.data.msg);
                   this.go_back();
                 });
-              }
-
-              /*this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
-                console.log('新增结果', res);
-                // this.$message.success(res.data.data);
+            } else {
+              api_warehouse.storage.addStorage(this, sendData).then((res) => {
+                this.$message.info(res.data.msg);
                 this.go_back();
-              }, err => {
-                console.log('新增报错', err);
-              })*/
-            });
-          })
+              });
+            }
+
+            /*this.$axios.post('/storage/apply/in/addStorage', sendData).then(res => {
+              console.log('新增结果', res);
+              // this.$message.success(res.data.data);
+              this.go_back();
+            }, err => {
+              console.log('新增报错', err);
+            })*/
+          });
+        })
           .catch(() => {
           });
       },
@@ -1531,22 +1523,20 @@
         let formdata = new FormData();
         formdata.append("file", val.raw);
         this.enclosure_loading = true;
-        api_warehouse.storage
-          .storageUploadFile(this, formdata)
-          .then(
-            (res) => {
-              console.log("上传结果", res);
-              this.enclosure_dialog_content_table_data.push(res.data.data);
-              this.enclosure_dialog_content_table_data.map((item) => {
-                item.fileName = item.fileName;
-                item.fileSize = item.fileSize;
-                item.fileType = item.fileType;
-              });
-            },
-            (err) => {
-              console.log("上传报错", err);
-            }
-          )
+        api_warehouse.storage.storageUploadFile(this, formdata).then(
+          (res) => {
+            console.log("上传结果", res);
+            this.enclosure_dialog_content_table_data.push(res.data.data);
+            this.enclosure_dialog_content_table_data.map((item) => {
+              item.fileName = item.fileName;
+              item.fileSize = item.fileSize;
+              item.fileType = item.fileType;
+            });
+          },
+          (err) => {
+            console.log("上传报错", err);
+          }
+        )
           .finally(() => {
             this.enclosure_loading = false;
           });
@@ -1670,7 +1660,6 @@
 
       // 附件文件下载操作
       download_file(obj) {
-        console.log(obj);
         window.open(obj.filePath);
       },
 
@@ -1757,6 +1746,8 @@
         this.material_flag = false;
         this.sureRow = JSON.parse(JSON.stringify(this.currentMaterialRow));
         let row = this.sureRow;
+        console.log(row);
+        if (!row) return;
         this.form = {
           inp1: row.orderNo,
           inp2: row.customerId,
@@ -1769,15 +1760,146 @@
           inp9: row.idCardNum,
           inp10: row.contactPhone,
           inp11: row.remark,
-        }
-
+        };
+        this.table_data = [];
       },
       //增加编排
-      add_bp(){
-        this.bp_row.push(1);
+      add_bp() {
+        if (!this.single_M_row || !this.single_M_row.name) {
+          this.$alert("选择入仓商品信息");
+        } else {
+          let row = JSON.parse(JSON.stringify(this.single_M_row));
+          row.isEdit = true;
+          row.warehouse_area = '';
+          this.bp_row.push(row);
+        }
       },
+      //保存单商品编排
+      save_bp() {
+        //判断数量是否对应
+        let numCount = 0, weightCount = 0, index = this.single_M_row.index;
+        this.bp_row.forEach((item) => {
+          numCount += item.inPlanNum * 1;
+          weightCount += item.inPlanWeight * 1;
+        });
+        if (this.table_data[index].inPlanWeight !== weightCount || this.table_data[index].inPlanNum !== numCount) {
+          this.$alert("请确保计划入仓数量或者重量等于计划存放数量或重量");
+          return false
+        }
+        let copyRow = JSON.parse(JSON.stringify(this.bp_row));
+        this.table_data[index].materialLocationList = copyRow;
+        return true;
+      },
+      //删除编排
+      deleteRow(index, rows) {
+        rows.splice(index, 1);
+      },
+      //保存编排
+      saveRow(index, rows) {
+        if (this.save_bp()) {
+          rows.forEach((item) => {
+            item.isEdit = false
+          });
+        } else {
+
+        }
+      },
+      //修改编排
+      editRow(index, rows) {
+        rows[index].isEdit = true
+      },
+      //取消编排
+      cancelRow(index, rows) {
+        rows[index].inPlanNum = '';
+        rows[index].inPlanWeight = '';
+        rows[index].warehouse_area = '';
+      }
     },
     beforeDestroy() {
+      let a = {
+        "attachments": [
+          0
+        ],
+        "carNum": "string",
+        "contactPhone": "string",
+        "customerId": 0,
+        "customerName": "string",
+        "customerNo": "string",
+        "driver": "string",
+        "id": 0,
+        "idCardNum": "string",
+        "idCardType": "string",
+        "linkedOrderNo": "string",
+        "materialList": [
+          {
+            "finishInTime": "2021-01-04T01:19:33.594Z",
+            "id": 0,
+            "inPlanNum": 0,
+            "isRefer": false,
+            "materialLocationList": [
+              {
+                "finishInTime": "2021-01-04T01:19:33.594Z",
+                "id": 0,
+                "inPlanNum": 0,
+                "isRefer": false,
+                "measureMethod": "string",
+                "measureMethodId": 0,
+                "name": "string",
+                "numUnit": "string",
+                "numUnitId": 0,
+                "pageNo": 0,
+                "pageSize": 0,
+                "placeOrigin": "string",
+                "realInNum": 0,
+                "realInWeight": 0,
+                "remark": "string",
+                "specifications": "string",
+                "terminalName": "string",
+                "terminalNo": "string",
+                "terminalTypeId": 0,
+                "textureMaterial": "string",
+                "warehouseLocation": "string",
+                "weightCoefficient": 0,
+                "weightUnit": "string",
+                "weightUnitId": 0
+              }
+            ],
+            "measureMethod": "string",
+            "measureMethodId": 0,
+            "name": "string",
+            "numUnit": "string",
+            "numUnitId": 0,
+            "orderPlanNo": "string",
+            "pageNo": 0,
+            "pageSize": 0,
+            "placeOrigin": "string",
+            "realInNum": 0,
+            "realInWeight": 0,
+            "remark": "string",
+            "specifications": "string",
+            "terminalName": "string",
+            "terminalNo": "string",
+            "terminalTypeId": 0,
+            "textureMaterial": "string",
+            "weightCoefficient": 0,
+            "weightUnit": "string",
+            "weightUnitId": 0
+          }
+        ],
+        "operatorId": 0,
+        "operatorName": "string",
+        "orderApplyNo": "string",
+        "orderMaterialNo": "string",
+        "orderNo": "string",
+        "pageNo": 0,
+        "pageSize": 0,
+        "putInPlanDate": "2021-01-04T01:19:33.594Z",
+        "remark": "string",
+        "shippingTypeId": 0,
+        "shippingTypeName": "string",
+        "warehouseId": 0,
+        "warehouseName": "string"
+      }
       //sessionStorage.removeItem('warehouse-incoming-edit');
     },
   };
