@@ -176,7 +176,6 @@ warehouse.storage.inComingSubmit = function (that, data) {
   })
 };
 
-
 //出仓提交
 warehouse.storage.outSrockSubmit = function (that, data) {
   return api.post('/busmiddle-storage/busmiddle-storage/storage/accept/apply/out/baseEdit', data).then(res => {
@@ -240,8 +239,17 @@ warehouse.storage.outComingAudit = function (that, data) {
   })
 };
 
-//出仓审核
+//过户审核
 warehouse.storage.transferAudit = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/common/storage/audit/log/audit', data).then(res => {
+    return res
+  }, err => {
+    console.log('获取信息失败', err);
+  })
+};
+
+//入仓计划审核
+warehouse.storage.inComingPlanAudit = function (that, data) {
   return api.post('/busmiddle-storage/busmiddle-storage/common/storage/audit/log/audit', data).then(res => {
     return res
   }, err => {
@@ -297,4 +305,87 @@ warehouse.arrange.getAllMaterialList = function (that, data) {
   })
 };
 
+//入仓计划列表
+warehouse.arrange.planInList = function (that, data) {
+  /*return api.post('/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/baseList', data).then(res => {
+    return res
+  }, err => {
+    console.log('报错', err);
+  })*/
+  let url = '/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/baseList?_pageList';
+  let timeKey = ['putInPlanDate_begin', 'putInPlanDate_end', 'deliverPlanDate_begin', 'deliverPlanDate_end'];
+  for (let i = 0; i < timeKey.length; i++) {
+    let row = timeKey[i]
+    if (data[row]) {
+      url += `&${row}=${timestampToTime(data[row])}`
+    }
+  }
+  return api.post(url, data).then(res => {
+    if (that) {
+      that.table_data = [...res.data.data.records];
+      that.page.total = res.data.data.total;
+    }
+    return res
+  }, err => {
+
+  }).finally(() => {
+    if (!that) return
+    that.loading = false
+  })
+
+};
+
+//入仓计划编排提交
+warehouse.arrange.planInComingSubmit = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/baseEdit', data).then(res => {
+    return res;
+  }, err => {
+    console.log('获取信息失败', err);
+  })
+};
+
+//新增入仓计划编排
+warehouse.arrange.addInPlan = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/add', data).then(res => {
+    return res
+  }, err => {
+    console.log('报错', err);
+  })
+};
+
+//修改入仓计划编排
+warehouse.arrange.editInPlan = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/edit', data).then(res => {
+    return res
+  }, err => {
+    console.log('报错', err);
+  })
+};
+
+//获取入仓计划编排商品
+warehouse.arrange.getMaterialList = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/material/baseList?_pageList', data).then(res => {
+    return res
+  }, err => {
+    console.log('报错', err);
+  })
+};
+//获取入仓计划编排信息
+warehouse.arrange.getLocationList = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/material/location/baseList?_pageList', data).then(res => {
+    return res
+  }, err => {
+    console.log('报错', err);
+  })
+};
+//入仓计划状态统计
+warehouse.storage.getIncomingPlanCount = function (that, data) {
+  return api.post('/busmiddle-storage/busmiddle-storage/storage/handle/plan/in/statsStatus', data).then(res => {
+    return res
+  }, err => {
+    console.log('获取信息失败', err);
+  })
+};
+
 export default warehouse;
+

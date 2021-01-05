@@ -153,4 +153,18 @@ export default [
     name: 'arrange_incoming_add',
     component: () => import("@/views/warehouse/arrange/incoming/add.vue")
   },
+
+
+  // 仓储协同，出仓库位编排列表
+  {
+    path: '/warehouse/arrange_out_stock/homePage',
+    name: 'arrange_out_stock_homePage',
+    component: () => import("@/views/warehouse/arrange/out_stock/homePage.vue")
+  },
+  // 仓储协同，出仓库位编排新增/修改
+  {
+    path: '/warehouse/arrange_out_stock/add',
+    name: 'arrange_out_stock_add',
+    component: () => import("@/views/warehouse/arrange/out_stock/add.vue")
+  },
 ]

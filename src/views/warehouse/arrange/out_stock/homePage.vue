@@ -225,10 +225,10 @@
     data() {
       return {
         tabsArr: [
-          {name: '新建', key: 'platfromPendingNum', type: 0},
-          {name: '待审核', key: 'pendingNum', type: 1},
-          {name: '已拒绝', key: 'rejectNum', type: 3},
-          {name: '已通过', key: 'acceptNum', type: 2},
+          {name: '新建', key: 'pendingNum', type: 0},
+          {name: '待审核', key: 'rejectNum', type: 1},
+          {name: '已拒绝', key: 'acceptNum', type: 3},
+          {name: '已通过', key: 'platfromPendingNum', type: 2},
         ],//tabs数组
         tabsAc: 0,//当前激活tab
         //表格按钮权限
@@ -386,7 +386,7 @@
 
         sessionStorage.setItem("tableRow", JSON.stringify(row));
         sessionStorage.setItem("warehouse-incoming-edit", 'true');
-        this.$router.push({name: 'arrange_incoming_add'});
+        this.$router.push({name: 'arrange_out_stock_add'});
         console.log(row);
       },
       //点击提交
@@ -400,7 +400,7 @@
           api_warehouse.arrange.planInComingSubmit(this, data).then((res) => {
             this.$message.info(res.data.msg);
             this.get_data();
-            api_warehouse.storage.getIncomingPlanCount().then(res => {
+            api_warehouse.storage.getIncomingCount().then(res => {
               this.incommingCount = res.data.data;
             });
           })
@@ -415,7 +415,7 @@
         }
         this.$message.info(payload.msg)
         this.dialogVisible = false;
-        api_warehouse.storage.getIncomingPlanCount().then(res => {
+        api_warehouse.storage.getIncomingCount().then(res => {
           this.incommingCount = res.data.data;
         });
         this.get_data()
@@ -442,12 +442,12 @@
       //新建订单
       addNew() {
         sessionStorage.setItem('warehouse-incoming-edit', 'false');
-        this.$router.push({name: 'arrange_incoming_add'});
+        this.$router.push({name: 'arrange_out_stock_add'});
       }
     },
     mounted() {
       this.get_data();
-      api_warehouse.storage.getIncomingPlanCount().then(res => {
+      api_warehouse.storage.getIncomingCount().then(res => {
         this.incommingCount = res.data.data;
       });
 
